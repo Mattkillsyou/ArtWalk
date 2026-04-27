@@ -1,0 +1,282 @@
+[
+  {
+    "address": "2100 N. Main Street",
+    "name": "Atrium",
+    "units": "A1-A15 (ground) / B1-B15 (top level)",
+    "floors": 2,
+    "position": "northeast corner, adjacent to I-5 freeway",
+    "notes": "Large building, main landmark"
+  },
+  {
+    "address": "2020 N. Main Street",
+    "name": "2020 N. Main",
+    "units": "220-244, 406A-407 (top level), plus ground units 14-20",
+    "floors": 2,
+    "position": "north-center, south of North Main Street",
+    "notes": "Large rectangular building"
+  },
+  {
+    "address": "1984 N. Main Street",
+    "name": "1984 N. Main",
+    "units": "200-500",
+    "floors": 2,
+    "position": "northwest area",
+    "notes": null
+  },
+  {
+    "address": "1980 N. Main Street",
+    "name": "1980 N. Main",
+    "units": null,
+    "floors": 1,
+    "position": "west side, south of 1984",
+    "notes": null
+  },
+  {
+    "address": "1960 N. Main Street",
+    "name": "1960",
+    "units": null,
+    "floors": 1,
+    "position": "west side",
+    "notes": null
+  },
+  {
+    "address": "1950 N. Main Street",
+    "name": "1950 N. Main",
+    "units": null,
+    "floors": 1,
+    "position": "west-center, near 1930/1940",
+    "notes": null
+  },
+  {
+    "address": "1940 N. Main Street",
+    "name": "1940 N. Main",
+    "units": null,
+    "floors": 1,
+    "position": "west-center",
+    "notes": null
+  },
+  {
+    "address": "1930 N. Main Street",
+    "name": "1930 N. Main",
+    "units": null,
+    "floors": 1,
+    "position": "west-center",
+    "notes": null
+  },
+  {
+    "address": "1920 N. Main Street",
+    "name": "1920 N. Main",
+    "units": null,
+    "floors": 1,
+    "position": "west side, near office",
+    "notes": "Near the main office"
+  },
+  {
+    "address": "1918 N. Main Street",
+    "name": "1918 N. Main",
+    "units": "101-104, 201-205",
+    "floors": 2,
+    "position": "southwest area",
+    "notes": null
+  },
+  {
+    "address": "1910 N. Main Street",
+    "name": "1910 N. Main",
+    "units": null,
+    "floors": 1,
+    "position": "far west, near UPS parking entrance",
+    "notes": null
+  },
+  {
+    "address": "600 Moulton Avenue",
+    "name": "600 Moulton",
+    "units": "101-500",
+    "floors": 2,
+    "position": "center of campus, large building",
+    "notes": "One of the largest buildings, central location"
+  },
+  {
+    "address": "602 Moulton Avenue",
+    "name": "602 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "south of 600 Moulton",
+    "notes": null
+  },
+  {
+    "address": "604 Moulton Avenue",
+    "name": "604 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "north area, near 606/608/610",
+    "notes": null
+  },
+  {
+    "address": "610 Moulton Avenue",
+    "name": "610 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "north area",
+    "notes": null
+  },
+  {
+    "address": "612 Moulton Avenue",
+    "name": "612 Moulton",
+    "units": "1-8, A, B",
+    "floors": 2,
+    "position": "north-center, between 600 and 2020",
+    "notes": null
+  },
+  {
+    "address": "618 Moulton Avenue",
+    "name": "618 Moulton",
+    "units": "A-F",
+    "floors": 1,
+    "position": "center, south of 600 Moulton",
+    "notes": null
+  },
+  {
+    "address": "620 Moulton Avenue",
+    "name": "620 Moulton",
+    "units": "200-218",
+    "floors": 1,
+    "position": "center-east",
+    "notes": null
+  },
+  {
+    "address": "622 Moulton Avenue",
+    "name": "622 Moulton",
+    "units": "A",
+    "floors": 1,
+    "position": "east side",
+    "notes": null
+  },
+  {
+    "address": "624 Moulton Avenue",
+    "name": "624 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "east side, near 622",
+    "notes": null
+  },
+  {
+    "address": "626 Moulton Avenue",
+    "name": "626 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "east side",
+    "notes": null
+  },
+  {
+    "address": "632 Moulton Avenue",
+    "name": "632 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "south-center",
+    "notes": null
+  },
+  {
+    "address": "634 Moulton Avenue",
+    "name": "634 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "south-center",
+    "notes": null
+  },
+  {
+    "address": "638 Moulton Avenue",
+    "name": "638 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "south-center",
+    "notes": null
+  },
+  {
+    "address": "642 Moulton Avenue",
+    "name": "642 Moulton (East & West)",
+    "units": "East: E18-E30+, West: W5-W17",
+    "floors": 1,
+    "position": "south-center, large L-shaped building split into East and West sections",
+    "notes": "Largest studio count, split East/West"
+  },
+  {
+    "address": "645 Moulton Avenue",
+    "name": "645 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "east side",
+    "notes": null
+  },
+  {
+    "address": "650 Moulton Avenue",
+    "name": "650 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "west side, near 650-652",
+    "notes": null
+  },
+  {
+    "address": "650 South Avenue 21",
+    "name": "650 S. Ave 21",
+    "units": null,
+    "floors": 1,
+    "position": "southeast area",
+    "notes": "Stronghold Climbing Gym, LA Artcore"
+  },
+  {
+    "address": "660 South Avenue 21",
+    "name": "660 S. Ave 21",
+    "units": "1-10",
+    "floors": 1,
+    "position": "east-center, near beer garden",
+    "notes": null
+  },
+  {
+    "address": "670 Moulton Avenue",
+    "name": "670 S. Ave 21",
+    "units": null,
+    "floors": 1,
+    "position": "south-center, near garden",
+    "notes": null
+  },
+  {
+    "address": "672 South Avenue 21",
+    "name": "672 S. Ave 21",
+    "units": "1-8",
+    "floors": 1,
+    "position": "south area",
+    "notes": null
+  },
+  {
+    "address": "676 South Avenue 21",
+    "name": "676 S. Ave 21",
+    "units": "33, 200, 300, 400",
+    "floors": 2,
+    "position": "far southeast",
+    "notes": null
+  },
+  {
+    "address": "690 Moulton Avenue",
+    "name": "690 Moulton",
+    "units": "A-E",
+    "floors": 1,
+    "position": "southwest area",
+    "notes": null
+  },
+  {
+    "address": "692 Moulton Avenue",
+    "name": "692 Moulton",
+    "units": "A, B",
+    "floors": 1,
+    "position": "southwest area",
+    "notes": null
+  },
+  {
+    "address": "696 Moulton Avenue",
+    "name": "696 Moulton",
+    "units": "A-D",
+    "floors": 1,
+    "position": "southwest area",
+    "notes": null
+  }
+]
