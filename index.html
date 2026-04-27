@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Brewery Art Walk</title>
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+    background: #fff;
+    color: #000;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+  }
+  header {
+    flex: 0 0 auto;
+    padding: env(safe-area-inset-top) 12px 8px;
+    padding-top: calc(env(safe-area-inset-top) + 8px);
+    background: #fff;
+    border-bottom: 1px solid #000;
+    z-index: 5;
+  }
+  #title {
+    font: 11px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    letter-spacing: 0.18em;
+    color: #000;
+    margin: 0 0 8px;
+    text-transform: uppercase;
+  }
+  #search {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid #000;
+    border-radius: 0;
+    font-size: 16px;
+    font-family: inherit;
+    background: #fff;
+    color: #000;
+    -webkit-appearance: none;
+    appearance: none;
+    user-select: text;
+    -webkit-user-select: text;
+  }
+  #search:focus {
+    outline: 2px solid #000;
+    outline-offset: -1px;
+  }
+  #chips {
+    flex: 0 0 auto;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 12px;
+    gap: 6px;
+    background: #fff;
+    border-bottom: 1px solid #000;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  #chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: 0 0 auto;
+    height: 36px;
+    min-width: 44px;
+    padding: 0 14px;
+    border: 1px solid #000;
+    background: #fff;
+    color: #000;
+    font: 13px/34px inherit;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .chip.active {
+    background: #000;
+    color: #fff;
+  }
+  #map-container {
+    flex: 1 1 auto;
+    position: relative;
+    overflow: hidden;
+    background: #fafafa;
+  }
+  #map {
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+  }
+  #status {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    font: 11px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    color: #000;
+    background: rgba(255,255,255,0.95);
+    padding: 6px 8px;
+    border: 1px solid #000;
+    pointer-events: none;
+    max-width: calc(100% - 80px);
+  }
+  #zoom-controls {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  #zoom-controls button {
+    width: 44px;
+    height: 44px;
+    border: 1px solid #000;
+    background: #fff;
+    color: #000;
+    font: 18px/1 inherit;
+    cursor: pointer;
+    margin-bottom: -1px;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  #zoom-controls button:active {
+    background: #000;
+    color: #fff;
+  }
+
+  /* Map element styling */
+  .bld-rect {
+    fill: #fff;
+    stroke: #000;
+    stroke-width: 1.4;
+    cursor: pointer;
+  }
+  .bld-group.dim .bld-rect { opacity: 0.18; }
+  .bld-group.dim .bld-label,
+  .bld-group.dim .bld-name,
+  .bld-group.dim .badge-circle,
+  .bld-group.dim .badge-text { opacity: 0.3; }
+  .bld-group.selected .bld-rect { fill: #222; }
+  .bld-group.selected .bld-label { fill: #fff; }
+  .bld-group.selected .bld-name { fill: #fff; }
+  .bld-label {
+    fill: #000;
+    font: 12px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    text-anchor: middle;
+    pointer-events: none;
+    font-weight: 700;
+  }
+  .bld-name {
+    fill: #000;
+    font: 8px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    text-anchor: middle;
+    pointer-events: none;
+  }
+  .bld-name.hidden { display: none; }
+  .badge-circle {
+    fill: #000;
+    pointer-events: none;
+  }
+  .badge-text {
+    fill: #fff;
+    font: 9px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    font-weight: 700;
+    text-anchor: middle;
+    pointer-events: none;
+  }
+  .badge-hidden { display: none; }
+  .street-strip { fill: #ededed; }
+  .street-label {
+    fill: #777;
+    font: 11px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    letter-spacing: 0.22em;
+    pointer-events: none;
+    font-weight: 600;
+  }
+  .landmark {
+    fill: #fff;
+    stroke: #888;
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+  }
+  .landmark-label {
+    fill: #555;
+    font: 10px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    text-anchor: middle;
+    pointer-events: none;
+  }
+
+  /* Bottom sheet */
+  #sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 65vh;
+    max-height: 65dvh;
+    background: #fff;
+    border-top: 1px solid #000;
+    transform: translateY(100%);
+    transition: transform 0.25s ease;
+    z-index: 10;
+    padding: 14px 20px calc(env(safe-area-inset-bottom) + 14px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  #sheet.open { transform: translateY(0); }
+  #sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: #000;
+    margin: 0 auto 10px;
+  }
+  #sheet-close {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    font: 22px/1 inherit;
+    color: #000;
+    cursor: pointer;
+  }
+  #sheet-body h2 {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    user-select: text;
+    -webkit-user-select: text;
+  }
+  #sheet-body .meta {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 4px;
+    user-select: text;
+    -webkit-user-select: text;
+  }
+  #sheet-body .building-head {
+    font: 11px/1.2 ui-monospace, "SF Mono", Menlo, monospace;
+    color: #555;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    user-select: text;
+    -webkit-user-select: text;
+  }
+  #sheet-body .bio {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 14px 0;
+    white-space: pre-wrap;
+    user-select: text;
+    -webkit-user-select: text;
+  }
+  #sheet-body .links {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 14px 0;
+  }
+  #sheet-body .links a {
+    display: inline-block;
+    height: 44px;
+    line-height: 42px;
+    padding: 0 16px;
+    border: 1px solid #000;
+    color: #000;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  #sheet-body .links a:active {
+    background: #000;
+    color: #fff;
+  }
+  #sheet-body img.thumb {
+    width: 100%;
+    max-height: 240px;
+    object-fit: cover;
+    border: 1px solid #000;
+    margin: 14px 0;
+    display: block;
+    background: #f5f5f5;
+  }
+  #sheet-body .artist-list { list-style: none; padding: 0; margin: 0; }
+  #sheet-body .artist-list li {
+    border-bottom: 1px solid #000;
+  }
+  #sheet-body .artist-list li:first-child { border-top: 1px solid #000; }
+  #sheet-body .artist-list button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 12px 4px;
+    background: none;
+    border: 0;
+    font: 14px/1.3 inherit;
+    color: #000;
+    cursor: pointer;
+    min-height: 56px;
+  }
+  #sheet-body .artist-list button:active { background: #f0f0f0; }
+  #sheet-body .a-name { font-weight: 600; }
+  #sheet-body .a-meta { font-size: 12px; color: #555; }
+  #sheet-body .empty {
+    text-align: center;
+    color: #555;
+    padding: 32px 0;
+    font-size: 14px;
+  }
+  #sheet-body .back-btn {
+    display: inline-block;
+    height: 32px;
+    line-height: 30px;
+    padding: 0 12px;
+    border: 1px solid #000;
+    background: #fff;
+    color: #000;
+    font: 12px/30px inherit;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+  #sheet-body .back-btn:active { background: #000; color: #fff; }
+
+  #error-banner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid #000;
+    background: #fff;
+    padding: 16px;
+    font: 13px/1.4 ui-monospace, monospace;
+    max-width: 320px;
+    text-align: left;
+    white-space: pre-wrap;
+    z-index: 20;
+    user-select: text;
+    -webkit-user-select: text;
+  }
+
+  @media (max-width: 380px) {
+    .chip { font-size: 12px; padding: 0 12px; }
+    #title { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <p id="title">Brewery Art Walk · 108 artists · 35 buildings</p>
+  <input type="search" id="search" placeholder="Search artists, mediums, addresses" autocomplete="off" autocapitalize="none" spellcheck="false">
+</header>
+
+<nav id="chips" aria-label="Filter by category"></nav>
+
+<main id="map-container">
+  <svg id="map" viewBox="0 0 1200 1400" role="img" aria-label="Brewery Art Colony campus map" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <pattern id="diag" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="6" stroke="#ddd" stroke-width="1"/>
+      </pattern>
+    </defs>
+  </svg>
+  <div id="status" aria-live="polite">Loading…</div>
+  <div id="zoom-controls">
+    <button id="zoom-in" aria-label="Zoom in">+</button>
+    <button id="zoom-out" aria-label="Zoom out">−</button>
+    <button id="zoom-reset" aria-label="Reset zoom">⟲</button>
+  </div>
+</main>
+
+<aside id="sheet" role="region" aria-label="Details" aria-hidden="true">
+  <div id="sheet-handle" aria-hidden="true"></div>
+  <button id="sheet-close" aria-label="Close">×</button>
+  <div id="sheet-body"></div>
+</aside>
+
+<script>
+'use strict';
+(async function () {
+  const $ = sel => document.querySelector(sel);
+  const svg = $('#map');
+  const sheet = $('#sheet');
+  const sheetBody = $('#sheet-body');
+  const sheetClose = $('#sheet-close');
+  const status = $('#status');
+  const search = $('#search');
+  const chipsBar = $('#chips');
+  const mapContainer = $('#map-container');
+  const NS = 'http://www.w3.org/2000/svg';
+
+  // -------- Building positions (manual layout for greyscale site plan) --------
+  // Coordinates in SVG units: 0,0 = top-left (NW), 1200,1400 = bottom-right (SE).
+  const POSITIONS = {
+    // Row 1 — North Main Street frontage
+    "1910 N. Main Street":   { x:  60, y: 170, w:  80, h:  70, short: "1910" },
+    "1984 N. Main Street":   { x: 170, y: 130, w: 200, h: 130, short: "1984" },
+    "1980 N. Main Street":   { x: 170, y: 280, w: 100, h:  50, short: "1980" },
+    "2020 N. Main Street":   { x: 400, y: 130, w: 220, h: 140, short: "2020" },
+    "2100 N. Main Street":   { x: 820, y: 110, w: 250, h: 180, short: "2100" },
+
+    // Row 2
+    "1960 N. Main Street":   { x:  60, y: 320, w:  70, h:  50, short: "1960" },
+    "1950 N. Main Street":   { x: 140, y: 320, w:  70, h:  50, short: "1950" },
+    "1940 N. Main Street":   { x: 220, y: 320, w:  70, h:  50, short: "1940" },
+    "1930 N. Main Street":   { x: 300, y: 320, w:  70, h:  50, short: "1930" },
+    "604 Moulton Avenue":    { x: 480, y: 320, w:  70, h:  50, short: "604"  },
+    "610 Moulton Avenue":    { x: 560, y: 320, w:  70, h:  50, short: "610"  },
+    "612 Moulton Avenue":    { x: 680, y: 300, w: 130, h:  90, short: "612"  },
+
+    // Row 3 — central buildings
+    "1920 N. Main Street":   { x:  60, y: 430, w: 130, h:  90, short: "1920" },
+    "600 Moulton Avenue":    { x: 320, y: 410, w: 280, h: 220, short: "600"  },
+    "602 Moulton Avenue":    { x: 320, y: 650, w: 130, h:  60, short: "602"  },
+    "620 Moulton Avenue":    { x: 680, y: 430, w: 130, h: 110, short: "620"  },
+    "622 Moulton Avenue":    { x: 820, y: 430, w:  65, h:  55, short: "622"  },
+    "624 Moulton Avenue":    { x: 895, y: 430, w:  65, h:  55, short: "624"  },
+    "626 Moulton Avenue":    { x: 970, y: 430, w:  65, h:  55, short: "626"  },
+
+    // Row 4
+    "1918 N. Main Street":   { x:  60, y: 720, w: 130, h: 100, short: "1918" },
+    "618 Moulton Avenue":    { x: 320, y: 740, w: 130, h:  90, short: "618"  },
+    "632 Moulton Avenue":    { x: 480, y: 740, w:  70, h:  60, short: "632"  },
+    "634 Moulton Avenue":    { x: 560, y: 740, w:  70, h:  60, short: "634"  },
+    "638 Moulton Avenue":    { x: 640, y: 740, w:  70, h:  60, short: "638"  },
+    "642 Moulton Avenue":    { x: 460, y: 830, w: 350, h:  90, short: "642 E&W" },
+    "645 Moulton Avenue":    { x: 820, y: 720, w:  85, h:  80, short: "645"  },
+    "660 South Avenue 21":   { x: 940, y: 720, w: 130, h: 110, short: "660"  },
+
+    // Row 5 — south
+    "696 Moulton Avenue":    { x:  60, y: 950, w:  70, h:  55, short: "696"  },
+    "692 Moulton Avenue":    { x: 140, y: 950, w:  70, h:  55, short: "692"  },
+    "690 Moulton Avenue":    { x: 220, y: 950, w:  70, h:  55, short: "690"  },
+    "650 Moulton Avenue":    { x: 320, y: 950, w:  90, h:  60, short: "650 M" },
+    "670 Moulton Avenue":    { x: 440, y: 970, w: 100, h:  80, short: "670"  },
+    "672 South Avenue 21":   { x: 560, y: 970, w: 100, h:  80, short: "672"  },
+    "650 South Avenue 21":   { x: 940, y: 920, w: 130, h: 120, short: "650"  },
+    "676 South Avenue 21":   { x: 940, y: 1060,w: 130, h: 110, short: "676"  },
+
+    // Orphan address from artists.json (no entry in buildings.json)
+    "621 Avenue 21":         { x: 880, y: 580, w:  60, h:  50, short: "621"  }
+  };
+
+  // -------- ViewBox / zoom --------
+  const NATURAL = { w: 1200, h: 1400 };
+  const VIEW = { x: 0, y: 0, w: NATURAL.w, h: NATURAL.h };
+  const MIN_W = 120;                        // most zoomed in
+  const MAX_W = NATURAL.w * 1.4;            // most zoomed out
+  let suppressClick = false;
+
+  // -------- State --------
+  let artists = [];
+  let buildings = [];
+  let categories = [];
+  let activeFilters = new Set();
+  let selectedAddress = null;
+  let searchQuery = '';
+  let artistsByAddress = {};
+
+  // -------- Data load --------
+  function loadJSON(path) {
+    return fetch(path, { cache: 'no-store' }).then(r => {
+      if (!r.ok) throw new Error(`${path} → HTTP ${r.status}`);
+      return r.json();
+    });
+  }
+
+  try {
+    const [a, b] = await Promise.all([
+      loadJSON('artists.json'),
+      loadJSON('buildings.json'),
+    ]);
+    artists = a;
+    buildings = b;
+  } catch (e) {
+    showError('Cannot load data:\n' + e.message + '\n\nServe over HTTP, e.g.\n  python3 -m http.server\nthen visit http://localhost:8000');
+    return;
+  }
+
+  categories = [...new Set(artists.map(x => x.category).filter(Boolean))].sort();
+  artistsByAddress = {};
+  artists.forEach(x => {
+    (artistsByAddress[x.address] = artistsByAddress[x.address] || []).push(x);
+  });
+
+  // -------- Render chips --------
+  function renderChips() {
+    chipsBar.innerHTML = '';
+    const all = makeChip('All', '', activeFilters.size === 0);
+    chipsBar.appendChild(all);
+    categories.forEach(cat => chipsBar.appendChild(makeChip(cat, cat, activeFilters.has(cat))));
+  }
+  function makeChip(label, cat, active) {
+    const b = document.createElement('button');
+    b.className = 'chip' + (active ? ' active' : '');
+    b.textContent = label;
+    b.dataset.cat = cat;
+    b.addEventListener('click', () => {
+      if (cat === '') {
+        activeFilters.clear();
+      } else {
+        if (activeFilters.has(cat)) activeFilters.delete(cat);
+        else activeFilters.add(cat);
+      }
+      renderChips();
+      applyFilters();
+    });
+    return b;
+  }
+
+  // -------- Render map --------
+  function renderMap() {
+    while (svg.lastChild && svg.lastChild.tagName !== 'defs') svg.removeChild(svg.lastChild);
+
+    // Streets (light grey strips with labels)
+    const streetsG = el('g', { id: 'streets' });
+    streetsG.appendChild(el('rect', { class: 'street-strip', x: 0,    y: 0,   width: 1200, height: 95 }));
+    streetsG.appendChild(el('rect', { class: 'street-strip', x: 1080, y: 95,  width: 120,  height: 1200 }));
+    streetsG.appendChild(el('rect', { class: 'street-strip', x: 633,  y: 95,  width: 45,   height: 1100 }));
+    streetsG.appendChild(textEl('NORTH MAIN STREET', 600, 56, 'street-label', { 'text-anchor': 'middle' }));
+    streetsG.appendChild(textEl('SOUTH AVENUE 21', 1140, 700, 'street-label', { 'text-anchor': 'middle', transform: 'rotate(-90 1140 700)' }));
+    streetsG.appendChild(textEl('MOULTON AVE', 655, 600, 'street-label', { 'text-anchor': 'middle', transform: 'rotate(-90 655 600)' }));
+    svg.appendChild(streetsG);
+
+    // Landmarks
+    const lmG = el('g', { id: 'landmarks' });
+    [
+      { x: 820, y: 580, w: 100, h: 80,  label: 'Beer Garden',  ly: 625 },
+      { x: 820, y: 680, w: 100, h: 60,  label: 'Garden',       ly: 715 },
+      { x: 1080,y: 600, w: 100, h: 160, label: 'I-5 Gallery',  ly: 685 },
+      { x:  60, y: 1180,w: 130, h: 160, label: 'UPS Parking',  ly: 1265 },
+    ].forEach(L => {
+      lmG.appendChild(el('rect', { class: 'landmark', x: L.x, y: L.y, width: L.w, height: L.h }));
+      lmG.appendChild(textEl(L.label, L.x + L.w / 2, L.ly, 'landmark-label'));
+    });
+    svg.appendChild(lmG);
+
+    // Buildings
+    const buildingsG = el('g', { id: 'buildings' });
+    Object.entries(POSITIONS).forEach(([addr, pos]) => {
+      const g = el('g', { class: 'bld-group', 'data-address': addr });
+      g.appendChild(el('rect', {
+        class: 'bld-rect', x: pos.x, y: pos.y, width: pos.w, height: pos.h
+      }));
+      g.appendChild(textEl(pos.short, pos.x + pos.w / 2, pos.y + pos.h / 2 + 4, 'bld-label'));
+
+      const meta = buildings.find(b => b.address === addr);
+      if (meta && meta.name && meta.name !== pos.short) {
+        const nameEl = textEl(meta.name, pos.x + pos.w / 2, pos.y + pos.h / 2 + 18, 'bld-name hidden');
+        g.appendChild(nameEl);
+      }
+
+      const count = (artistsByAddress[addr] || []).length;
+      if (count > 0) {
+        const r = 9.5;
+        const cx = pos.x + pos.w - r - 3;
+        const cy = pos.y + r + 3;
+        g.appendChild(el('circle', { class: 'badge-circle', cx, cy, r }));
+        const t = textEl(String(count), cx, cy + 3.5, 'badge-text');
+        g.appendChild(t);
+      }
+
+      g.addEventListener('click', () => {
+        if (suppressClick) return;
+        onBuildingTap(addr);
+      });
+
+      buildingsG.appendChild(g);
+    });
+    svg.appendChild(buildingsG);
+  }
+
+  function el(name, attrs) {
+    const e = document.createElementNS(NS, name);
+    if (attrs) for (const k in attrs) {
+      if (attrs[k] != null) e.setAttribute(k, attrs[k]);
+    }
+    return e;
+  }
+  function textEl(text, x, y, cls, extra) {
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('x', x);
+    t.setAttribute('y', y);
+    if (cls) t.setAttribute('class', cls);
+    if (extra) for (const k in extra) t.setAttribute(k, extra[k]);
+    if (!extra || !('text-anchor' in extra)) t.setAttribute('text-anchor', 'middle');
+    t.textContent = text;
+    return t;
+  }
+
+  // -------- Filter / search application --------
+  function matchesFilter(a) {
+    return activeFilters.size === 0 || activeFilters.has(a.category);
+  }
+  function matchesSearch(a) {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (a.name && a.name.toLowerCase().includes(q)) ||
+           (a.medium && a.medium.toLowerCase().includes(q)) ||
+           (a.address && a.address.toLowerCase().includes(q)) ||
+           (a.category && a.category.toLowerCase().includes(q));
+  }
+
+  function applyFilters() {
+    let total = 0;
+    const filterActive = activeFilters.size > 0 || !!searchQuery;
+    Object.entries(POSITIONS).forEach(([addr]) => {
+      const arts = artistsByAddress[addr] || [];
+      const matching = arts.filter(a => matchesFilter(a) && matchesSearch(a));
+      total += matching.length;
+      const g = svg.querySelector(`g.bld-group[data-address="${cssEscape(addr)}"]`);
+      if (!g) return;
+      const isAny = matching.length > 0;
+      g.classList.toggle('dim', filterActive && !isAny);
+      const badge = g.querySelector('text.badge-text');
+      const circ = g.querySelector('circle.badge-circle');
+      if (badge && circ) {
+        badge.textContent = matching.length;
+        badge.classList.toggle('badge-hidden', matching.length === 0);
+        circ.classList.toggle('badge-hidden', matching.length === 0);
+      }
+    });
+    status.textContent = `Showing ${total} of ${artists.length} artists`;
+    if (searchQuery && !selectedAddress) {
+      const matches = artists.filter(a => matchesFilter(a) && matchesSearch(a));
+      showSearchResults(matches);
+    }
+  }
+
+  function cssEscape(s) {
+    return String(s).replace(/(["\\])/g, '\\$1');
+  }
+
+  // -------- Tap handlers --------
+  function onBuildingTap(addr) {
+    selectedAddress = addr;
+    highlightBuilding(addr);
+    showBuildingArtists(addr);
+    if (currentZoomLevel() < 2) zoomTo(addr);
+  }
+  function highlightBuilding(addr) {
+    svg.querySelectorAll('g.bld-group').forEach(g => {
+      g.classList.toggle('selected', g.dataset.address === addr);
+    });
+  }
+  function clearHighlight() {
+    svg.querySelectorAll('g.bld-group.selected').forEach(g => g.classList.remove('selected'));
+  }
+
+  // -------- Bottom sheet --------
+  function openSheet(html) {
+    sheetBody.innerHTML = html;
+    sheet.classList.add('open');
+    sheet.setAttribute('aria-hidden', 'false');
+    sheet.scrollTop = 0;
+  }
+  function closeSheet() {
+    sheet.classList.remove('open');
+    sheet.setAttribute('aria-hidden', 'true');
+    selectedAddress = null;
+    clearHighlight();
+  }
+  sheetClose.addEventListener('click', closeSheet);
+
+  function showBuildingArtists(addr) {
+    const arts = (artistsByAddress[addr] || []).filter(a => matchesFilter(a) && matchesSearch(a));
+    const meta = buildings.find(b => b.address === addr);
+    const bldName = meta && meta.name && meta.name !== addr ? ' · ' + meta.name : '';
+    const html = `
+      <div class="building-head">${esc(addr)}${esc(bldName)}</div>
+      <h2>${arts.length} ${arts.length === 1 ? 'artist' : 'artists'}</h2>
+      ${arts.length === 0
+        ? '<p class="empty">No artists match the current filter.</p>'
+        : '<ul class="artist-list">' + arts.map(a => `
+            <li><button data-artist-idx="${artists.indexOf(a)}">
+              <div class="a-name">${esc(a.name)}</div>
+              <div class="a-meta">${esc(a.category)}${a.medium ? ' · ' + esc(a.medium) : ''}${a.unit ? ' · #' + esc(a.unit) : ''}</div>
+            </button></li>`).join('') + '</ul>'}`;
+    openSheet(html);
+    bindArtistButtons(addr);
+  }
+
+  function bindArtistButtons(returnAddr) {
+    sheetBody.querySelectorAll('button[data-artist-idx]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const a = artists[parseInt(btn.dataset.artistIdx, 10)];
+        showArtistDetail(a, returnAddr);
+      });
+    });
+  }
+
+  function showArtistDetail(a, returnAddr) {
+    const links = [];
+    if (a.website)     links.push(`<a href="${esc(a.website)}" target="_blank" rel="noopener">Website</a>`);
+    if (a.instagram)   links.push(`<a href="${esc(a.instagram)}" target="_blank" rel="noopener">Instagram</a>`);
+    if (a.profile_url) links.push(`<a href="${esc(a.profile_url)}" target="_blank" rel="noopener">Profile</a>`);
+    if (a.other_links) a.other_links.forEach(l => links.push(`<a href="${esc(l)}" target="_blank" rel="noopener">${esc(displayHost(l))}</a>`));
+
+    const html = `
+      ${returnAddr ? `<button class="back-btn" id="back-to-list">← Back to ${esc(POSITIONS[returnAddr] ? (POSITIONS[returnAddr].short) : returnAddr)}</button>` : ''}
+      <div class="building-head">${esc(a.address)}${a.unit ? ' · Unit ' + esc(a.unit) : ''}</div>
+      <h2>${esc(a.name)}</h2>
+      <div class="meta">${esc(a.category)}${a.medium ? ' · ' + esc(a.medium) : ''}</div>
+      ${a.images && a.images.length ? `<img class="thumb" src="${esc(a.images[0])}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+      ${a.bio ? `<div class="bio">${esc(a.bio)}</div>` : ''}
+      ${links.length ? '<div class="links">' + links.join('') + '</div>' : ''}`;
+    openSheet(html);
+    const back = sheetBody.querySelector('#back-to-list');
+    if (back) back.addEventListener('click', () => showBuildingArtists(returnAddr));
+  }
+
+  function showSearchResults(matches) {
+    if (matches.length === 0) {
+      openSheet('<h2>No matches</h2><p class="empty">Try a different search term.</p>');
+      return;
+    }
+    const html = `
+      <h2>${matches.length} ${matches.length === 1 ? 'result' : 'results'}</h2>
+      <ul class="artist-list">
+        ${matches.slice(0, 200).map(a => `
+          <li><button data-artist-idx="${artists.indexOf(a)}">
+            <div class="a-name">${esc(a.name)}</div>
+            <div class="a-meta">${esc(a.category)} · ${esc(a.address)}${a.unit ? ' #' + esc(a.unit) : ''}</div>
+          </button></li>`).join('')}
+      </ul>`;
+    openSheet(html);
+    sheetBody.querySelectorAll('button[data-artist-idx]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const a = artists[parseInt(btn.dataset.artistIdx, 10)];
+        zoomTo(a.address);
+        selectedAddress = a.address;
+        highlightBuilding(a.address);
+        showArtistDetail(a, a.address);
+      });
+    });
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function displayHost(url) {
+    try { return new URL(url).host.replace(/^www\./, ''); }
+    catch { return url; }
+  }
+
+  // -------- Pan / zoom --------
+  function setView(x, y, w) {
+    w = Math.max(MIN_W, Math.min(MAX_W, w));
+    const aspectMap = NATURAL.h / NATURAL.w;
+    const containerRect = svg.getBoundingClientRect();
+    const aspectScreen = containerRect.height / containerRect.width;
+    const h = w * aspectScreen;
+    const overshoot = Math.max(NATURAL.w, NATURAL.h) * 0.15;
+    x = Math.max(-overshoot, Math.min(NATURAL.w + overshoot - w, x));
+    y = Math.max(-overshoot, Math.min(NATURAL.h + overshoot - h, y));
+    VIEW.x = x; VIEW.y = y; VIEW.w = w; VIEW.h = h;
+    svg.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
+    updateZoomLevel();
+  }
+  function currentZoomLevel() {
+    const z = NATURAL.w / VIEW.w;
+    if (z < 1.8) return 1;
+    if (z < 4) return 2;
+    return 3;
+  }
+  function updateZoomLevel() {
+    const lvl = currentZoomLevel();
+    svg.querySelectorAll('text.bld-name').forEach(t => t.classList.toggle('hidden', lvl < 2));
+  }
+  function zoomTo(addr) {
+    const pos = POSITIONS[addr];
+    if (!pos) return;
+    const cx = pos.x + pos.w / 2;
+    const cy = pos.y + pos.h / 2;
+    const targetW = Math.max(pos.w * 4.5, 320);
+    const containerRect = svg.getBoundingClientRect();
+    const aspectScreen = containerRect.height / containerRect.width;
+    const targetH = targetW * aspectScreen;
+    setView(cx - targetW / 2, cy - targetH / 2, targetW);
+  }
+  function resetView() {
+    const containerRect = svg.getBoundingClientRect();
+    const aspectScreen = containerRect.height / containerRect.width;
+    const w = aspectScreen >= NATURAL.h / NATURAL.w ? NATURAL.w : NATURAL.h / aspectScreen;
+    setView((NATURAL.w - w) / 2, 0, w);
+  }
+
+  // Mouse + touch interactions
+  let isPanning = false;
+  let panStart = null;
+  let panStartView = null;
+  let pinchStartDist = 0;
+  let pinchStartView = null;
+  let pinchStartFocus = null;
+  let touchMoved = false;
+
+  svg.addEventListener('mousedown', e => {
+    isPanning = true;
+    panStart = { x: e.clientX, y: e.clientY };
+    panStartView = { ...VIEW };
+    touchMoved = false;
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', e => {
+    if (!isPanning) return;
+    const dx = e.clientX - panStart.x;
+    const dy = e.clientY - panStart.y;
+    if (Math.abs(dx) + Math.abs(dy) > 4) touchMoved = true;
+    const rect = svg.getBoundingClientRect();
+    const sx = panStartView.w / rect.width;
+    const sy = panStartView.h / rect.height;
+    setView(panStartView.x - dx * sx, panStartView.y - dy * sy, panStartView.w);
+  });
+  window.addEventListener('mouseup', () => {
+    if (touchMoved) { suppressClick = true; setTimeout(() => suppressClick = false, 80); }
+    isPanning = false;
+  });
+
+  svg.addEventListener('wheel', e => {
+    e.preventDefault();
+    const factor = Math.exp(-e.deltaY * 0.0015);
+    const rect = svg.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width;
+    const py = (e.clientY - rect.top) / rect.height;
+    const fx = VIEW.x + px * VIEW.w;
+    const fy = VIEW.y + py * VIEW.h;
+    const newW = VIEW.w / factor;
+    const aspectScreen = rect.height / rect.width;
+    const newH = newW * aspectScreen;
+    setView(fx - px * newW, fy - py * newH, newW);
+  }, { passive: false });
+
+  svg.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+      const t = e.touches[0];
+      isPanning = true;
+      panStart = { x: t.clientX, y: t.clientY };
+      panStartView = { ...VIEW };
+      touchMoved = false;
+    } else if (e.touches.length === 2) {
+      isPanning = false;
+      const t1 = e.touches[0], t2 = e.touches[1];
+      pinchStartDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      pinchStartView = { ...VIEW };
+      const rect = svg.getBoundingClientRect();
+      const midX = (t1.clientX + t2.clientX) / 2;
+      const midY = (t1.clientY + t2.clientY) / 2;
+      const px = (midX - rect.left) / rect.width;
+      const py = (midY - rect.top) / rect.height;
+      pinchStartFocus = { px, py };
+    }
+  }, { passive: true });
+  svg.addEventListener('touchmove', e => {
+    if (e.touches.length === 1 && isPanning) {
+      e.preventDefault();
+      const t = e.touches[0];
+      const dx = t.clientX - panStart.x;
+      const dy = t.clientY - panStart.y;
+      if (Math.abs(dx) + Math.abs(dy) > 4) touchMoved = true;
+      const rect = svg.getBoundingClientRect();
+      const sx = panStartView.w / rect.width;
+      const sy = panStartView.h / rect.height;
+      setView(panStartView.x - dx * sx, panStartView.y - dy * sy, panStartView.w);
+    } else if (e.touches.length === 2 && pinchStartView) {
+      e.preventDefault();
+      const t1 = e.touches[0], t2 = e.touches[1];
+      const d = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      const factor = d / pinchStartDist || 1;
+      const newW = pinchStartView.w / factor;
+      const fx = pinchStartView.x + pinchStartFocus.px * pinchStartView.w;
+      const fy = pinchStartView.y + pinchStartFocus.py * pinchStartView.h;
+      const rect = svg.getBoundingClientRect();
+      const aspectScreen = rect.height / rect.width;
+      const newH = newW * aspectScreen;
+      setView(fx - pinchStartFocus.px * newW, fy - pinchStartFocus.py * newH, newW);
+      touchMoved = true;
+    }
+  }, { passive: false });
+  svg.addEventListener('touchend', () => {
+    if (touchMoved) { suppressClick = true; setTimeout(() => suppressClick = false, 80); }
+    isPanning = false;
+    pinchStartView = null;
+  });
+
+  // Zoom buttons
+  $('#zoom-in').addEventListener('click', () => {
+    setView(VIEW.x + VIEW.w * 0.18, VIEW.y + VIEW.h * 0.18, VIEW.w * 0.6);
+  });
+  $('#zoom-out').addEventListener('click', () => {
+    setView(VIEW.x - VIEW.w * 0.33, VIEW.y - VIEW.h * 0.33, VIEW.w * 1.6);
+  });
+  $('#zoom-reset').addEventListener('click', () => {
+    resetView();
+    closeSheet();
+    search.value = '';
+    searchQuery = '';
+    activeFilters.clear();
+    renderChips();
+    applyFilters();
+  });
+
+  // Search input
+  let searchTimer = null;
+  search.addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      searchQuery = e.target.value.trim();
+      applyFilters();
+      if (!searchQuery && !selectedAddress) closeSheet();
+    }, 100);
+  });
+  search.addEventListener('focus', () => {
+    if (searchQuery) showSearchResults(artists.filter(a => matchesFilter(a) && matchesSearch(a)));
+  });
+
+  // Resize handler
+  window.addEventListener('resize', () => setView(VIEW.x, VIEW.y, VIEW.w));
+  window.addEventListener('orientationchange', () => setTimeout(() => setView(VIEW.x, VIEW.y, VIEW.w), 100));
+
+  // -------- Init --------
+  function showError(msg) {
+    const el = document.createElement('div');
+    el.id = 'error-banner';
+    el.textContent = msg;
+    mapContainer.appendChild(el);
+    status.textContent = '';
+  }
+
+  renderChips();
+  renderMap();
+  resetView();
+  applyFilters();
+})();
+</script>
+</body>
+</html>
