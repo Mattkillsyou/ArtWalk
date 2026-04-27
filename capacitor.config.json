@@ -1,0 +1,12 @@
+{
+  "appId": "com.breweryartwalk.app",
+  "appName": "Brewery Art Walk",
+  "webDir": "www",
+  "server": {
+    "iosScheme": "https"
+  },
+  "ios": {
+    "contentInset": "always",
+    "limitsNavigationsToAppBoundDomains": false
+  }
+}

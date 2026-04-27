@@ -40,24 +40,27 @@ IMG_1075 copy.png   Reference: campus photo
 IMG_1077 copy.png   Reference: campus photo
 ```
 
-## Run (V1, web only — Phase 1)
+## Run
 
+### Web preview (any OS)
+
+`index.html` is self-contained — open it directly in any browser. The 108 artists and 35 buildings are inlined into the HTML by `prepare.js`.
+
+If you edit `artists.json` or `buildings.json`:
 ```bash
-# Once index.html is built (Phase 1):
-open index.html
+node prepare.js     # re-inlines into index.html and www/
 ```
 
-## Run (V1, iOS native — Phase 2+)
+### iOS native (Mac required)
 
-Mac required.
+See **[MAC_SETUP.md](MAC_SETUP.md)** for the full step-by-step. Short version:
 
 ```bash
 git clone https://github.com/Mattkillsyou/ArtWalk.git
 cd ArtWalk
-npm install
-npx cap sync ios
-npx cap open ios
-# then run on simulator or device from Xcode
+npm install            # installs Capacitor, runs prepare.js via postinstall
+npx cap add ios        # one-time
+npm run ios:open       # build + sync + open in Xcode
 ```
 
 ## Build phases
