@@ -492,10 +492,16 @@
     const b64 = window[globalKey];
     if (!b64 || typeof b64 !== 'string') return null;
     try {
-      const json = atob(b64);
+      // atob -> binary string (Latin-1). The JSON is UTF-8, so decode bytes
+      // properly via TextDecoder, otherwise curly quotes / em dashes / accented
+      // characters in bios will mangle JSON.parse.
+      const bin = atob(b64);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      const json = new TextDecoder('utf-8').decode(bytes);
       const data = JSON.parse(json);
       return Array.isArray(data) && data.length > 0 ? data : null;
-    } catch { return null; }
+    } catch (e) { console.error('inline data parse:', e); return null; }
   }
   function loadJSON(path) {
     return fetch(path, { cache: 'no-store' }).then(r => {
