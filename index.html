@@ -9,7 +9,7 @@
 <title>Brewery Art Walk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap">
 <style>
   *, *::before, *::after {
     box-sizing: border-box;
@@ -161,29 +161,29 @@
   .bld-group.selected .bld-rect { fill: #222; }
   .bld-group.selected .bld-label { fill: #fff; }
   .bld-group.selected .bld-name { fill: #fff; }
-  /* Address + street typography — square geometric (Anton), small, all caps.
-     Address sits in the top-left corner of each building. Street name is
-     small and outside (above the building), only on parent buildings — sub
-     units in a row don't get the street tag (avoids "MOULTON" repeating). */
+  /* Address + street typography — sleek modern sans (Inter Tight), small,
+     all caps, soft grey. Buildings are the click target so labels stay
+     understated and don't compete for attention. */
   .bld-label, .bld-street {
-    font-family: "Anton", "Arial Narrow", "Helvetica Neue Condensed", "Bahnschrift Condensed", "Roboto Condensed", system-ui, sans-serif;
-    font-weight: 400;            /* Anton is intrinsically bold */
+    font-family: "Inter Tight", "Inter", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
     text-transform: uppercase;
     pointer-events: none;
   }
   .bld-label {
-    fill: #111;
+    fill: #8c8c8c;
+    font-weight: 600;
     letter-spacing: 0.04em;
   }
-  .bld-label.lbl-xs { font-size: 8px; }
-  .bld-label.lbl-sm { font-size: 9px; }
-  .bld-label.lbl-md { font-size: 11px; }
-  .bld-label.lbl-lg { font-size: 13px; }
-  .bld-label.lbl-xl { font-size: 15px; }
+  .bld-label.lbl-xs { font-size: 7px; letter-spacing: 0.02em; }
+  .bld-label.lbl-sm { font-size: 8px; letter-spacing: 0.03em; }
+  .bld-label.lbl-md { font-size: 10px; }
+  .bld-label.lbl-lg { font-size: 12px; }
+  .bld-label.lbl-xl { font-size: 14px; }
   .bld-street {
-    fill: #8a8a8a;
+    fill: #b2b2b2;
+    font-weight: 500;
     font-size: 6px;
-    letter-spacing: 0.20em;
+    letter-spacing: 0.22em;
   }
   .bld-group.selected .bld-label { fill: #fff; }
   .bld-group.selected .bld-street { fill: #ddd; }
