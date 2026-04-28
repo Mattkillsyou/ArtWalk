@@ -127,44 +127,53 @@ for (const [addr, p] of Object.entries(positions)) {
 const GAP_CLOSE = 20;       // close vertical gaps up to this many px
 const MIN_OVERLAP = 5;      // require this much horizontal overlap
 
+// Close both gaps AND small overlaps. A and B should share an edge if their
+// edges are within tolerance, regardless of which side overshoots.
 for (let pass = 0; pass < 6; pass++) {
   let changed = false;
+
+  // Vertical: A above B, snap A.bottom = B.top.
   for (const A of rects) {
     const a = A.ref;
-    let bestGap = Infinity, bestB = null;
+    let bestDist = Infinity, bestB = null;
     for (const B of rects) {
       if (A === B) continue;
       const b = B.ref;
+      // A must be above B (centers).
+      if (a.y + a.h / 2 >= b.y + b.h / 2) continue;
       const ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
       if (ox < MIN_OVERLAP) continue;
-      const gap = b.y - (a.y + a.h);
-      if (gap > 0 && gap < GAP_CLOSE && gap < bestGap) {
-        bestGap = gap; bestB = b;
+      const diff = b.y - (a.y + a.h);  // positive = gap, negative = overlap
+      const d = Math.abs(diff);
+      if (d <= GAP_CLOSE && d < bestDist) {
+        bestDist = d; bestB = b;
       }
     }
     if (bestB) {
-      // Extend A down to meet B's top exactly.
-      a.h = bestB.y - a.y;
-      changed = true;
+      const newBottom = bestB.y;
+      if (a.h !== newBottom - a.y) { a.h = newBottom - a.y; changed = true; }
     }
   }
-  // Also close horizontal gaps (right edge of A meets left edge of B).
+
+  // Horizontal: A to the left of B, snap A.right = B.left.
   for (const A of rects) {
     const a = A.ref;
-    let bestGap = Infinity, bestB = null;
+    let bestDist = Infinity, bestB = null;
     for (const B of rects) {
       if (A === B) continue;
       const b = B.ref;
+      if (a.x + a.w / 2 >= b.x + b.w / 2) continue;
       const oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
       if (oy < MIN_OVERLAP) continue;
-      const gap = b.x - (a.x + a.w);
-      if (gap > 0 && gap < GAP_CLOSE && gap < bestGap) {
-        bestGap = gap; bestB = b;
+      const diff = b.x - (a.x + a.w);
+      const d = Math.abs(diff);
+      if (d <= GAP_CLOSE && d < bestDist) {
+        bestDist = d; bestB = b;
       }
     }
     if (bestB) {
-      a.w = bestB.x - a.x;
-      changed = true;
+      const newRight = bestB.x;
+      if (a.w !== newRight - a.x) { a.w = newRight - a.x; changed = true; }
     }
   }
   if (!changed) break;
