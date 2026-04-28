@@ -120,11 +120,17 @@
 <aside id="side">
   <div id="side-head">
     <h1>Capture building positions</h1>
-    <p>1. Click an address.<br>2. Click NW corner of the building on the map.<br>3. Click SE corner. Done. Repeat.</p>
+    <p><b>Rect:</b> click NW corner, then SE corner.<br><b>Polygon:</b> click each vertex, then "Finish".<br>Pick mode below, then pick an address.</p>
+    <div style="margin-top:8px; display:flex; gap:6px;">
+      <label style="font:11px ui-monospace; cursor:pointer;"><input type="radio" name="mode" value="rect" checked> Rect (2 clicks)</label>
+      <label style="font:11px ui-monospace; cursor:pointer;"><input type="radio" name="mode" value="polygon"> Polygon</label>
+    </div>
   </div>
   <ul id="addr-list"></ul>
   <div id="side-foot">
     <div id="status">Pick an address.</div>
+    <button id="finish-btn" style="display:none; background:#000; color:#fff;">Finish polygon</button>
+    <button id="undo-btn" style="display:none;">Undo last vertex</button>
     <button id="copy-btn">Copy POSITIONS as JS</button>
     <button id="save-btn">Download positions.json</button>
     <button id="reset-btn">Reset all</button>
@@ -178,9 +184,31 @@ const ADDRESSES = [
   "621 Avenue 21",
 ];
 
-const positions = {};   // addr → {x, y, w, h}
+const positions = {};   // addr → { x, y, w, h, type, points }
 let active = null;
-let pending = null;    // first click stored here
+let pending = null;     // first click in rect mode
+let polyVerts = [];     // accumulating polygon vertices for current address
+let mode = 'rect';      // 'rect' or 'polygon'
+
+document.querySelectorAll('input[name="mode"]').forEach(r => {
+  r.addEventListener('change', e => {
+    mode = e.target.value;
+    pending = null;
+    polyVerts = [];
+    document.getElementById('finish-btn').style.display = mode === 'polygon' ? '' : 'none';
+    document.getElementById('undo-btn').style.display   = mode === 'polygon' ? '' : 'none';
+    if (active) selectAddress(active);
+  });
+});
+
+document.getElementById('finish-btn').addEventListener('click', finishPolygon);
+document.getElementById('undo-btn').addEventListener('click', () => {
+  polyVerts.pop();
+  renderShapes();
+  status.textContent = polyVerts.length === 0
+    ? `Click vertices for "${active}".`
+    : `${polyVerts.length} vertices. Keep clicking, then Finish.`;
+});
 
 const list = document.getElementById('addr-list');
 const status = document.getElementById('status');
@@ -209,14 +237,24 @@ function renderList() {
 function selectAddress(addr) {
   active = addr;
   pending = null;
-  status.textContent = `Pick the NW corner of "${addr}".`;
+  polyVerts = [];
+  if (mode === 'rect') {
+    status.textContent = `Pick the NW corner of "${addr}".`;
+  } else {
+    status.textContent = `Click vertices for "${addr}". Hit Finish when done.`;
+  }
   renderList();
+  renderShapes();
 }
 
 function renderShapes() {
-  // Clear all visible markers/rects then rebuild.
-  overlay.querySelectorAll('.marker, .rect').forEach(n => n.remove());
+  // Clear visible markers / rects / polys, rebuild.
+  overlay.querySelectorAll('.marker, .rect, svg.poly-overlay').forEach(n => n.remove());
+
+  // Rect-typed saved shapes (drawn as div boxes — keeps overlay simple).
+  const polys = [];
   for (const [addr, p] of Object.entries(positions)) {
+    if (p.type === 'polygon') { polys.push([addr, p]); continue; }
     const r = document.createElement('div');
     r.className = 'rect' + (addr === active ? '' : ' done');
     r.style.left = p.x + 'px';
@@ -226,6 +264,59 @@ function renderShapes() {
     r.textContent = addr.match(/^\d+/)?.[0] || addr;
     overlay.appendChild(r);
   }
+
+  // Polygon-typed saved shapes (drawn in an SVG layer matching overlay size).
+  if (polys.length || polyVerts.length || pending) {
+    const ov = overlay.getBoundingClientRect();
+    const sx = img.naturalWidth, sy = img.naturalHeight;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'poly-overlay');
+    svg.setAttribute('viewBox', `0 0 ${sx} ${sy}`);
+    svg.setAttribute('preserveAspectRatio', 'none');
+    Object.assign(svg.style, {
+      position: 'absolute', top: '0', left: '0', width: '100%', height: '100%',
+      pointerEvents: 'none',
+    });
+    for (const [addr, p] of polys) {
+      const isActive = addr === active;
+      const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      poly.setAttribute('points', p.points);
+      poly.setAttribute('fill', isActive ? 'rgba(255,0,0,0.08)' : 'rgba(0,100,0,0.06)');
+      poly.setAttribute('stroke', isActive ? 'red' : '#060');
+      poly.setAttribute('stroke-width', '2');
+      svg.appendChild(poly);
+
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      t.setAttribute('x', p.x + p.w / 2);
+      t.setAttribute('y', p.y + p.h / 2);
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('fill', isActive ? 'red' : '#060');
+      t.setAttribute('font', '12px ui-monospace, monospace');
+      t.setAttribute('font-weight', 'bold');
+      t.textContent = addr.match(/^\d+/)?.[0] || addr;
+      svg.appendChild(t);
+    }
+    // Live polygon being drawn for the active address.
+    if (polyVerts.length > 0) {
+      const ptsStr = polyVerts.map(v => `${v.x},${v.y}`).join(' ');
+      const live = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      live.setAttribute('points', ptsStr);
+      live.setAttribute('fill', 'none');
+      live.setAttribute('stroke', 'red');
+      live.setAttribute('stroke-width', '2');
+      live.setAttribute('stroke-dasharray', '4 3');
+      svg.appendChild(live);
+      // small dots at each vertex
+      for (const v of polyVerts) {
+        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', v.x); c.setAttribute('cy', v.y); c.setAttribute('r', 5);
+        c.setAttribute('fill', 'white'); c.setAttribute('stroke', 'red'); c.setAttribute('stroke-width', '2');
+        svg.appendChild(c);
+      }
+    }
+    overlay.appendChild(svg);
+  }
+
   if (pending) {
     const m = document.createElement('div');
     m.className = 'marker';
@@ -233,6 +324,28 @@ function renderShapes() {
     m.style.top  = pending.y + 'px';
     overlay.appendChild(m);
   }
+}
+
+function finishPolygon() {
+  if (!active) { status.textContent = 'Pick an address first.'; return; }
+  if (polyVerts.length < 3) { status.textContent = 'Need at least 3 vertices.'; return; }
+  let minX=Infinity, maxX=-Infinity, minY=Infinity, maxY=-Infinity;
+  for (const v of polyVerts) {
+    if (v.x < minX) minX = v.x; if (v.x > maxX) maxX = v.x;
+    if (v.y < minY) minY = v.y; if (v.y > maxY) maxY = v.y;
+  }
+  positions[active] = {
+    type: 'polygon',
+    points: polyVerts.map(v => `${v.x},${v.y}`).join(' '),
+    x: minX, y: minY, w: maxX - minX, h: maxY - minY,
+  };
+  status.textContent = `Saved "${active}" as polygon (${polyVerts.length} verts). Pick another.`;
+  polyVerts = [];
+  const idx = ADDRESSES.indexOf(active);
+  const next = ADDRESSES.slice(idx + 1).find(a => !positions[a]);
+  active = next || null;
+  renderList();
+  renderShapes();
 }
 
 overlay.addEventListener('click', (e) => {
@@ -247,6 +360,14 @@ overlay.addEventListener('click', (e) => {
   const x = Math.round((e.clientX - rect.left) * sx);
   const y = Math.round((e.clientY - rect.top)  * sy);
 
+  if (mode === 'polygon') {
+    polyVerts.push({ x, y });
+    status.textContent = `${polyVerts.length} vertex${polyVerts.length === 1 ? '' : 'es'}. Keep clicking, then Finish.`;
+    renderShapes();
+    return;
+  }
+
+  // rect mode
   if (!pending) {
     pending = { x, y };
     status.textContent = `NW set at (${x}, ${y}). Now click the SE corner of "${active}".`;
@@ -256,15 +377,22 @@ overlay.addEventListener('click', (e) => {
     const y1 = Math.min(pending.y, y);
     const w  = Math.abs(x - pending.x);
     const h  = Math.abs(y - pending.y);
-    positions[active] = { x: x1, y: y1, w, h };
+    positions[active] = { type: 'rect', x: x1, y: y1, w, h };
     status.textContent = `Saved "${active}" → (${x1}, ${y1}) ${w}×${h}. Pick another address.`;
     pending = null;
-    // auto-advance
     const idx = ADDRESSES.indexOf(active);
     const next = ADDRESSES.slice(idx + 1).find(a => !positions[a]);
     active = next || null;
     renderList();
     renderShapes();
+  }
+});
+
+// Double-click anywhere on overlay finishes polygon mode.
+overlay.addEventListener('dblclick', (e) => {
+  if (mode === 'polygon' && polyVerts.length >= 3) {
+    e.preventDefault();
+    finishPolygon();
   }
 });
 
@@ -274,7 +402,11 @@ document.getElementById('copy-btn').addEventListener('click', () => {
     const p = positions[addr];
     if (!p) continue;
     const num = (addr.match(/^\d+/) || [addr])[0];
-    lines.push(`    ${JSON.stringify(addr)}: { x: ${p.x}, y: ${p.y}, w: ${p.w}, h: ${p.h}, short: ${JSON.stringify(num)} },`);
+    if (p.type === 'polygon') {
+      lines.push(`    ${JSON.stringify(addr)}: { x: ${p.x}, y: ${p.y}, w: ${p.w}, h: ${p.h}, short: ${JSON.stringify(num)}, parts: [{ type: "polygon", points: ${JSON.stringify(p.points)} }] },`);
+    } else {
+      lines.push(`    ${JSON.stringify(addr)}: { x: ${p.x}, y: ${p.y}, w: ${p.w}, h: ${p.h}, short: ${JSON.stringify(num)} },`);
+    }
   }
   lines.push('  };');
   const text = lines.join('\n');
