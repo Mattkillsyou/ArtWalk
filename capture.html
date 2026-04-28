@@ -175,16 +175,12 @@ function parseUnits(unitsStr) {
       const prefix = p1 || p2;
       if (p1 === p2 || !p1 || !p2) {
         const lo = parseInt(n1, 10), hi = parseInt(n2, 10);
-        // Pure-numeric ranges starting at 100+ are floor+room designations
-        // (e.g. 1918's "101-104, 201-205", 600's "101-500", 620's "200-218",
-        // 1984's "200-500"). Those buildings are ONE physical block on the
-        // map — no separately-drawn cells — so we don't subdivide. Letter-
-        // prefixed ranges (A1-A15, E18-E30, W5-W17) DO correspond to
-        // visible cells, so they still expand.
-        if (!prefix && lo >= 100) continue;
         if (hi - lo + 1 <= MAX_RANGE) {
           for (let i = lo; i <= hi; i++) units.push(prefix + i);
         }
+        // Bigger ranges (>30) skip entirely — those are typically floor
+        // designators ("101-500" = 400 rooms) and the building should be
+        // captured as one shape via NO_SUBDIVIDE.
         continue;
       }
     }
@@ -261,14 +257,15 @@ let ADDRESSES = [
 // drawn as one block on the printed map (no separately-rendered cells).
 // These are captured as a single shape; we don't append "#unit" sub-units.
 const NO_SUBDIVIDE = new Set([
-  "600 Moulton Avenue",        // 101-500 = floor designations
-  "620 Moulton Avenue",        // 200-218 = single block
+  "600 Moulton Avenue",        // 101-500 = floor designations, one block
+  "620 Moulton Avenue",        // 200-218 inside one block
   "660 South Avenue 21",       // 1-10 inside one block
   "672 South Avenue 21",       // 1-8 inside one block
   "676 South Avenue 21",       // 33, 200, 300, 400 = floor designations
-  "1918 N. Main Street",       // 101-104, 201-205
-  "1984 N. Main Street",       // 200-500
-  "2020 N. Main Street",       // 220-244, 14-20, 406A-407
+  "1918 N. Main Street",       // 101-104, 201-205 inside one block
+  "1984 N. Main Street",       // 200-500 = floor designations
+  // 2020 N. Main DOES subdivide — its "220-244" cells are drawn separately
+  // on the printed map (per user). Keep out of this list.
   "2100 N. Main Street",       // Atrium A1-A15 / B1-B15 — one building
 ]);
 
