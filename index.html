@@ -633,48 +633,21 @@
   function renderMap() {
     while (svg.lastChild && svg.lastChild.tagName !== 'defs') svg.removeChild(svg.lastChild);
 
-    // Paper-map overlay (calibration aid)
-    if (overlayMode) {
-      const img = document.createElementNS(NS, 'image');
-      img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', OVERLAY_SRC);
-      img.setAttribute('href', OVERLAY_SRC);
-      img.setAttribute('x', OVERLAY.x);
-      img.setAttribute('y', OVERLAY.y);
-      img.setAttribute('width', OVERLAY.width);
-      img.setAttribute('height', OVERLAY.height);
-      img.setAttribute('preserveAspectRatio', 'none');
-      img.setAttribute('opacity', '0.55');
-      svg.appendChild(img);
-    }
+    // Streets — light grey strips, no labels needed (the building number
+    // alone identifies each address).
+    const streetsG = el('g', { id: 'streets' });
+    streetsG.appendChild(el('rect', { class: 'street-strip', x: 0,   y: 0,  width: 1019, height: 60 }));
+    streetsG.appendChild(el('rect', { class: 'street-strip', x: 950, y: 60, width: 69,  height: 853 }));
+    streetsG.appendChild(el('polygon', { class: 'street-strip', points: '0,60 185,60 75,740 0,740' }));
+    svg.appendChild(streetsG);
 
-    // Streets (light grey strips with labels) — coords in 1019×913 viewBox.
-    // In overlay mode the image already has the streets drawn, so skip these
-    // to avoid duplicate labels.
-    if (!overlayMode) {
-      const streetsG = el('g', { id: 'streets' });
-      // North Main Street — top horizontal strip
-      streetsG.appendChild(el('rect', { class: 'street-strip', x: 0, y: 0, width: 1019, height: 60 }));
-      streetsG.appendChild(textEl('NORTH MAIN STREET', 510, 38, 'street-label', { 'text-anchor': 'middle' }));
-      // South Avenue 21 — right vertical strip
-      streetsG.appendChild(el('rect', { class: 'street-strip', x: 950, y: 60, width: 69, height: 853 }));
-      streetsG.appendChild(textEl('SOUTH AVENUE 21', 985, 460, 'street-label', { 'text-anchor': 'middle', transform: 'rotate(-90 985 460)' }));
-      // Moulton Avenue — diagonal polygon strip on the WEST side (NW→SSE).
-      // East edge of road runs from (185, 60) at top to (75, 740) near south,
-      // matching the silhouette template.
-      streetsG.appendChild(el('polygon', { class: 'street-strip',
-        points: '0,60 185,60 75,740 0,740' }));
-      streetsG.appendChild(textEl('MOULTON AVE', 130, 380, 'street-label', { 'text-anchor': 'middle', transform: 'rotate(-83 130 380)' }));
-      svg.appendChild(streetsG);
-    }
-
-    // (No amenities or icons — buildings only.)
-
-    // Buildings
+    // Buildings — visible rectangles, one per address.
+    // No artist-count badges (per request) — just the number.
     const buildingsG = el('g', { id: 'buildings' });
     Object.entries(POSITIONS).forEach(([addr, pos]) => {
       const g = el('g', { class: 'bld-group', 'data-address': addr });
-      // Multi-part footprint (e.g. 642 Moulton's L-shape) — render each rect.
-            if (pos.parts && pos.parts.length) {
+
+      if (pos.parts && pos.parts.length) {
         pos.parts.forEach(part => {
           let pe;
           if (part.type === 'rect' || (part.x != null && part.w != null && part.type == null)) {
@@ -692,18 +665,6 @@
         }));
       }
       g.appendChild(textEl(pos.short, pos.x + pos.w / 2, pos.y + pos.h / 2 + 4, 'bld-label'));
-
-      // No secondary name text — the number is the label, per minimal-text directive.
-
-      const count = (artistsByAddress[addr] || []).length;
-      if (count > 0) {
-        const r = 9.5;
-        const cx = pos.x + pos.w - r - 3;
-        const cy = pos.y + r + 3;
-        g.appendChild(el('circle', { class: 'badge-circle', cx, cy, r }));
-        const t = textEl(String(count), cx, cy + 3.5, 'badge-text');
-        g.appendChild(t);
-      }
 
       g.addEventListener('click', () => {
         if (suppressClick) return;
