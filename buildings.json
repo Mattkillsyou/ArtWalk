@@ -354,9 +354,9 @@
   {
     "address": "694 South Avenue 21",
     "name": "694 S. Ave 21",
-    "units": "A, B, C, 694A",
+    "units": "A, B, C, 694A, 688, 690, 692",
     "floors": 1,
     "position": "bottom row south, along S. Ave 21",
-    "notes": "Distinct from the (removed) 694 Moulton; visible on the printed map"
+    "notes": "Distinct from the (removed) 694 Moulton; visible on the printed map. Inner units 688/690/692 are cells named after numbers — not the same buildings as 688/690/692 Moulton Avenue."
   }
 ]
