@@ -120,6 +120,22 @@
     "notes": null
   },
   {
+    "address": "606 Moulton Avenue",
+    "name": "606 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "north area, between 604 and 608",
+    "notes": "Small studio cell south of 1984 N. Main; no artists in 2026 program"
+  },
+  {
+    "address": "608 Moulton Avenue",
+    "name": "608 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "north area, between 606 and 610",
+    "notes": "Small studio cell south of 1984 N. Main; no artists in 2026 program"
+  },
+  {
     "address": "610 Moulton Avenue",
     "name": "610 Moulton",
     "units": null,
