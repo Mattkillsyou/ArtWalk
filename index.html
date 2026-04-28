@@ -693,8 +693,20 @@
   function renderMap() {
     while (svg.lastChild && svg.lastChild.tagName !== 'defs') svg.removeChild(svg.lastChild);
 
-    // Per-render dedupe set: only one street label per (short, street) combo.
-    const shownStreetLabels = new Set();
+    // For each unique street, pick the LARGEST non-sub-unit shape. Only that
+    // shape will display the street label — so the whole campus shows roughly
+    // one "MOULTON", one "N. MAIN", one "S. AVE 21", one "AVE 21" total,
+    // anchored on the most visually prominent building for each street.
+    const streetAnchor = {};
+    for (const [addr, pos] of Object.entries(POSITIONS)) {
+      const street = streetFor(addr);
+      if (!street) continue;
+      if (addr.includes(' #') || /\([^)]+\)\s*$/.test(addr)) continue;
+      const area = pos.w * pos.h;
+      if (!streetAnchor[street] || streetAnchor[street].area < area) {
+        streetAnchor[street] = { addr, area };
+      }
+    }
 
     // Streets — light grey strips, no labels needed (the building number
     // alone identifies each address).
@@ -742,17 +754,12 @@
       const addrY = pos.y + pad + fontSize - 1;   // SVG y is baseline
       g.appendChild(textEl(pos.short, addrX, addrY, 'bld-label ' + sizeCls, { 'text-anchor': 'start' }));
 
-      // Street name: tiny, OUTSIDE just above the top edge. Skipped on
-      // sub-units of any flavor — both "#A/#B/…" (618 row, 622 row, etc.)
-      // and parenthesized variants like "642 Moulton Avenue (West)" /
-      // "(East)" / "(010-020)" / "(101-115)". Also dedupe so each unique
-      // building number+street combo only gets one label total — that's how
-      // we kill the "MOULTONMOULTON" repeat above the 642 W/E pair.
+      // Street name: only on the single largest shape per street. Users
+      // navigate by GPS and walk to the squares — they don't search by
+      // address — so the street labels just provide light orientation
+      // context, not a directory.
       const street = streetFor(addr);
-      const isSubUnit = addr.includes(' #') || /\([^)]+\)\s*$/.test(addr);
-      const streetKey = pos.short + '|' + street;
-      if (street && !isSubUnit && !shownStreetLabels.has(streetKey)) {
-        shownStreetLabels.add(streetKey);
+      if (street && streetAnchor[street]?.addr === addr) {
         g.appendChild(textEl(street, pos.x + pad, pos.y - 3, 'bld-street', { 'text-anchor': 'start' }));
       }
 
