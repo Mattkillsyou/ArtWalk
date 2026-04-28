@@ -64,8 +64,8 @@ if (!fs.existsSync(wwwDir)) fs.mkdirSync(wwwDir, { recursive: true });
 fs.writeFileSync(wwwHtmlPath, html);
 
 // Copy static assets the HTML references via relative URL.
-// Currently just the calibration overlay image.
-const assets = ['bw map.jpg'];
+// Calibration overlays — silhouette and labeled greyscale.
+const assets = ['bw map.jpg', 'map_greyscale.jpg'];
 const copied = [];
 for (const name of assets) {
   const src = path.join(root, name);

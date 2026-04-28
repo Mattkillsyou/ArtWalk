@@ -458,77 +458,77 @@
   //   Moulton Ave    : diagonal polygon,      east edge x=170 (top) → x=95 (bottom)
   //   S. Avenue 21   : right vertical strip,  x=1100..1200
   const POSITIONS = {
-    // Coordinates traced directly from `bw map.jpg` (1019 × 913 silhouette).
-    // ?overlay=1 in the URL renders the silhouette underneath translucently
-    // so any drift is visible and easy to nudge.
+    // Coordinates traced from `map_greyscale.jpg` (the LABELED 1019×913 map).
+    // Open `?overlay=1` to see remaining drift — the silhouette is rendered
+    // translucent underneath, anything misaligned shows up immediately.
+    // Short labels are just the building number per "least text" directive.
 
     // ---- Top row, fronting N. Main Street --------------------------
-    "1910 N. Main Street":   { x: 195, y:  85, w:  95, h:  95, short: "1910" },
-    "1984 N. Main Street":   { x: 295, y:  85, w: 245, h: 200, short: "1984" },
-    "2020 N. Main Street":   { x: 545, y:  85, w: 175, h: 200, short: "2020" },
-    "2100 N. Main Street":   { x: 725, y:  85, w: 215, h: 240, short: "2100 Atrium" },
+    "1910 N. Main Street":   { x:  90, y:  50, w: 115, h: 100, short: "1910" },
+    "1980 N. Main Street":   { x: 265, y:  60, w:  50, h: 115, short: "1980" },
+    "602 Moulton Avenue":    { x: 270, y: 175, w:  45, h:  90, short: "602"  },
+    "1984 N. Main Street":   { x: 315, y:  60, w: 270, h: 200, short: "1984" },
+    "2020 N. Main Street":   { x: 585, y:  60, w: 150, h: 215, short: "2020" },
+    "2100 N. Main Street":   { x: 735, y:  60, w: 175, h: 235, short: "2100" },
 
-    // ---- 1980 strip + 1960/50/40/30 row, west side ----------------
-    "1980 N. Main Street":   { x: 295, y: 295, w: 175, h:  60, short: "1980" },
-    "1960 N. Main Street":   { x: 295, y: 365, w:  60, h:  55, short: "1960" },
-    "1950 N. Main Street":   { x: 360, y: 365, w:  60, h:  55, short: "1950" },
-    "1940 N. Main Street":   { x: 425, y: 365, w:  60, h:  55, short: "1940" },
-    "1930 N. Main Street":   { x: 490, y: 365, w:  55, h:  55, short: "1930" },
+    // ---- 604 / 610 small studio row inside south face of 1984 -----
+    // (606, 608 also on the printed map but not in buildings.json — skipped.)
+    "604 Moulton Avenue":    { x: 395, y: 215, w:  50, h:  50, short: "604"  },
+    "610 Moulton Avenue":    { x: 535, y: 215, w:  50, h:  50, short: "610"  },
 
-    // ---- 604/610 small Moulton frontage + 612 medium block --------
-    "604 Moulton Avenue":    { x: 555, y: 365, w:  60, h:  55, short: "604"  },
-    "610 Moulton Avenue":    { x: 620, y: 365, w:  65, h:  55, short: "610"  },
-    "612 Moulton Avenue":    { x: 690, y: 290, w: 130, h: 130, short: "612"  },
+    // ---- 612 vertical strip + 1930-50 row near 600 -----------------
+    "612 Moulton Avenue":    { x: 540, y: 145, w:  55, h: 175, short: "612"  },
+    "1930 N. Main Street":   { x: 240, y: 200, w:  50, h:  45, short: "1930" },
+    "1940 N. Main Street":   { x: 290, y: 200, w:  50, h:  45, short: "1940" },
+    "1950 N. Main Street":   { x: 340, y: 200, w:  45, h:  45, short: "1950" },
 
-    // ---- 1920 + 600 (central) + 620 -------------------------------
-    "1920 N. Main Street":   { x: 215, y: 425, w: 180, h: 145, short: "1920" },
-    "600 Moulton Avenue":    { x: 410, y: 425, w: 275, h: 240, short: "600"  },
-    "620 Moulton Avenue":    { x: 690, y: 425, w: 130, h: 115, short: "620"  },
+    // ---- Central core: 600 + 620 ----------------------------------
+    "600 Moulton Avenue":    { x: 315, y: 245, w: 225, h: 170, short: "600"  },
+    "620 Moulton Avenue":    { x: 540, y: 355, w: 145, h: 110, short: "620"  },
 
-    // ---- East cluster of small studios: 622, 624, 626 -------------
-    "622 Moulton Avenue":    { x: 830, y: 425, w: 110, h:  55, short: "622"  },
-    "624 Moulton Avenue":    { x: 830, y: 485, w: 110, h:  55, short: "624"  },
-    "626 Moulton Avenue":    { x: 830, y: 545, w: 110, h:  55, short: "626"  },
+    // ---- East cluster: 626/621/624/622, plus 645 ------------------
+    "626 Moulton Avenue":    { x: 695, y: 355, w:  40, h:  30, short: "626"  },
+    "621 Avenue 21":         { x: 740, y: 355, w:  40, h:  30, short: "621"  },
+    "624 Moulton Avenue":    { x: 700, y: 385, w:  85, h:  30, short: "624"  },
+    "622 Moulton Avenue":    { x: 695, y: 415, w:  90, h:  35, short: "622"  },
+    "645 Moulton Avenue":    { x: 800, y: 410, w:  45, h:  40, short: "645"  },
+    "660 South Avenue 21":   { x: 720, y: 460, w: 135, h:  75, short: "660"  },
 
-    // ---- East side, S. Ave 21 frontage ----------------------------
-    "645 Moulton Avenue":    { x: 720, y: 545, w:  85, h:  85, short: "645"  },
-    "660 South Avenue 21":   { x: 830, y: 605, w: 110, h: 115, short: "660"  },
-    "650 South Avenue 21":   { x: 830, y: 725, w: 110, h: 100, short: "650"  },
-    "676 South Avenue 21":   { x: 830, y: 830, w: 110, h:  75, short: "676"  },
+    // ---- 618 (wide) + 1918/1920 (west) ----------------------------
+    "1918 N. Main Street":   { x: 120, y: 420, w: 110, h:  85, short: "1918" },
+    "1920 N. Main Street":   { x: 230, y: 420, w:  45, h:  85, short: "1920" },
+    "618 Moulton Avenue":    { x: 240, y: 420, w: 300, h:  55, short: "618"  },
 
-    // ---- 602 long thin south of 600 + 1918 west + 618 east --------
-    "602 Moulton Avenue":    { x: 410, y: 670, w: 275, h:  55, short: "602"  },
-    "1918 N. Main Street":   { x: 215, y: 720, w: 180, h: 110, short: "1918" },
-    "618 Moulton Avenue":    { x: 410, y: 730, w: 175, h: 110, short: "618"  },
+    // ---- 650 Moulton — small far-west vertical strip --------------
+    "650 Moulton Avenue":    { x:  85, y: 400, w:  45, h: 110, short: "650"  },
 
-    // ---- 632 / 634 / 638 small middle-south studios ---------------
-    "632 Moulton Avenue":    { x: 595, y: 730, w:  60, h:  55, short: "632"  },
-    "634 Moulton Avenue":    { x: 660, y: 730, w:  60, h:  55, short: "634"  },
-    "638 Moulton Avenue":    { x: 720, y: 730, w:  60, h:  55, short: "638"  },
+    // ---- 630-638 vertical block (data has 632/634/638 separately) -
+    "632 Moulton Avenue":    { x: 380, y: 410, w:  35, h:  30, short: "632"  },
+    "634 Moulton Avenue":    { x: 380, y: 440, w:  35, h:  30, short: "634"  },
+    "638 Moulton Avenue":    { x: 380, y: 470, w:  35, h:  30, short: "638"  },
 
-    // ---- 642 Moulton — L-shape (West wing + East horizontal base)
-    // Label/badge anchor the bounding box around the east-base portion.
+    // ---- 642 — TWO PARALLEL VERTICAL WINGS (not an L). West W1-W17,
+    //      East E18-E34. Bounding box covers both for label centering.
     "642 Moulton Avenue": {
-      x: 410, y: 855, w: 350, h:  55, short: "642 W & E",
+      x: 395, y: 475, w: 115, h: 225, short: "642",
       parts: [
-        { x: 410, y: 790, w: 175, h:  65 },  // West wing extending north
-        { x: 410, y: 855, w: 350, h:  55 }   // East wing across the south
+        { x: 395, y: 475, w:  55, h: 225 },   // West wing
+        { x: 450, y: 490, w:  60, h: 210 }    // East wing (slightly inset on top)
       ]
     },
 
-    // ---- SW cluster: 696/692/690 + 650 Moulton --------------------
-    "696 Moulton Avenue":    { x: 195, y: 595, w:  85, h:  90, short: "696"  },
-    "692 Moulton Avenue":    { x: 285, y: 595, w:  85, h:  90, short: "692"  },
-    "690 Moulton Avenue":    { x: 195, y: 690, w:  85, h:  90, short: "690"  },
-    "650 Moulton Avenue":    { x: 285, y: 690, w:  85, h:  90, short: "650 M" },
+    // ---- 670 Moulton (small block at the GARDEN, south-center) ----
+    "670 Moulton Avenue":    { x: 555, y: 575, w:  70, h:  50, short: "670"  },
 
-    // ---- South-center: 670 + 672 ----------------------------------
-    "670 Moulton Avenue":    { x: 595, y: 855, w: 110, h:  55, short: "670"  },
-    "672 South Avenue 21":   { x: 710, y: 855, w: 115, h:  55, short: "672"  },
+    // ---- 672 + 650/676 east-south column --------------------------
+    "672 South Avenue 21":   { x: 520, y: 560, w: 165, h:  65, short: "672"  },
+    "650 South Avenue 21":   { x: 720, y: 560, w: 130, h:  70, short: "650"  },
+    "676 South Avenue 21":   { x: 735, y: 680, w: 110, h:  60, short: "676"  },
 
-    // ---- Orphan from artists.json (no entry in buildings.json) ----
-    // Tiny isolated building visible on the east edge near S. Ave 21.
-    "621 Avenue 21":         { x: 875, y: 270, w:  55, h:  60, short: "621"  }
+    // ---- SW cluster (only entries that exist in buildings.json) ---
+    "696 Moulton Avenue":    { x: 140, y: 565, w:  75, h:  65, short: "696"  },
+    "690 Moulton Avenue":    { x: 215, y: 565, w:  60, h:  65, short: "690"  },
+    "692 Moulton Avenue":    { x: 275, y: 625, w:  60, h:  65, short: "692"  }
   };
 
   // -------- ViewBox / zoom --------
@@ -622,13 +622,15 @@
   }
 
   // -------- Render map --------
-  // Overlay mode (?overlay=1) drops the canonical silhouette template
-  // (`bw map.jpg`, 1019×913) translucent under the SVG so building rects can
-  // be aligned by eye. The SVG viewBox matches the image 1:1, so OVERLAY is
-  // just the full image — no calibration knobs needed.
+  // Overlay modes drop the printed campus map translucent under the SVG so
+  // building rects can be aligned by eye. The SVG viewBox matches both
+  // reference images 1:1 (1019×913), so OVERLAY is just the full image.
+  //   ?overlay=1     → labeled greyscale (default, shows addresses + units)
+  //   ?overlay=bw    → black silhouette only
   const OVERLAY = { x: 0, y: 0, width: 1019, height: 913 };
-  const OVERLAY_SRC = 'bw map.jpg';
-  const overlayMode = new URLSearchParams(location.search).has('overlay');
+  const overlayParam = new URLSearchParams(location.search).get('overlay');
+  const overlayMode = overlayParam !== null;
+  const OVERLAY_SRC = overlayParam === 'bw' ? 'bw map.jpg' : 'map_greyscale.jpg';
   if (overlayMode) document.body.classList.add('overlay-mode');
 
   function renderMap() {
@@ -688,11 +690,7 @@
       }
       g.appendChild(textEl(pos.short, pos.x + pos.w / 2, pos.y + pos.h / 2 + 4, 'bld-label'));
 
-      const meta = buildings.find(b => b.address === addr);
-      if (meta && meta.name && meta.name !== pos.short) {
-        const nameEl = textEl(meta.name, pos.x + pos.w / 2, pos.y + pos.h / 2 + 18, 'bld-name hidden');
-        g.appendChild(nameEl);
-      }
+      // No secondary name text — the number is the label, per minimal-text directive.
 
       const count = (artistsByAddress[addr] || []).length;
       if (count > 0) {
@@ -806,12 +804,23 @@
   }
   sheetClose.addEventListener('click', closeSheet);
 
+  // Trim verbose suffixes for display: "1984 N. Main Street" → "1984 N. Main",
+  // "650 South Avenue 21" → "650 S. Ave 21", "600 Moulton Avenue" → "600 Moulton".
+  function prettyAddr(addr) {
+    if (!addr) return '';
+    return String(addr)
+      .replace(/\bStreet\b/g, '')
+      .replace(/\bSouth Avenue 21\b/g, 'S. Ave 21')
+      .replace(/\bMoulton Avenue\b/g, 'Moulton')
+      .replace(/\bAvenue\b/g, 'Ave')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
   function showBuildingArtists(addr) {
     const arts = (artistsByAddress[addr] || []).filter(a => matchesFilter(a) && matchesSearch(a));
-    const meta = buildings.find(b => b.address === addr);
-    const bldName = meta && meta.name && meta.name !== addr ? ' · ' + meta.name : '';
     const html = `
-      <div class="building-head">${esc(addr)}${esc(bldName)}</div>
+      <div class="building-head">${esc(prettyAddr(addr))}</div>
       <h2>${arts.length} ${arts.length === 1 ? 'artist' : 'artists'}</h2>
       ${arts.length === 0
         ? '<p class="empty">No artists match the current filter.</p>'
@@ -841,8 +850,8 @@
     if (a.other_links) a.other_links.forEach(l => links.push(`<a href="${esc(l)}" target="_blank" rel="noopener">${esc(displayHost(l))}</a>`));
 
     const html = `
-      ${returnAddr ? `<button class="back-btn" id="back-to-list">← Back to ${esc(POSITIONS[returnAddr] ? (POSITIONS[returnAddr].short) : returnAddr)}</button>` : ''}
-      <div class="building-head">${esc(a.address)}${a.unit ? ' · Unit ' + esc(a.unit) : ''}</div>
+      ${returnAddr ? `<button class="back-btn" id="back-to-list">← Back to ${esc(POSITIONS[returnAddr] ? (POSITIONS[returnAddr].short) : prettyAddr(returnAddr))}</button>` : ''}
+      <div class="building-head">${esc(prettyAddr(a.address))}${a.unit ? ' · Unit ' + esc(a.unit) : ''}</div>
       <h2>${esc(a.name)}</h2>
       <div class="meta">${esc(a.category)}${a.medium ? ' · ' + esc(a.medium) : ''}</div>
       ${a.images && a.images.length ? `<img class="thumb" src="${esc(a.images[0])}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
@@ -864,7 +873,7 @@
         ${matches.slice(0, 200).map(a => `
           <li><button data-artist-idx="${artists.indexOf(a)}">
             <div class="a-name">${esc(a.name)}</div>
-            <div class="a-meta">${esc(a.category)} · ${esc(a.address)}${a.unit ? ' #' + esc(a.unit) : ''}</div>
+            <div class="a-meta">${esc(a.category)} · ${esc(prettyAddr(a.address))}${a.unit ? ' #' + esc(a.unit) : ''}</div>
           </button></li>`).join('')}
       </ul>`;
     openSheet(html);
