@@ -390,5 +390,29 @@
     "floors": 1,
     "position": "small cell in the column between 600 Moulton and 620 Moulton (alongside units 111-113)",
     "notes": "Labelled BARBARA'S on the printed map"
+  },
+  {
+    "address": "111 Moulton Avenue",
+    "name": "111 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "small cell in the column between 600 Moulton and 620 Moulton, just above 110",
+    "notes": null
+  },
+  {
+    "address": "112 Moulton Avenue",
+    "name": "112 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "small cell in the column between 600 Moulton and 620 Moulton, above 111",
+    "notes": null
+  },
+  {
+    "address": "113 Moulton Avenue",
+    "name": "113 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "small cell in the column between 600 Moulton and 620 Moulton, top of the column",
+    "notes": null
   }
 ]
