@@ -276,6 +276,18 @@ const NO_SUBDIVIDE = new Set([
 // "642 Moulton Avenue #E18". Parents come first, sub-units after, so the
 // search filter is the practical way to navigate (e.g. type "642").
 fetch('buildings.json?v=' + Date.now()).then(r => r.json()).then(buildings => {
+  // 1. Pull in any building address from data that's not in the hardcoded
+  //    parent list yet (so adding to buildings.json automatically shows up
+  //    in the capture tool — e.g. "670 South Avenue 21", "688 Moulton").
+  const newParents = [];
+  for (const b of buildings) {
+    if (!ADDRESSES.includes(b.address)) {
+      newParents.push(b.address);
+      ADDRESSES.push(b.address);
+    }
+  }
+
+  // 2. Append sub-units for buildings whose units field is meaningful.
   const subs = [];
   for (const b of buildings) {
     if (NO_SUBDIVIDE.has(b.address)) continue;
@@ -283,8 +295,9 @@ fetch('buildings.json?v=' + Date.now()).then(r => r.json()).then(buildings => {
     for (const unit of u) subs.push(`${b.address} #${unit}`);
   }
   ADDRESSES = [...ADDRESSES, ...subs];
+
   renderList();
-  console.log(`expanded to ${ADDRESSES.length} addresses (${subs.length} sub-units)`);
+  console.log(`expanded to ${ADDRESSES.length} addresses (+${newParents.length} new parents, +${subs.length} sub-units)`);
 }).catch(err => {
   console.warn('failed to load buildings.json — sub-units not expanded:', err);
 });
