@@ -154,7 +154,12 @@
 </main>
 
 <script>
+// Source of truth: the official 2026 Brewery Art Walk program directory.
+// Includes everything from buildings.json + 614/616 Moulton (on the printed
+// map but absent from data), with 642 split into separate East/West wings
+// (the program lists them as distinct addresses).
 const ADDRESSES = [
+  // North Main Street row (W → E)
   "1910 N. Main Street",
   "1918 N. Main Street",
   "1920 N. Main Street",
@@ -166,11 +171,15 @@ const ADDRESSES = [
   "1984 N. Main Street",
   "2020 N. Main Street",
   "2100 N. Main Street",
+
+  // Moulton Avenue (number ascending)
   "600 Moulton Avenue",
   "602 Moulton Avenue",
   "604 Moulton Avenue",
   "610 Moulton Avenue",
   "612 Moulton Avenue",
+  "614 Moulton Avenue",                 // on the printed map; add to data
+  "616 Moulton Avenue",                 // on the printed map; add to data
   "618 Moulton Avenue",
   "620 Moulton Avenue",
   "622 Moulton Avenue",
@@ -179,18 +188,21 @@ const ADDRESSES = [
   "632 Moulton Avenue",
   "634 Moulton Avenue",
   "638 Moulton Avenue",
-  "642 Moulton Avenue",
+  "642 Moulton Avenue (West)",          // program lists East/West separately
+  "642 Moulton Avenue (East)",
   "645 Moulton Avenue",
   "650 Moulton Avenue",
-  "650 South Avenue 21",
-  "660 South Avenue 21",
   "670 Moulton Avenue",
-  "672 South Avenue 21",
-  "676 South Avenue 21",
   "690 Moulton Avenue",
   "692 Moulton Avenue",
   "696 Moulton Avenue",
-  "621 Avenue 21",
+
+  // South Avenue 21 (number ascending)
+  "621 Avenue 21",                      // orphan from artists.json
+  "650 South Avenue 21",
+  "660 South Avenue 21",
+  "672 South Avenue 21",
+  "676 South Avenue 21",
 ];
 
 const positions = {};   // addr → { x, y, w, h, type, points }
