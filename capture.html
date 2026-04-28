@@ -140,9 +140,10 @@
     <div id="status">Pick an address.</div>
     <button id="finish-btn" style="display:none; background:#000; color:#fff;">Finish polygon</button>
     <button id="undo-btn" style="display:none;">Undo last vertex</button>
+    <button id="reset-one-btn">Reset selected address</button>
     <button id="copy-btn">Copy POSITIONS as JS</button>
     <button id="save-btn">Download positions.json</button>
-    <button id="reset-btn">Reset all</button>
+    <button id="reset-btn" style="background:#fee;">Reset all</button>
   </div>
 </aside>
 
@@ -558,10 +559,27 @@ document.getElementById('reset-btn').addEventListener('click', () => {
   if (!confirm('Wipe all captured positions?')) return;
   for (const k in positions) delete positions[k];
   pending = null;
+  polyVerts = [];
   active = ADDRESSES[0];
   renderList();
   renderShapes();
   status.textContent = 'Reset. Pick an address.';
+});
+
+document.getElementById('reset-one-btn').addEventListener('click', () => {
+  if (!active) {
+    status.textContent = 'Pick an address from the list first.';
+    return;
+  }
+  const had = !!positions[active];
+  delete positions[active];
+  pending = null;
+  polyVerts = [];
+  renderList();
+  renderShapes();
+  status.textContent = had
+    ? `Cleared "${active}". Recapture it now (or pick another).`
+    : `"${active}" had no capture yet — nothing to reset.`;
 });
 
 renderList();
