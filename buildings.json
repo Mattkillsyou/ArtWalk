@@ -13,7 +13,15 @@
     "units": "220-244, 406A-407 (top level), plus ground units 14-20",
     "floors": 2,
     "position": "north-center, south of North Main Street",
-    "notes": "Large rectangular building"
+    "notes": "Large rectangular building (top portion). Has a separate south extension labelled 010-020 — captured as 2020 N. Main Street (010-020)."
+  },
+  {
+    "address": "2020 N. Main Street (010-020)",
+    "name": "2020 N. Main South",
+    "units": null,
+    "floors": 1,
+    "position": "vertical narrow strip extending south from the main 2020 N. Main block",
+    "notes": "Physically separate footprint on the printed map — captured as its own shape"
   },
   {
     "address": "1984 N. Main Street",
