@@ -298,16 +298,12 @@ function snapEdges(shapes, tolerance = 2.5) {
       }
       s.bbox = { x: mnX, y: mnY, w: mxX - mnX, h: mxY - mnY };
     } else if (g.type === 'path') {
-      // Snap every (x, y) pair in the path d-string. Crude — assumes pairs
-      // are coordinates (ignores arc rotation flags etc) — but for
-      // architectural shapes drawn via M/L/V/H/C/Z it works.
-      let pairIdx = 0;
-      g.d = g.d.replace(/-?\d+(?:\.\d+)?/g, (m) => {
-        const v = parseFloat(m);
-        const isX = (pairIdx++ % 2 === 0);
-        return snap(v, isX ? xC : yC).toFixed(2);
-      });
-      s.bbox = pathBBox(g.d) || s.bbox;
+      // Path snapping needs command-aware tokenization (H takes 1 arg, V
+      // takes 1 arg, C takes 6, A takes 7 with non-coord flags…). A naive
+      // x/y alternation corrupts everything after the first H/V/C and
+      // produces wildly distorted shapes. Skip until we wire a proper
+      // path tokenizer; the 5 paths in the SVG keep their original coords.
+      // bbox already correctly computed earlier.
     } else if (g.type === 'line') {
       g.x1 = snap(g.x1, xC); g.x2 = snap(g.x2, xC);
       g.y1 = snap(g.y1, yC); g.y2 = snap(g.y2, yC);
