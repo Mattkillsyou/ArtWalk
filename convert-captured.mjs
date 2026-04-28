@@ -97,25 +97,11 @@ for (const [addr, shape] of Object.entries(captured)) {
       if (snapped[i+1] < minY) minY = snapped[i+1]; if (snapped[i+1] > maxY) maxY = snapped[i+1];
     }
     bbox = { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
-
-    // Polygon area via shoelace.
-    let area2 = 0;
-    for (let i = 0; i < xy.length; i++) {
-      const [x1, y1] = xy[i];
-      const [x2, y2] = xy[(i + 1) % xy.length];
-      area2 += x1 * y2 - x2 * y1;
-    }
-    const polyArea = Math.abs(area2) / 2;
-    const bboxArea = bbox.w * bbox.h;
-    const fillRatio = bboxArea > 0 ? polyArea / bboxArea : 0;
-
-    // Real parallelograms / L-shapes fill ~55-90% of their bbox.
-    // Mis-clicked triangles fill <50%. Promote those to a clean rect.
-    if (fillRatio < 0.55) {
-      part = { type: 'rect', x: bbox.x, y: bbox.y, w: bbox.w, h: bbox.h };
-    } else {
-      part = { type: 'polygon', points: xy.map(p => p[0] + ',' + p[1]).join(' ') };
-    }
+    // Keep every polygon as-drawn — the user's intentional triangles
+    // (e.g. 688 #A and 692 #B that form the diagonal east point of the
+    // SW cluster) are NOT mis-clicks. Auto-converting them to bounding
+    // rects destroys the building's pentagon outline.
+    part = { type: 'polygon', points: xy.map(p => p[0] + ',' + p[1]).join(' ') };
   } else {
     continue;
   }
@@ -125,6 +111,69 @@ for (const [addr, shape] of Object.entries(captured)) {
     short,
     parts: [part],
   };
+}
+
+// ----- 2b. Close vertical gaps between horizontally-overlapping rects -----
+// The global edge-cluster snap is purely numeric and can pull together edges
+// from buildings on opposite sides of the campus. This pass only operates on
+// rects that actually overlap horizontally — closing the small remaining
+// gap between, e.g., 650 S. Ave 21's bottom and 686/674's top.
+const rects = [];
+for (const [addr, p] of Object.entries(positions)) {
+  const part = p.parts[0];
+  if (part && part.type === 'rect') rects.push({ addr, ref: part, p });
+}
+
+const GAP_CLOSE = 20;       // close vertical gaps up to this many px
+const MIN_OVERLAP = 5;      // require this much horizontal overlap
+
+for (let pass = 0; pass < 6; pass++) {
+  let changed = false;
+  for (const A of rects) {
+    const a = A.ref;
+    let bestGap = Infinity, bestB = null;
+    for (const B of rects) {
+      if (A === B) continue;
+      const b = B.ref;
+      const ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+      if (ox < MIN_OVERLAP) continue;
+      const gap = b.y - (a.y + a.h);
+      if (gap > 0 && gap < GAP_CLOSE && gap < bestGap) {
+        bestGap = gap; bestB = b;
+      }
+    }
+    if (bestB) {
+      // Extend A down to meet B's top exactly.
+      a.h = bestB.y - a.y;
+      changed = true;
+    }
+  }
+  // Also close horizontal gaps (right edge of A meets left edge of B).
+  for (const A of rects) {
+    const a = A.ref;
+    let bestGap = Infinity, bestB = null;
+    for (const B of rects) {
+      if (A === B) continue;
+      const b = B.ref;
+      const oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+      if (oy < MIN_OVERLAP) continue;
+      const gap = b.x - (a.x + a.w);
+      if (gap > 0 && gap < GAP_CLOSE && gap < bestGap) {
+        bestGap = gap; bestB = b;
+      }
+    }
+    if (bestB) {
+      a.w = bestB.x - a.x;
+      changed = true;
+    }
+  }
+  if (!changed) break;
+}
+
+// Refresh each entry's bbox to match its (possibly grown) part.
+for (const r of rects) {
+  r.p.x = r.ref.x; r.p.y = r.ref.y;
+  r.p.w = r.ref.w; r.p.h = r.ref.h;
 }
 
 // ----- 3. Splice POSITIONS literal into index.html ---------------------
