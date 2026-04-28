@@ -118,19 +118,12 @@ console.log(`spatial snap: ${xClusters.length} X clusters, ${yClusters.length} Y
 // ----- 3. Build POSITIONS, applying snap to every coordinate -----------
 const positions = {};
 for (const [addr, shape] of Object.entries(captured)) {
-  // Cool labels:
-  //   • Sub-units → "<parent#><suffix>" e.g. "618A", "696D", "622E", so each
-  //     small cell still tells you which building it's in at a glance.
-  //   • If the suffix is itself a number (e.g. "694 South Avenue 21 #688")
-  //     just use that number — those are independent buildings sharing a lot.
-  //   • Parents like "618 Moulton Avenue" → "618".
-  //   • Named landmarks like "Garden" / "Construction Yard" stay verbatim.
+  // Simple labels: sub-units show just the suffix ("A", "B"…), parent
+  // buildings show their number, named landmarks stay as-is. A row of
+  // 618 sub-units reads "A B C D E F" — clean, no repetition.
   let short;
   if (addr.includes(' #')) {
-    const suffix = addr.split(' #').pop();
-    const parent = (addr.match(/^\d+/) || [''])[0];
-    // If suffix starts with a digit, it's its own building — no prefix.
-    short = /^\d/.test(suffix) ? suffix : (parent + suffix);
+    short = addr.split(' #').pop();
   } else {
     const m = addr.match(/^\d+/);
     short = m ? m[0] : addr;

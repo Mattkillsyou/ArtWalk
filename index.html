@@ -9,7 +9,7 @@
 <title>Brewery Art Walk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&display=swap">
 <style>
   *, *::before, *::after {
     box-sizing: border-box;
@@ -161,46 +161,33 @@
   .bld-group.selected .bld-rect { fill: #222; }
   .bld-group.selected .bld-label { fill: #fff; }
   .bld-group.selected .bld-name { fill: #fff; }
-  /* Cool / modern editorial labeling — heavy display sans for the number,
-     tight tracking, paired with a tiny tracked-uppercase street name in
-     a clean grotesk underneath. Falls back gracefully if Space Grotesk
-     fails to load (system Inter / Helvetica are already on most devices). */
-  .bld-label {
-    fill: #0a0a0a;
-    font-family: "Space Grotesk", "Inter Display", "Inter", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto, sans-serif;
-    font-weight: 700;
-    text-anchor: middle;
-    pointer-events: none;
-    letter-spacing: -0.02em;            /* modern: slightly tight numbers */
-    paint-order: stroke fill;
-    stroke: rgba(255,255,255,0.94);
-    stroke-width: 3;
-    stroke-linejoin: round;
-  }
-  .bld-label.lbl-xs { font-size: 10px; stroke-width: 2.4; letter-spacing: 0; }
-  .bld-label.lbl-sm { font-size: 12px; stroke-width: 2.6; letter-spacing: 0; }
-  .bld-label.lbl-md { font-size: 15px; }
-  .bld-label.lbl-lg { font-size: 22px; letter-spacing: -0.025em; }
-  .bld-label.lbl-xl { font-size: 30px; letter-spacing: -0.035em; font-weight: 700; }
-  .bld-street {
-    fill: #707070;
-    font-family: "Inter", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
-    font-weight: 700;
+  /* Address + street typography — square geometric (Anton), small, all caps.
+     Address sits in the top-left corner of each building. Street name is
+     small and outside (above the building), only on parent buildings — sub
+     units in a row don't get the street tag (avoids "MOULTON" repeating). */
+  .bld-label, .bld-street {
+    font-family: "Anton", "Arial Narrow", "Helvetica Neue Condensed", "Bahnschrift Condensed", "Roboto Condensed", system-ui, sans-serif;
+    font-weight: 400;            /* Anton is intrinsically bold */
     text-transform: uppercase;
-    letter-spacing: 0.20em;
-    text-anchor: middle;
     pointer-events: none;
-    paint-order: stroke fill;
-    stroke: rgba(255,255,255,0.92);
-    stroke-width: 2;
-    stroke-linejoin: round;
-    font-size: 7px;
   }
-  .bld-street.str-md { font-size: 8px; letter-spacing: 0.22em; }
-  .bld-street.str-lg { font-size: 9px; letter-spacing: 0.26em; }
-  .bld-street.str-xl { font-size: 10px; letter-spacing: 0.30em; }
-  .bld-group.selected .bld-street { fill: #cfcfcf; stroke: rgba(0,0,0,0.4); }
-  .bld-group:hover .bld-rect { fill: #f8f6f2; }
+  .bld-label {
+    fill: #111;
+    letter-spacing: 0.04em;
+  }
+  .bld-label.lbl-xs { font-size: 8px; }
+  .bld-label.lbl-sm { font-size: 9px; }
+  .bld-label.lbl-md { font-size: 11px; }
+  .bld-label.lbl-lg { font-size: 13px; }
+  .bld-label.lbl-xl { font-size: 15px; }
+  .bld-street {
+    fill: #8a8a8a;
+    font-size: 6px;
+    letter-spacing: 0.20em;
+  }
+  .bld-group.selected .bld-label { fill: #fff; }
+  .bld-group.selected .bld-street { fill: #ddd; }
+  .bld-group:hover .bld-rect { fill: #f6f6f6; }
   .bld-group.selected:hover .bld-rect { fill: #2a2a2a; }
   .bld-name {
     fill: #000;
@@ -505,12 +492,12 @@
     "600 Moulton Avenue": { x: 418, y: 274, w: 135, h: 147, short: "600", parts: [{"type":"rect","x":418,"y":274,"w":135,"h":147}] },
     "614 Moulton Avenue": { x: 289, y: 326, w: 129, h: 53, short: "614", parts: [{"type":"rect","x":289,"y":326,"w":129,"h":53}] },
     "616 Moulton Avenue": { x: 289, y: 379, w: 129, h: 42, short: "616", parts: [{"type":"rect","x":289,"y":379,"w":129,"h":42}] },
-    "618 Moulton Avenue #A": { x: 289, y: 421, w: 48, h: 50, short: "618A", parts: [{"type":"rect","x":289,"y":421,"w":48,"h":50}] },
-    "618 Moulton Avenue #B": { x: 337, y: 421, w: 40, h: 50, short: "618B", parts: [{"type":"rect","x":337,"y":421,"w":40,"h":50}] },
-    "618 Moulton Avenue #C": { x: 377, y: 421, w: 41, h: 50, short: "618C", parts: [{"type":"rect","x":377,"y":421,"w":41,"h":50}] },
-    "618 Moulton Avenue #D": { x: 418, y: 421, w: 51, h: 50, short: "618D", parts: [{"type":"rect","x":418,"y":421,"w":51,"h":50}] },
-    "618 Moulton Avenue #E": { x: 469, y: 421, w: 45, h: 49, short: "618E", parts: [{"type":"rect","x":469,"y":421,"w":45,"h":49}] },
-    "618 Moulton Avenue #F": { x: 514, y: 421, w: 39, h: 49, short: "618F", parts: [{"type":"rect","x":514,"y":421,"w":39,"h":49}] },
+    "618 Moulton Avenue #A": { x: 289, y: 421, w: 48, h: 50, short: "A", parts: [{"type":"rect","x":289,"y":421,"w":48,"h":50}] },
+    "618 Moulton Avenue #B": { x: 337, y: 421, w: 40, h: 50, short: "B", parts: [{"type":"rect","x":337,"y":421,"w":40,"h":50}] },
+    "618 Moulton Avenue #C": { x: 377, y: 421, w: 41, h: 50, short: "C", parts: [{"type":"rect","x":377,"y":421,"w":41,"h":50}] },
+    "618 Moulton Avenue #D": { x: 418, y: 421, w: 51, h: 50, short: "D", parts: [{"type":"rect","x":418,"y":421,"w":51,"h":50}] },
+    "618 Moulton Avenue #E": { x: 469, y: 421, w: 45, h: 49, short: "E", parts: [{"type":"rect","x":469,"y":421,"w":45,"h":49}] },
+    "618 Moulton Avenue #F": { x: 514, y: 421, w: 39, h: 49, short: "F", parts: [{"type":"rect","x":514,"y":421,"w":39,"h":49}] },
     "630-638 Moulton Avenue": { x: 438, y: 518, w: 70, h: 75, short: "630", parts: [{"type":"rect","x":438,"y":518,"w":70,"h":75}] },
     "642 Moulton Avenue (West)": { x: 437, y: 616, w: 38, h: 275, short: "642", parts: [{"type":"rect","x":437,"y":616,"w":38,"h":275}] },
     "642 Moulton Avenue (East)": { x: 475, y: 616, w: 36, h: 275, short: "642", parts: [{"type":"rect","x":475,"y":616,"w":36,"h":275}] },
@@ -518,19 +505,19 @@
     "1918 N. Main Street": { x: 172, y: 520, w: 108, h: 84, short: "1918", parts: [{"type":"rect","x":172,"y":520,"w":108,"h":84}] },
     "650 Moulton Avenue": { x: 98, y: 520, w: 74, h: 84, short: "650", parts: [{"type":"polygon","points":"172,520 172,604 98,604 128,520 172,520"}] },
     "670 Moulton Avenue": { x: 46, y: 604, w: 134, h: 143, short: "670", parts: [{"type":"polygon","points":"180,604 128,747 46,747 98,604 180,604"}] },
-    "696 Moulton Avenue #A": { x: 200, y: 780, w: 33, h: 47, short: "696A", parts: [{"type":"rect","x":200,"y":780,"w":33,"h":47}] },
-    "696 Moulton Avenue #B": { x: 168, y: 780, w: 32, h: 47, short: "696B", parts: [{"type":"rect","x":168,"y":780,"w":32,"h":47}] },
-    "696 Moulton Avenue #C": { x: 134, y: 780, w: 34, h: 47, short: "696C", parts: [{"type":"rect","x":134,"y":780,"w":34,"h":47}] },
-    "696 Moulton Avenue #D": { x: 137, y: 827, w: 44, h: 44, short: "696D", parts: [{"type":"rect","x":137,"y":827,"w":44,"h":44}] },
-    "696 Moulton Avenue #E": { x: 181, y: 827, w: 52, h: 44, short: "696E", parts: [{"type":"rect","x":181,"y":827,"w":52,"h":44}] },
-    "690 Moulton Avenue #A": { x: 275, y: 780, w: 20, h: 47, short: "690A", parts: [{"type":"rect","x":275,"y":780,"w":20,"h":47}] },
-    "690 Moulton Avenue #B": { x: 261, y: 780, w: 14, h: 47, short: "690B", parts: [{"type":"rect","x":261,"y":780,"w":14,"h":47}] },
-    "690 Moulton Avenue #C": { x: 233, y: 780, w: 28, h: 47, short: "690C", parts: [{"type":"rect","x":233,"y":780,"w":28,"h":47}] },
-    "688 Moulton Avenue #A": { x: 361, y: 772, w: 48, h: 48, short: "688A", parts: [{"type":"polygon","points":"361,772 361,820 409,820 361,772"}] },
-    "688 Moulton Avenue #B": { x: 327, y: 772, w: 34, h: 48, short: "688B", parts: [{"type":"rect","x":327,"y":772,"w":34,"h":48}] },
-    "688 Moulton Avenue #C": { x: 295, y: 772, w: 32, h: 48, short: "688C", parts: [{"type":"rect","x":295,"y":772,"w":32,"h":48}] },
-    "692 Moulton Avenue #A": { x: 295, y: 820, w: 45, h: 51, short: "692A", parts: [{"type":"rect","x":295,"y":820,"w":45,"h":51}] },
-    "692 Moulton Avenue #B": { x: 340, y: 820, w: 69, h: 51, short: "692B", parts: [{"type":"polygon","points":"340,871 361,871 409,820 340,820"}] },
+    "696 Moulton Avenue #A": { x: 200, y: 780, w: 33, h: 47, short: "A", parts: [{"type":"rect","x":200,"y":780,"w":33,"h":47}] },
+    "696 Moulton Avenue #B": { x: 168, y: 780, w: 32, h: 47, short: "B", parts: [{"type":"rect","x":168,"y":780,"w":32,"h":47}] },
+    "696 Moulton Avenue #C": { x: 134, y: 780, w: 34, h: 47, short: "C", parts: [{"type":"rect","x":134,"y":780,"w":34,"h":47}] },
+    "696 Moulton Avenue #D": { x: 137, y: 827, w: 44, h: 44, short: "D", parts: [{"type":"rect","x":137,"y":827,"w":44,"h":44}] },
+    "696 Moulton Avenue #E": { x: 181, y: 827, w: 52, h: 44, short: "E", parts: [{"type":"rect","x":181,"y":827,"w":52,"h":44}] },
+    "690 Moulton Avenue #A": { x: 275, y: 780, w: 20, h: 47, short: "A", parts: [{"type":"rect","x":275,"y":780,"w":20,"h":47}] },
+    "690 Moulton Avenue #B": { x: 261, y: 780, w: 14, h: 47, short: "B", parts: [{"type":"rect","x":261,"y":780,"w":14,"h":47}] },
+    "690 Moulton Avenue #C": { x: 233, y: 780, w: 28, h: 47, short: "C", parts: [{"type":"rect","x":233,"y":780,"w":28,"h":47}] },
+    "688 Moulton Avenue #A": { x: 361, y: 772, w: 48, h: 48, short: "A", parts: [{"type":"polygon","points":"361,772 361,820 409,820 361,772"}] },
+    "688 Moulton Avenue #B": { x: 327, y: 772, w: 34, h: 48, short: "B", parts: [{"type":"rect","x":327,"y":772,"w":34,"h":48}] },
+    "688 Moulton Avenue #C": { x: 295, y: 772, w: 32, h: 48, short: "C", parts: [{"type":"rect","x":295,"y":772,"w":32,"h":48}] },
+    "692 Moulton Avenue #A": { x: 295, y: 820, w: 45, h: 51, short: "A", parts: [{"type":"rect","x":295,"y":820,"w":45,"h":51}] },
+    "692 Moulton Avenue #B": { x: 340, y: 820, w: 69, h: 51, short: "B", parts: [{"type":"polygon","points":"340,871 361,871 409,820 340,820"}] },
     "670 South Avenue 21": { x: 556, y: 639, w: 65, h: 55, short: "670", parts: [{"type":"rect","x":556,"y":639,"w":65,"h":55}] },
     "672 South Avenue 21": { x: 553, y: 742, w: 193, h: 50, short: "672", parts: [{"type":"rect","x":553,"y":742,"w":193,"h":50}] },
     "650 South Avenue 21": { x: 790, y: 740, w: 184, h: 48, short: "650", parts: [{"type":"rect","x":790,"y":740,"w":184,"h":48}] },
@@ -551,17 +538,17 @@
     "674 South Avenue 21": { x: 830, y: 788, w: 144, h: 42, short: "674", parts: [{"type":"rect","x":830,"y":788,"w":144,"h":42}] },
     "676 South Avenue 21": { x: 833, y: 830, w: 141, h: 34, short: "676", parts: [{"type":"rect","x":833,"y":830,"w":141,"h":34}] },
     "678 South Avenue 21": { x: 833, y: 864, w: 141, h: 40, short: "678", parts: [{"type":"rect","x":833,"y":864,"w":141,"h":40}] },
-    "694 South Avenue 21 #B": { x: 575, y: 859, w: 33, h: 48, short: "694B", parts: [{"type":"rect","x":575,"y":859,"w":33,"h":48}] },
-    "694 South Avenue 21 #C": { x: 542, y: 859, w: 33, h: 48, short: "694C", parts: [{"type":"rect","x":542,"y":859,"w":33,"h":48}] },
+    "694 South Avenue 21 #B": { x: 575, y: 859, w: 33, h: 48, short: "B", parts: [{"type":"rect","x":575,"y":859,"w":33,"h":48}] },
+    "694 South Avenue 21 #C": { x: 542, y: 859, w: 33, h: 48, short: "C", parts: [{"type":"rect","x":542,"y":859,"w":33,"h":48}] },
     "694 South Avenue 21 #694A": { x: 608, y: 859, w: 47, h: 48, short: "694A", parts: [{"type":"rect","x":608,"y":859,"w":47,"h":48}] },
     "660 South Avenue 21": { x: 820, y: 575, w: 149, h: 46, short: "660", parts: [{"type":"rect","x":820,"y":575,"w":149,"h":46}] },
-    "622 Moulton Avenue #A": { x: 824, y: 510, w: 51, h: 22, short: "622A", parts: [{"type":"rect","x":824,"y":510,"w":51,"h":22}] },
-    "622 Moulton Avenue #B": { x: 824, y: 531, w: 22, h: 30, short: "622B", parts: [{"type":"rect","x":824,"y":531,"w":22,"h":30}] },
-    "622 Moulton Avenue #C": { x: 846, y: 532, w: 16, h: 29, short: "622C", parts: [{"type":"rect","x":846,"y":532,"w":16,"h":29}] },
-    "622 Moulton Avenue #D": { x: 862, y: 532, w: 13, h: 29, short: "622D", parts: [{"type":"rect","x":862,"y":532,"w":13,"h":29}] },
-    "622 Moulton Avenue #E": { x: 875, y: 532, w: 16, h: 29, short: "622E", parts: [{"type":"rect","x":875,"y":532,"w":16,"h":29}] },
-    "622 Moulton Avenue #F": { x: 891, y: 532, w: 15, h: 29, short: "622F", parts: [{"type":"rect","x":891,"y":532,"w":15,"h":29}] },
-    "622 Moulton Avenue #G": { x: 906, y: 532, w: 24, h: 29, short: "622G", parts: [{"type":"rect","x":906,"y":532,"w":24,"h":29}] },
+    "622 Moulton Avenue #A": { x: 824, y: 510, w: 51, h: 22, short: "A", parts: [{"type":"rect","x":824,"y":510,"w":51,"h":22}] },
+    "622 Moulton Avenue #B": { x: 824, y: 531, w: 22, h: 30, short: "B", parts: [{"type":"rect","x":824,"y":531,"w":22,"h":30}] },
+    "622 Moulton Avenue #C": { x: 846, y: 532, w: 16, h: 29, short: "C", parts: [{"type":"rect","x":846,"y":532,"w":16,"h":29}] },
+    "622 Moulton Avenue #D": { x: 862, y: 532, w: 13, h: 29, short: "D", parts: [{"type":"rect","x":862,"y":532,"w":13,"h":29}] },
+    "622 Moulton Avenue #E": { x: 875, y: 532, w: 16, h: 29, short: "E", parts: [{"type":"rect","x":875,"y":532,"w":16,"h":29}] },
+    "622 Moulton Avenue #F": { x: 891, y: 532, w: 15, h: 29, short: "F", parts: [{"type":"rect","x":891,"y":532,"w":15,"h":29}] },
+    "622 Moulton Avenue #G": { x: 906, y: 532, w: 24, h: 29, short: "G", parts: [{"type":"rect","x":906,"y":532,"w":24,"h":29}] },
     "645 Moulton Avenue": { x: 930, y: 532, w: 40, h: 29, short: "645", parts: [{"type":"rect","x":930,"y":532,"w":40,"h":29}] },
     "624 Moulton Avenue": { x: 875, y: 484, w: 95, h: 48, short: "624", parts: [{"type":"rect","x":875,"y":484,"w":95,"h":48}] },
     "626 Moulton Avenue": { x: 875, y: 459, w: 51, h: 25, short: "626", parts: [{"type":"rect","x":875,"y":459,"w":51,"h":25}] },
@@ -737,35 +724,28 @@
           class: 'bld-rect', x: pos.x, y: pos.y, width: pos.w, height: pos.h
         }));
       }
-      // Adaptive label size — base it on the smaller dimension so a long thin
-      // strip doesn't get a giant label that overflows. xs=tiny cell, xl=big lot.
+      // Adaptive address size based on the smaller dimension of the shape.
       const minSide = Math.min(pos.w, pos.h);
       const sizeCls =
         minSide < 22 ? 'lbl-xs' :
         minSide < 36 ? 'lbl-sm' :
         minSide < 70 ? 'lbl-md' :
         minSide < 130 ? 'lbl-lg' : 'lbl-xl';
+      const fontSize = { 'lbl-xs': 8, 'lbl-sm': 9, 'lbl-md': 11, 'lbl-lg': 13, 'lbl-xl': 15 }[sizeCls];
 
+      // Address: top-left INSIDE the building.
+      const pad = 3;
+      const addrX = pos.x + pad;
+      const addrY = pos.y + pad + fontSize - 1;   // SVG y is baseline
+      g.appendChild(textEl(pos.short, addrX, addrY, 'bld-label ' + sizeCls, { 'text-anchor': 'start' }));
+
+      // Street name: tiny, OUTSIDE just above the top edge. Only on parent
+      // buildings (not on #A/#B/etc sub-units) so a row of sub-units doesn't
+      // repeat the same street label six times.
       const street = streetFor(addr);
-      // Two-line label only when there's enough room. Tiny cells and unnamed
-      // landmarks (Garden, Construction Yard) just get the single big label.
-      const showStreet = !!street && minSide >= 36;
-      const cx = pos.x + pos.w / 2;
-      const cy = pos.y + pos.h / 2;
-
-      if (showStreet) {
-        // Two-line stack: heavy number on top, tiny tracked-caps street below.
-        // Offsets are tuned per size so visible glyph blocks don't overlap and
-        // the combined block reads as visually centered in the shape.
-        const offsets = {
-          'lbl-md': { numDy: -2,  strDy: 10, strCls: 'str-md' },
-          'lbl-lg': { numDy: -4,  strDy: 14, strCls: 'str-lg' },
-          'lbl-xl': { numDy: -6,  strDy: 18, strCls: 'str-xl' },
-        }[sizeCls] || { numDy: 0, strDy: 9, strCls: '' };
-        g.appendChild(textEl(pos.short, cx, cy + offsets.numDy, 'bld-label ' + sizeCls));
-        g.appendChild(textEl(street,    cx, cy + offsets.strDy, 'bld-street ' + offsets.strCls));
-      } else {
-        g.appendChild(textEl(pos.short, cx, cy + 4, 'bld-label ' + sizeCls));
+      const isSubUnit = addr.includes(' #');
+      if (street && !isSubUnit) {
+        g.appendChild(textEl(street, pos.x + pad, pos.y - 3, 'bld-street', { 'text-anchor': 'start' }));
       }
 
       g.addEventListener('click', () => {
