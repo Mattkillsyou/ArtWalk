@@ -257,6 +257,20 @@ let ADDRESSES = [
   "676 South Avenue 21",
 ];
 
+// Buildings whose `units` field describes unit NUMBERS but the building is
+// drawn as one block on the printed map (no separately-rendered cells).
+// These are captured as a single shape; we don't append "#unit" sub-units.
+const NO_SUBDIVIDE = new Set([
+  "600 Moulton Avenue",        // 101-500 = floor designations
+  "620 Moulton Avenue",        // 200-218 = single block
+  "660 South Avenue 21",       // 1-10 inside one block
+  "672 South Avenue 21",       // 1-8 inside one block
+  "676 South Avenue 21",       // 33, 200, 300, 400 = floor designations
+  "1918 N. Main Street",       // 101-104, 201-205
+  "1984 N. Main Street",       // 200-500
+  "2020 N. Main Street",       // 220-244, 14-20, 406A-407
+]);
+
 // Append sub-units from buildings.json's `units` field. Each becomes
 // "<address> #<unit>" — e.g. "618 Moulton Avenue #A", "2100 N. Main Street #A1",
 // "642 Moulton Avenue #E18". Parents come first, sub-units after, so the
@@ -264,6 +278,7 @@ let ADDRESSES = [
 fetch('buildings.json?v=' + Date.now()).then(r => r.json()).then(buildings => {
   const subs = [];
   for (const b of buildings) {
+    if (NO_SUBDIVIDE.has(b.address)) continue;
     const u = parseUnits(b.units);
     for (const unit of u) subs.push(`${b.address} #${unit}`);
   }

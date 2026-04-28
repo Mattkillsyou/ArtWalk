@@ -286,5 +286,13 @@
     "floors": 1,
     "position": "southwest area, between 690 and the SW edge",
     "notes": "Visible on the printed map; not in the official 2026 program"
+  },
+  {
+    "address": "670 South Avenue 21",
+    "name": "670 S. Ave 21",
+    "units": null,
+    "floors": 1,
+    "position": "south-center, small block immediately south of the GARDEN landmark",
+    "notes": "Distinct from 670 Moulton Avenue (the large parallelogram on the west); visible on the printed map, no artists in 2026 program"
   }
 ]
