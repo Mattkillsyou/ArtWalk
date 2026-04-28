@@ -318,5 +318,13 @@
     "floors": 1,
     "position": "east column along S. Ave 21, narrow vertical block between 650 and 674",
     "notes": "Visible on the printed map; not in the official 2026 program"
+  },
+  {
+    "address": "694 South Avenue 21",
+    "name": "694 S. Ave 21",
+    "units": "A, B, C, 694A",
+    "floors": 1,
+    "position": "bottom row south, along S. Ave 21",
+    "notes": "Distinct from the (removed) 694 Moulton; visible on the printed map"
   }
 ]
