@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Web preview (npx serve)",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-l", "8000", "."],
+      "port": 8000
+    },
+    {
+      "name": "Web preview (Python http.server)",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8000"],
+      "port": 8000
+    },
+    {
+      "name": "Web preview www/ (Capacitor build dir)",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8001", "--directory", "www"],
+      "port": 8001
+    }
+  ]
+}
