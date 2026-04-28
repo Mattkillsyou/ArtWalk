@@ -12,7 +12,7 @@
 
 import { readFileSync, writeFileSync } from 'node:fs';
 
-const SNAP_TOLERANCE = 8;
+const SNAP_TOLERANCE = 15;
 const captured = JSON.parse(readFileSync('positions-captured.json', 'utf8'));
 
 // ----- 1. Edge snapping ------------------------------------------------
@@ -65,7 +65,15 @@ console.log(`snap: ${xClusters.length} unique X edges, ${yClusters.length} uniqu
 // ----- 2. Build POSITIONS, applying snap to every coordinate -----------
 const positions = {};
 for (const [addr, shape] of Object.entries(captured)) {
-  const short = (addr.match(/^\d+/) || [addr])[0];
+  // Sub-units like "618 Moulton Avenue #A" label as "A" (the unit only) so
+  // a row of cells shows A B C D E F rather than five "618"s. Parents like
+  // "618 Moulton Avenue" label as "618" (the building number).
+  let short;
+  if (addr.includes(' #')) {
+    short = addr.split(' #').pop();
+  } else {
+    short = (addr.match(/^\d+/) || [addr])[0];
+  }
 
   let part, bbox;
   if (shape.type === 'rect') {
