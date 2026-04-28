@@ -754,14 +754,16 @@
       const cy = pos.y + pos.h / 2;
 
       if (showStreet) {
-        // Center the combined number+street block in the shape.
+        // Two-line stack: heavy number on top, tiny tracked-caps street below.
+        // Offsets are tuned per size so visible glyph blocks don't overlap and
+        // the combined block reads as visually centered in the shape.
         const offsets = {
-          'lbl-md': { numDy:  0,  strDy: 10, strCls: 'str-md' },
-          'lbl-lg': { numDy: -3,  strDy: 13, strCls: 'str-lg' },
-          'lbl-xl': { numDy: -6,  strDy: 16, strCls: 'str-xl' },
+          'lbl-md': { numDy: -2,  strDy: 10, strCls: 'str-md' },
+          'lbl-lg': { numDy: -4,  strDy: 14, strCls: 'str-lg' },
+          'lbl-xl': { numDy: -6,  strDy: 18, strCls: 'str-xl' },
         }[sizeCls] || { numDy: 0, strDy: 9, strCls: '' };
-        g.appendChild(textEl(pos.short, cx, cy + offsets.numDy + 5, 'bld-label ' + sizeCls));
-        g.appendChild(textEl(street,    cx, cy + offsets.strDy,     'bld-street ' + offsets.strCls));
+        g.appendChild(textEl(pos.short, cx, cy + offsets.numDy, 'bld-label ' + sizeCls));
+        g.appendChild(textEl(street,    cx, cy + offsets.strDy, 'bld-street ' + offsets.strCls));
       } else {
         g.appendChild(textEl(pos.short, cx, cy + 4, 'bld-label ' + sizeCls));
       }
