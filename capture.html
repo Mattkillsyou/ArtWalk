@@ -261,7 +261,7 @@ let ADDRESSES = [
 // "<address> #<unit>" — e.g. "618 Moulton Avenue #A", "2100 N. Main Street #A1",
 // "642 Moulton Avenue #E18". Parents come first, sub-units after, so the
 // search filter is the practical way to navigate (e.g. type "642").
-fetch('buildings.json').then(r => r.json()).then(buildings => {
+fetch('buildings.json?v=' + Date.now()).then(r => r.json()).then(buildings => {
   const subs = [];
   for (const b of buildings) {
     const u = parseUnits(b.units);
