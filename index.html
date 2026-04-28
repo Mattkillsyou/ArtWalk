@@ -693,6 +693,9 @@
   function renderMap() {
     while (svg.lastChild && svg.lastChild.tagName !== 'defs') svg.removeChild(svg.lastChild);
 
+    // Per-render dedupe set: only one street label per (short, street) combo.
+    const shownStreetLabels = new Set();
+
     // Streets — light grey strips, no labels needed (the building number
     // alone identifies each address).
     const streetsG = el('g', { id: 'streets' });
@@ -739,12 +742,17 @@
       const addrY = pos.y + pad + fontSize - 1;   // SVG y is baseline
       g.appendChild(textEl(pos.short, addrX, addrY, 'bld-label ' + sizeCls, { 'text-anchor': 'start' }));
 
-      // Street name: tiny, OUTSIDE just above the top edge. Only on parent
-      // buildings (not on #A/#B/etc sub-units) so a row of sub-units doesn't
-      // repeat the same street label six times.
+      // Street name: tiny, OUTSIDE just above the top edge. Skipped on
+      // sub-units of any flavor — both "#A/#B/…" (618 row, 622 row, etc.)
+      // and parenthesized variants like "642 Moulton Avenue (West)" /
+      // "(East)" / "(010-020)" / "(101-115)". Also dedupe so each unique
+      // building number+street combo only gets one label total — that's how
+      // we kill the "MOULTONMOULTON" repeat above the 642 W/E pair.
       const street = streetFor(addr);
-      const isSubUnit = addr.includes(' #');
-      if (street && !isSubUnit) {
+      const isSubUnit = addr.includes(' #') || /\([^)]+\)\s*$/.test(addr);
+      const streetKey = pos.short + '|' + street;
+      if (street && !isSubUnit && !shownStreetLabels.has(streetKey)) {
+        shownStreetLabels.add(streetKey);
         g.appendChild(textEl(street, pos.x + pad, pos.y - 3, 'bld-street', { 'text-anchor': 'start' }));
       }
 
