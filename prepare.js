@@ -63,7 +63,19 @@ fs.writeFileSync(htmlPath, html);
 if (!fs.existsSync(wwwDir)) fs.mkdirSync(wwwDir, { recursive: true });
 fs.writeFileSync(wwwHtmlPath, html);
 
+// Copy static assets the HTML references via relative URL.
+// Currently just the calibration overlay image.
+const assets = ['bw map.jpg'];
+const copied = [];
+for (const name of assets) {
+  const src = path.join(root, name);
+  if (!fs.existsSync(src)) continue;
+  const dest = path.join(wwwDir, name);
+  fs.copyFileSync(src, dest);
+  copied.push(name);
+}
+
 const after = html.length;
 console.log(`Inlined ${artistsData.length} artists + ${buildingsData.length} buildings.`);
 console.log(`index.html: ${before.toLocaleString()} → ${after.toLocaleString()} bytes`);
-console.log(`Wrote: index.html, www/index.html`);
+console.log(`Wrote: index.html, www/index.html` + (copied.length ? ', ' + copied.map(n => 'www/' + n).join(', ') : ''));
