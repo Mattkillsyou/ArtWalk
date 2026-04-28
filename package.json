@@ -17,7 +17,8 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^6.0.0",
-    "jimp": "^1.6.1"
+    "jimp": "^1.6.1",
+    "tesseract.js": "^7.0.0"
   },
   "repository": {
     "type": "git",
