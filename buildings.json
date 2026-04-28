@@ -358,5 +358,13 @@
     "floors": 1,
     "position": "bottom row south, along S. Ave 21",
     "notes": "Distinct from the (removed) 694 Moulton; visible on the printed map. Inner units 688/690/692 are cells named after numbers — not the same buildings as 688/690/692 Moulton Avenue."
+  },
+  {
+    "address": "700 Moulton Avenue",
+    "name": "700 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "south of the SW cluster, bottom of the campus",
+    "notes": "Visible on the printed map; not in the official 2026 program"
   }
 ]
