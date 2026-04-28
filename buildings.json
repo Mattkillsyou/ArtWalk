@@ -294,5 +294,29 @@
     "floors": 1,
     "position": "south-center, small block immediately south of the GARDEN landmark",
     "notes": "Distinct from 670 Moulton Avenue (the large parallelogram on the west); visible on the printed map, no artists in 2026 program"
+  },
+  {
+    "address": "674 South Avenue 21",
+    "name": "674 S. Ave 21",
+    "units": null,
+    "floors": 1,
+    "position": "east column along S. Ave 21, between 650 and 676",
+    "notes": "Visible on the printed map; not in the official 2026 program"
+  },
+  {
+    "address": "678 South Avenue 21",
+    "name": "678 S. Ave 21",
+    "units": null,
+    "floors": 1,
+    "position": "southeast corner along S. Ave 21, bottom of east column",
+    "notes": "Visible on the printed map; not in the official 2026 program"
+  },
+  {
+    "address": "686 South Avenue 21",
+    "name": "686 S. Ave 21",
+    "units": null,
+    "floors": 1,
+    "position": "east column along S. Ave 21, narrow vertical block between 650 and 674",
+    "notes": "Visible on the printed map; not in the official 2026 program"
   }
 ]
