@@ -251,13 +251,16 @@ function snapEdges(shapes, tolerance = 2.5) {
     }
   }
 
-  // Chain-cluster sorted values: any two consecutive values within tolerance
-  // are in the same cluster. Cluster snap = mean.
+  // Cluster sorted values, capping cluster spread at `tolerance`. Pure chain
+  // linkage (consecutive-diff ≤ tol) lets a long chain drift far past the
+  // tolerance, which would yank shapes 5+px from their original positions.
+  // Here a value joins the current cluster only if it stays within tolerance
+  // of the cluster's FIRST value, otherwise a new cluster opens.
   function buildClusters(values) {
     const sorted = [...values].sort((a, b) => a - b);
     const clusters = []; let cur = [];
     for (const v of sorted) {
-      if (cur.length === 0 || v - cur[cur.length - 1] <= tolerance) cur.push(v);
+      if (cur.length === 0 || v - cur[0] <= tolerance) cur.push(v);
       else { clusters.push(cur); cur = [v]; }
     }
     if (cur.length) clusters.push(cur);
@@ -317,7 +320,7 @@ function snapEdges(shapes, tolerance = 2.5) {
   return { xClusters: xC.length, yClusters: yC.length };
 }
 
-const snapStats = snapEdges(shapes, 2.5);
+const snapStats = snapEdges(shapes, 4);
 console.log(`edge-snap: ${snapStats.xClusters} unique X edges, ${snapStats.yClusters} unique Y edges`);
 
 // --------------------------------------------------------------------
