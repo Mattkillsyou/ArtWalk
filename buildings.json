@@ -382,5 +382,13 @@
     "floors": 0,
     "position": "south-center, between 620 area and 670 South Ave 21",
     "notes": "Landmark on the printed map (not a building)"
+  },
+  {
+    "address": "110 Moulton Avenue",
+    "name": "Barbara's (110 Moulton)",
+    "units": null,
+    "floors": 1,
+    "position": "small cell in the column between 600 Moulton and 620 Moulton (alongside units 111-113)",
+    "notes": "Labelled BARBARA'S on the printed map"
   }
 ]
