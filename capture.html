@@ -175,12 +175,16 @@ function parseUnits(unitsStr) {
       const prefix = p1 || p2;
       if (p1 === p2 || !p1 || !p2) {
         const lo = parseInt(n1, 10), hi = parseInt(n2, 10);
+        // Pure-numeric ranges starting at 100+ are floor+room designations
+        // (e.g. 1918's "101-104, 201-205", 600's "101-500", 620's "200-218",
+        // 1984's "200-500"). Those buildings are ONE physical block on the
+        // map — no separately-drawn cells — so we don't subdivide. Letter-
+        // prefixed ranges (A1-A15, E18-E30, W5-W17) DO correspond to
+        // visible cells, so they still expand.
+        if (!prefix && lo >= 100) continue;
         if (hi - lo + 1 <= MAX_RANGE) {
           for (let i = lo; i <= hi; i++) units.push(prefix + i);
         }
-        // Range > MAX_RANGE (e.g. 600's "101-500" = floor designators not
-        // unique studios; 1984's "200-500"): treat the building as one
-        // address, no sub-units. Just capture the parent.
         continue;
       }
     }
