@@ -154,11 +154,56 @@
 </main>
 
 <script>
-// Source of truth: the official 2026 Brewery Art Walk program directory.
-// Includes everything from buildings.json + 614/616 Moulton (on the printed
-// map but absent from data), with 642 split into separate East/West wings
-// (the program lists them as distinct addresses).
-const ADDRESSES = [
+// Parse a buildings.json `units` string into a list of unit identifiers.
+// Handles ranges (A-F, 1-10, A1-A15, 200-218, E18-E30), comma-separated
+// lists, and parenthetical / labelled tokens like "East: E18-E30+,
+// West: W5-W17" or "406A-407 (top level)".
+function parseUnits(unitsStr) {
+  if (!unitsStr) return [];
+  let s = unitsStr.replace(/\s*\([^)]*\)/g, '');
+  s = s.replace(/[A-Za-z]+:\s*/g, '');
+  s = s.replace(/\bplus\s+(?:ground|top)\s+units?\s*/gi, '');
+  s = s.replace(/\+/g, '');
+  const parts = s.split(/[,/]\s*/).map(p => p.trim()).filter(Boolean);
+  const MAX_RANGE = 30;   // bigger than this is almost certainly a floor designator like "101-500"
+  const units = [];
+  for (const part of parts) {
+    const m = part.match(/^([A-Za-z]*)(\d+)-([A-Za-z]*)(\d+)$/);
+    if (m) {
+      const [, p1, n1, p2, n2] = m;
+      const prefix = p1 || p2;
+      if (p1 === p2 || !p1 || !p2) {
+        const lo = parseInt(n1, 10), hi = parseInt(n2, 10);
+        if (hi - lo + 1 <= MAX_RANGE) {
+          for (let i = lo; i <= hi; i++) units.push(prefix + i);
+        } else {
+          // Range too wide ("101-500" = 5 floors of rooms, not 400 unique
+          // studios). Keep just the endpoints so the user can capture them.
+          units.push(prefix + lo, prefix + hi);
+        }
+        continue;
+      }
+    }
+    const lm = part.match(/^([A-Za-z])-([A-Za-z])$/);
+    if (lm) {
+      for (let c = lm[1].charCodeAt(0); c <= lm[2].charCodeAt(0); c++) units.push(String.fromCharCode(c));
+      continue;
+    }
+    // Unparseable mixed range like "406A-407" — split on dash, include both ends.
+    if (/^[A-Za-z0-9]+-[A-Za-z0-9]+$/.test(part)) {
+      const [lo, hi] = part.split('-');
+      if (lo) units.push(lo.trim());
+      if (hi) units.push(hi.trim());
+      continue;
+    }
+    if (part) units.push(part);
+  }
+  return units;
+}
+
+// Parent addresses — generated dynamically below from buildings.json + the
+// official program's extras (614/616 Moulton, 642 split, the 621 orphan).
+let ADDRESSES = [
   // North Main Street row (W → E)
   "1910 N. Main Street",
   "1918 N. Main Street",
@@ -178,15 +223,9 @@ const ADDRESSES = [
   "604 Moulton Avenue",
   "610 Moulton Avenue",
   "612 Moulton Avenue",
-  "614 Moulton Avenue",                 // on the printed map; add to data
-  "616 Moulton Avenue",                 // on the printed map; add to data
+  "614 Moulton Avenue",
+  "616 Moulton Avenue",
   "618 Moulton Avenue",
-  "618 Moulton Avenue (A)",
-  "618 Moulton Avenue (B)",
-  "618 Moulton Avenue (C)",
-  "618 Moulton Avenue (D)",
-  "618 Moulton Avenue (E)",
-  "618 Moulton Avenue (F)",
   "620 Moulton Avenue",
   "622 Moulton Avenue",
   "624 Moulton Avenue",
@@ -194,7 +233,7 @@ const ADDRESSES = [
   "632 Moulton Avenue",
   "634 Moulton Avenue",
   "638 Moulton Avenue",
-  "642 Moulton Avenue (West)",          // program lists East/West separately
+  "642 Moulton Avenue (West)",
   "642 Moulton Avenue (East)",
   "645 Moulton Avenue",
   "650 Moulton Avenue",
@@ -203,13 +242,30 @@ const ADDRESSES = [
   "692 Moulton Avenue",
   "696 Moulton Avenue",
 
-  // South Avenue 21 (number ascending)
-  "621 Avenue 21",                      // orphan from artists.json
+  // South Avenue 21
+  "621 Avenue 21",
   "650 South Avenue 21",
   "660 South Avenue 21",
   "672 South Avenue 21",
   "676 South Avenue 21",
 ];
+
+// Append sub-units from buildings.json's `units` field. Each becomes
+// "<address> #<unit>" — e.g. "618 Moulton Avenue #A", "2100 N. Main Street #A1",
+// "642 Moulton Avenue #E18". Parents come first, sub-units after, so the
+// search filter is the practical way to navigate (e.g. type "642").
+fetch('buildings.json').then(r => r.json()).then(buildings => {
+  const subs = [];
+  for (const b of buildings) {
+    const u = parseUnits(b.units);
+    for (const unit of u) subs.push(`${b.address} #${unit}`);
+  }
+  ADDRESSES = [...ADDRESSES, ...subs];
+  renderList();
+  console.log(`expanded to ${ADDRESSES.length} addresses (${subs.length} sub-units)`);
+}).catch(err => {
+  console.warn('failed to load buildings.json — sub-units not expanded:', err);
+});
 
 const positions = {};   // addr → { x, y, w, h, type, points }
 let active = null;
