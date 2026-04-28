@@ -89,15 +89,33 @@ for (const [addr, shape] of Object.entries(captured)) {
     for (let i = 0; i + 1 < nums.length; i += 2) {
       snapped.push(snap(nums[i], xClusters), snap(nums[i + 1], yClusters));
     }
-    const pts = [];
+    const xy = [];
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     for (let i = 0; i + 1 < snapped.length; i += 2) {
-      pts.push(snapped[i] + ',' + snapped[i + 1]);
+      xy.push([snapped[i], snapped[i + 1]]);
       if (snapped[i]   < minX) minX = snapped[i];   if (snapped[i]   > maxX) maxX = snapped[i];
       if (snapped[i+1] < minY) minY = snapped[i+1]; if (snapped[i+1] > maxY) maxY = snapped[i+1];
     }
-    part = { type: 'polygon', points: pts.join(' ') };
     bbox = { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
+
+    // Polygon area via shoelace.
+    let area2 = 0;
+    for (let i = 0; i < xy.length; i++) {
+      const [x1, y1] = xy[i];
+      const [x2, y2] = xy[(i + 1) % xy.length];
+      area2 += x1 * y2 - x2 * y1;
+    }
+    const polyArea = Math.abs(area2) / 2;
+    const bboxArea = bbox.w * bbox.h;
+    const fillRatio = bboxArea > 0 ? polyArea / bboxArea : 0;
+
+    // Real parallelograms / L-shapes fill ~55-90% of their bbox.
+    // Mis-clicked triangles fill <50%. Promote those to a clean rect.
+    if (fillRatio < 0.55) {
+      part = { type: 'rect', x: bbox.x, y: bbox.y, w: bbox.w, h: bbox.h };
+    } else {
+      part = { type: 'polygon', points: xy.map(p => p[0] + ',' + p[1]).join(' ') };
+    }
   } else {
     continue;
   }
