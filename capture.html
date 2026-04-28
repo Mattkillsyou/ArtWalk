@@ -119,11 +119,20 @@
 
 <aside id="side">
   <div id="side-head">
-    <h1>Capture building positions</h1>
+    <h1>Capture building positions <span id="progress" style="float:right; font:11px ui-monospace; color:#555;">0/0</span></h1>
     <p><b>Rect:</b> click NW corner, then SE corner.<br><b>Polygon:</b> click each vertex, then "Finish".<br>Pick mode below, then pick an address.</p>
     <div style="margin-top:8px; display:flex; gap:6px;">
       <label style="font:11px ui-monospace; cursor:pointer;"><input type="radio" name="mode" value="rect" checked> Rect (2 clicks)</label>
       <label style="font:11px ui-monospace; cursor:pointer;"><input type="radio" name="mode" value="polygon"> Polygon</label>
+    </div>
+    <input id="search" type="search" placeholder="filter addresses…" autocomplete="off"
+           style="margin-top:8px; width:100%; height:30px; padding:0 8px; border:1px solid #000; font:12px ui-monospace, monospace;">
+    <div style="margin-top:6px; display:flex; gap:6px;">
+      <button id="show-pending" style="flex:1; height:26px; border:1px solid #000; background:#fff; font:11px ui-monospace; cursor:pointer;">Show pending only</button>
+      <label style="flex:0 0 auto; height:26px; line-height:26px; padding:0 8px; border:1px solid #000; cursor:pointer; font:11px ui-monospace;">
+        Load JSON
+        <input id="load-file" type="file" accept=".json" style="display:none;">
+      </label>
     </div>
   </div>
   <ul id="addr-list"></ul>
@@ -222,9 +231,17 @@ img.addEventListener('load', () => {
   console.log('map loaded:', img.naturalWidth, 'x', img.naturalHeight);
 });
 
+let searchQuery = '';
+let pendingOnly = false;
+
 function renderList() {
   list.innerHTML = '';
+  const q = searchQuery.toLowerCase();
+  let shown = 0;
   for (const addr of ADDRESSES) {
+    if (q && !addr.toLowerCase().includes(q)) continue;
+    if (pendingOnly && positions[addr]) continue;
+    shown++;
     const li = document.createElement('li');
     li.textContent = addr;
     if (addr === active) li.classList.add('active');
@@ -232,7 +249,47 @@ function renderList() {
     li.addEventListener('click', () => selectAddress(addr));
     list.appendChild(li);
   }
+  if (shown === 0) {
+    const li = document.createElement('li');
+    li.textContent = '(no matches)';
+    li.style.color = '#999';
+    li.style.cursor = 'default';
+    list.appendChild(li);
+  }
+  const done = Object.keys(positions).length;
+  document.getElementById('progress').textContent = `${done}/${ADDRESSES.length}`;
 }
+
+document.getElementById('search').addEventListener('input', e => {
+  searchQuery = e.target.value.trim();
+  renderList();
+});
+document.getElementById('show-pending').addEventListener('click', () => {
+  pendingOnly = !pendingOnly;
+  document.getElementById('show-pending').textContent = pendingOnly ? 'Show all' : 'Show pending only';
+  renderList();
+});
+document.getElementById('load-file').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    let loaded = 0;
+    for (const [addr, p] of Object.entries(data)) {
+      if (!ADDRESSES.includes(addr)) continue;
+      positions[addr] = p;
+      loaded++;
+    }
+    status.textContent = `Loaded ${loaded} positions from ${f.name}.`;
+    // resume on first pending address
+    const next = ADDRESSES.find(a => !positions[a]);
+    if (next) selectAddress(next);
+    else { active = null; renderList(); renderShapes(); }
+  } catch (err) {
+    status.textContent = 'Error loading JSON: ' + err.message;
+  }
+  e.target.value = '';
+});
 
 function selectAddress(addr) {
   active = addr;
