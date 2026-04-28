@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Brewery Art Walk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;600;700;800&display=swap">
 <style>
   *, *::before, *::after {
     box-sizing: border-box;
@@ -158,23 +161,46 @@
   .bld-group.selected .bld-rect { fill: #222; }
   .bld-group.selected .bld-label { fill: #fff; }
   .bld-group.selected .bld-name { fill: #fff; }
+  /* Cool / modern editorial labeling — heavy display sans for the number,
+     tight tracking, paired with a tiny tracked-uppercase street name in
+     a clean grotesk underneath. Falls back gracefully if Space Grotesk
+     fails to load (system Inter / Helvetica are already on most devices). */
   .bld-label {
-    fill: #111;
-    font: 700 12px/1 "Inter", ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+    fill: #0a0a0a;
+    font-family: "Space Grotesk", "Inter Display", "Inter", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, "Segoe UI", Roboto, sans-serif;
+    font-weight: 700;
     text-anchor: middle;
     pointer-events: none;
-    letter-spacing: 0.02em;
-    paint-order: stroke fill;          /* white halo so dark stroke borders never clip the text */
-    stroke: rgba(255,255,255,0.85);
+    letter-spacing: -0.02em;            /* modern: slightly tight numbers */
+    paint-order: stroke fill;
+    stroke: rgba(255,255,255,0.94);
     stroke-width: 3;
     stroke-linejoin: round;
   }
-  .bld-label.lbl-xs { font-size: 9px; stroke-width: 2.4; }
-  .bld-label.lbl-sm { font-size: 10px; stroke-width: 2.6; }
-  .bld-label.lbl-md { font-size: 12px; }
-  .bld-label.lbl-lg { font-size: 15px; letter-spacing: 0.04em; }
-  .bld-label.lbl-xl { font-size: 18px; letter-spacing: 0.05em; }
-  .bld-group:hover .bld-rect { fill: #f5f5f5; }
+  .bld-label.lbl-xs { font-size: 10px; stroke-width: 2.4; letter-spacing: 0; }
+  .bld-label.lbl-sm { font-size: 12px; stroke-width: 2.6; letter-spacing: 0; }
+  .bld-label.lbl-md { font-size: 15px; }
+  .bld-label.lbl-lg { font-size: 22px; letter-spacing: -0.025em; }
+  .bld-label.lbl-xl { font-size: 30px; letter-spacing: -0.035em; font-weight: 700; }
+  .bld-street {
+    fill: #707070;
+    font-family: "Inter", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.20em;
+    text-anchor: middle;
+    pointer-events: none;
+    paint-order: stroke fill;
+    stroke: rgba(255,255,255,0.92);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    font-size: 7px;
+  }
+  .bld-street.str-md { font-size: 8px; letter-spacing: 0.22em; }
+  .bld-street.str-lg { font-size: 9px; letter-spacing: 0.26em; }
+  .bld-street.str-xl { font-size: 10px; letter-spacing: 0.30em; }
+  .bld-group.selected .bld-street { fill: #cfcfcf; stroke: rgba(0,0,0,0.4); }
+  .bld-group:hover .bld-rect { fill: #f8f6f2; }
   .bld-group.selected:hover .bld-rect { fill: #2a2a2a; }
   .bld-name {
     fill: #000;
@@ -655,6 +681,28 @@
   const OVERLAY_SRC = overlayParam === 'bw' ? 'bw map.jpg' : 'map_greyscale.jpg';
   if (overlayMode) document.body.classList.add('overlay-mode');
 
+  // Extract a short, branded street name from a full address.
+  // Examples:
+  //   "618 Moulton Avenue #A"     → "Moulton"
+  //   "1910 N. Main Street"        → "N. Main"
+  //   "670 South Avenue 21"        → "S. Ave 21"
+  //   "621 Avenue 21"              → "Ave 21"
+  //   "Garden" / "Construction Yard" → ""  (no street; just show the name)
+  function streetFor(addr) {
+    if (!/^\d/.test(addr)) return '';
+    let s = addr
+      .replace(/^\S+\s+/, '')              // drop the leading "618 "
+      .replace(/\s*#.*$/, '')              // drop "#A"
+      .replace(/\s*\([^)]+\)\s*$/, '')     // drop "(West)"
+      .trim()
+      .replace(/\bN\.\s*Main Street\b/, 'N. Main')
+      .replace(/\bSouth Avenue\b/, 'S. Ave')
+      .replace(/\bMoulton Avenue\b/, 'Moulton')
+      .replace(/\bAvenue\b/, 'Ave')
+      .replace(/\bStreet\b/, 'St');
+    return s;
+  }
+
   function renderMap() {
     while (svg.lastChild && svg.lastChild.tagName !== 'defs') svg.removeChild(svg.lastChild);
 
@@ -697,7 +745,26 @@
         minSide < 36 ? 'lbl-sm' :
         minSide < 70 ? 'lbl-md' :
         minSide < 130 ? 'lbl-lg' : 'lbl-xl';
-      g.appendChild(textEl(pos.short, pos.x + pos.w / 2, pos.y + pos.h / 2 + 4, 'bld-label ' + sizeCls));
+
+      const street = streetFor(addr);
+      // Two-line label only when there's enough room. Tiny cells and unnamed
+      // landmarks (Garden, Construction Yard) just get the single big label.
+      const showStreet = !!street && minSide >= 36;
+      const cx = pos.x + pos.w / 2;
+      const cy = pos.y + pos.h / 2;
+
+      if (showStreet) {
+        // Center the combined number+street block in the shape.
+        const offsets = {
+          'lbl-md': { numDy:  0,  strDy: 10, strCls: 'str-md' },
+          'lbl-lg': { numDy: -3,  strDy: 13, strCls: 'str-lg' },
+          'lbl-xl': { numDy: -6,  strDy: 16, strCls: 'str-xl' },
+        }[sizeCls] || { numDy: 0, strDy: 9, strCls: '' };
+        g.appendChild(textEl(pos.short, cx, cy + offsets.numDy + 5, 'bld-label ' + sizeCls));
+        g.appendChild(textEl(street,    cx, cy + offsets.strDy,     'bld-street ' + offsets.strCls));
+      } else {
+        g.appendChild(textEl(pos.short, cx, cy + 4, 'bld-label ' + sizeCls));
+      }
 
       g.addEventListener('click', () => {
         if (suppressClick) return;
