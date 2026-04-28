@@ -1,38 +1,107 @@
 // convert-captured.mjs — turn positions-captured.json (output of capture.html)
-// into a POSITIONS object and splice it into index.html. Also rewrites the
-// renderMap parts logic so each entry can carry one rect or polygon part.
+// into a POSITIONS object and splice it into index.html.
+//
+// 1. Snap near-coincident X and Y coordinates so manually-clicked shapes
+//    that "should" share an edge actually do (cluster spread capped at
+//    SNAP_TOLERANCE so a long chain can't drag the whole cluster).
+// 2. Each captured address becomes its own POSITIONS entry with one part.
+//    Sub-units like "618 Moulton Avenue #A" stay as their own entries.
 //
 //   node convert-captured.mjs
 //   node prepare.js   # then re-inline + mirror to www/
 
 import { readFileSync, writeFileSync } from 'node:fs';
 
+const SNAP_TOLERANCE = 8;
 const captured = JSON.parse(readFileSync('positions-captured.json', 'utf8'));
 
-// Build POSITIONS. Each captured address becomes its own entry with one
-// part. Sub-units like "618 Moulton Avenue #A" stay as their own entries
-// (separately tappable on the map). The bottom-sheet code can match
-// "<addr> #<unit>" → fall back to artists at "<addr>" if no exact match.
+// ----- 1. Edge snapping ------------------------------------------------
+// Collect every X edge and Y edge from every shape.
+const xs = [], ys = [];
+for (const shape of Object.values(captured)) {
+  if (shape.type === 'rect') {
+    xs.push(shape.x, shape.x + shape.w);
+    ys.push(shape.y, shape.y + shape.h);
+  } else if (shape.type === 'polygon') {
+    const nums = shape.points.split(/[\s,]+/).map(parseFloat).filter(n => !Number.isNaN(n));
+    for (let i = 0; i + 1 < nums.length; i += 2) {
+      xs.push(nums[i]);
+      ys.push(nums[i + 1]);
+    }
+  }
+}
+
+// Cap each cluster's spread at tolerance so a chain of values 7px apart
+// each can't span 50px collectively. A value joins the current cluster only
+// if it's within tolerance of the cluster's FIRST value.
+function buildClusters(values) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const clusters = [];
+  let cur = [];
+  for (const v of sorted) {
+    if (cur.length === 0 || v - cur[0] <= SNAP_TOLERANCE) cur.push(v);
+    else { clusters.push(cur); cur = [v]; }
+  }
+  if (cur.length) clusters.push(cur);
+  return clusters.map(c => ({
+    lo: c[0],
+    hi: c[c.length - 1],
+    snap: Math.round(c.reduce((a, b) => a + b, 0) / c.length),
+  }));
+}
+
+const xClusters = buildClusters(xs);
+const yClusters = buildClusters(ys);
+
+function snap(v, clusters) {
+  for (const c of clusters) {
+    if (v >= c.lo - 0.001 && v <= c.hi + 0.001) return c.snap;
+  }
+  return Math.round(v);
+}
+
+console.log(`snap: ${xClusters.length} unique X edges, ${yClusters.length} unique Y edges`);
+
+// ----- 2. Build POSITIONS, applying snap to every coordinate -----------
 const positions = {};
 for (const [addr, shape] of Object.entries(captured)) {
   const short = (addr.match(/^\d+/) || [addr])[0];
-  let part;
-  if (shape.type === 'polygon') {
-    part = { type: 'polygon', points: shape.points };
+
+  let part, bbox;
+  if (shape.type === 'rect') {
+    const x1 = snap(shape.x, xClusters);
+    const y1 = snap(shape.y, yClusters);
+    const x2 = snap(shape.x + shape.w, xClusters);
+    const y2 = snap(shape.y + shape.h, yClusters);
+    part = { type: 'rect', x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+    bbox = part;
+  } else if (shape.type === 'polygon') {
+    const nums = shape.points.split(/[\s,]+/).map(parseFloat).filter(n => !Number.isNaN(n));
+    const snapped = [];
+    for (let i = 0; i + 1 < nums.length; i += 2) {
+      snapped.push(snap(nums[i], xClusters), snap(nums[i + 1], yClusters));
+    }
+    const pts = [];
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (let i = 0; i + 1 < snapped.length; i += 2) {
+      pts.push(snapped[i] + ',' + snapped[i + 1]);
+      if (snapped[i]   < minX) minX = snapped[i];   if (snapped[i]   > maxX) maxX = snapped[i];
+      if (snapped[i+1] < minY) minY = snapped[i+1]; if (snapped[i+1] > maxY) maxY = snapped[i+1];
+    }
+    part = { type: 'polygon', points: pts.join(' ') };
+    bbox = { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
   } else {
-    part = { type: 'rect', x: shape.x, y: shape.y, w: shape.w, h: shape.h };
+    continue;
   }
+
   positions[addr] = {
-    x: +shape.x.toFixed(2),
-    y: +shape.y.toFixed(2),
-    w: +shape.w.toFixed(2),
-    h: +shape.h.toFixed(2),
+    x: bbox.x, y: bbox.y, w: bbox.w, h: bbox.h,
     short,
     parts: [part],
   };
 }
 
-// Build the POSITIONS literal as compact JS. One address per line.
+// ----- 3. Splice POSITIONS literal into index.html ---------------------
 const lines = ['  const POSITIONS = {'];
 for (const [addr, p] of Object.entries(positions)) {
   const partStr = JSON.stringify(p.parts[0]);
@@ -41,7 +110,6 @@ for (const [addr, p] of Object.entries(positions)) {
 lines.push('  };');
 const positionsBlock = lines.join('\n');
 
-// Splice into index.html.
 let html = readFileSync('index.html', 'utf8');
 const start = html.indexOf('const POSITIONS = {');
 if (start === -1) throw new Error('POSITIONS not found in index.html');
