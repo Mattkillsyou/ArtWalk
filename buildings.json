@@ -149,7 +149,15 @@
     "units": "200-218",
     "floors": 1,
     "position": "center-east",
-    "notes": null
+    "notes": "Main block. Has a separate north strip labelled 101-115 captured as 620 Moulton Avenue (101-115)."
+  },
+  {
+    "address": "620 Moulton Avenue (101-115)",
+    "name": "620 Moulton North",
+    "units": null,
+    "floors": 1,
+    "position": "vertical narrow strip extending north from the main 620 Moulton block",
+    "notes": "Physically separate footprint on the printed map — captured as its own shape"
   },
   {
     "address": "622 Moulton Avenue",
