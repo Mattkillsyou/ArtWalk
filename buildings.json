@@ -366,5 +366,21 @@
     "floors": 1,
     "position": "south of the SW cluster, bottom of the campus",
     "notes": "Visible on the printed map; not in the official 2026 program"
+  },
+  {
+    "address": "Construction Yard",
+    "name": "Construction Yard",
+    "units": null,
+    "floors": 0,
+    "position": "south-west, large open area between 1918 / 670 Moulton and 642",
+    "notes": "Landmark on the printed map (not a building)"
+  },
+  {
+    "address": "Garden",
+    "name": "Garden",
+    "units": null,
+    "floors": 0,
+    "position": "south-center, between 620 area and 670 South Ave 21",
+    "notes": "Landmark on the printed map (not a building)"
   }
 ]
