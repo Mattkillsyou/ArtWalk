@@ -21,7 +21,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 
 const SNAP_TOLERANCE = 10;   // values within this px range may cluster — kept under typical cell width so adjacent narrow cells (e.g. 622 #D-G at ~14px each) don't have their separate left-edges merged into one cluster
 const SPATIAL_SLACK  = 5;    // perp-range slack: edges 5px apart in perp direction still considered adjacent
-const GAP_CLOSE      = 20;   // close vertical/horizontal gaps up to this many px
+const GAP_CLOSE      = 10;   // close vertical/horizontal gaps up to this many px — kept under 20 so intentional 20-px gaps (e.g. 700 Moulton sits across a road from 692 #A and 694 SA21 above it, captured ~20px apart on purpose) DON'T get bridged. Click-jitter under 10px still closes.
 const MIN_OVERLAP    = 5;    // require this much perp overlap before gap-close
 
 const captured = JSON.parse(readFileSync('positions-captured.json', 'utf8'));
@@ -118,14 +118,22 @@ console.log(`spatial snap: ${xClusters.length} X clusters, ${yClusters.length} Y
 // ----- 3. Build POSITIONS, applying snap to every coordinate -----------
 const positions = {};
 for (const [addr, shape] of Object.entries(captured)) {
-  // Sub-units like "618 Moulton Avenue #A" label as "A" (the unit only) so
-  // a row of cells shows A B C D E F rather than five "618"s. Parents like
-  // "618 Moulton Avenue" label as "618" (the building number).
+  // Cool labels:
+  //   • Sub-units → "<parent#><suffix>" e.g. "618A", "696D", "622E", so each
+  //     small cell still tells you which building it's in at a glance.
+  //   • If the suffix is itself a number (e.g. "694 South Avenue 21 #688")
+  //     just use that number — those are independent buildings sharing a lot.
+  //   • Parents like "618 Moulton Avenue" → "618".
+  //   • Named landmarks like "Garden" / "Construction Yard" stay verbatim.
   let short;
   if (addr.includes(' #')) {
-    short = addr.split(' #').pop();
+    const suffix = addr.split(' #').pop();
+    const parent = (addr.match(/^\d+/) || [''])[0];
+    // If suffix starts with a digit, it's its own building — no prefix.
+    short = /^\d/.test(suffix) ? suffix : (parent + suffix);
   } else {
-    short = (addr.match(/^\d+/) || [addr])[0];
+    const m = addr.match(/^\d+/);
+    short = m ? m[0] : addr;
   }
 
   let part, bbox;
