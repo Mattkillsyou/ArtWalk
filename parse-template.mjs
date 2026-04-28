@@ -223,6 +223,108 @@ for (const m of body.matchAll(/<line\s+([^>]*?)\/?>/g)) {
 shapes.forEach(s => s.category = classCategory[s.cls] || 'other');
 
 // --------------------------------------------------------------------
+// 4) Edge-snap: cluster near-coincident X and Y coordinates so adjacent
+//    buildings actually share their walls (no 0.1-px gaps from Illustrator).
+// --------------------------------------------------------------------
+function snapEdges(shapes, tolerance = 2.5) {
+  // Gather every coordinate that an edge could land on.
+  const xs = [], ys = [];
+  for (const s of shapes) {
+    const g = s.geom;
+    if (!g) continue;
+    if (g.type === 'rect') {
+      xs.push(g.x, g.x + g.w);
+      ys.push(g.y, g.y + g.h);
+    } else if (g.type === 'polygon' || g.type === 'polyline') {
+      const nums = g.points.split(/[\s,]+/).map(parseFloat).filter(n => !Number.isNaN(n));
+      for (let i = 0; i + 1 < nums.length; i += 2) {
+        xs.push(nums[i]); ys.push(nums[i + 1]);
+      }
+    } else if (g.type === 'path') {
+      // Pull any number-pair from the d-string. Coarse but fine for snapping.
+      const nums = (g.d.match(/-?\d+(?:\.\d+)?/g) || []).map(parseFloat);
+      for (let i = 0; i + 1 < nums.length; i += 2) {
+        xs.push(nums[i]); ys.push(nums[i + 1]);
+      }
+    } else if (g.type === 'line') {
+      xs.push(g.x1, g.x2); ys.push(g.y1, g.y2);
+    }
+  }
+
+  // Chain-cluster sorted values: any two consecutive values within tolerance
+  // are in the same cluster. Cluster snap = mean.
+  function buildClusters(values) {
+    const sorted = [...values].sort((a, b) => a - b);
+    const clusters = []; let cur = [];
+    for (const v of sorted) {
+      if (cur.length === 0 || v - cur[cur.length - 1] <= tolerance) cur.push(v);
+      else { clusters.push(cur); cur = [v]; }
+    }
+    if (cur.length) clusters.push(cur);
+    return clusters.map(c => ({
+      lo: c[0], hi: c[c.length - 1],
+      snap: +(c.reduce((a, b) => a + b, 0) / c.length).toFixed(2),
+    }));
+  }
+  const xC = buildClusters(xs);
+  const yC = buildClusters(ys);
+
+  function snap(v, clusters) {
+    for (const c of clusters) {
+      if (v >= c.lo - 0.001 && v <= c.hi + 0.001) return c.snap;
+    }
+    return v;
+  }
+
+  for (const s of shapes) {
+    const g = s.geom;
+    if (!g) continue;
+    if (g.type === 'rect') {
+      const x1 = snap(g.x, xC), x2 = snap(g.x + g.w, xC);
+      const y1 = snap(g.y, yC), y2 = snap(g.y + g.h, yC);
+      g.x = x1; g.y = y1; g.w = x2 - x1; g.h = y2 - y1;
+      s.bbox = { x: x1, y: y1, w: g.w, h: g.h };
+    } else if (g.type === 'polygon' || g.type === 'polyline') {
+      const nums = g.points.split(/[\s,]+/).map(parseFloat).filter(n => !Number.isNaN(n));
+      const out = [];
+      for (let i = 0; i + 1 < nums.length; i += 2) {
+        out.push(snap(nums[i], xC), snap(nums[i + 1], yC));
+      }
+      g.points = out.map(n => n.toFixed(2)).join(' ');
+      let mnX = Infinity, mxX = -Infinity, mnY = Infinity, mxY = -Infinity;
+      for (let i = 0; i + 1 < out.length; i += 2) {
+        if (out[i] < mnX) mnX = out[i]; if (out[i] > mxX) mxX = out[i];
+        if (out[i + 1] < mnY) mnY = out[i + 1]; if (out[i + 1] > mxY) mxY = out[i + 1];
+      }
+      s.bbox = { x: mnX, y: mnY, w: mxX - mnX, h: mxY - mnY };
+    } else if (g.type === 'path') {
+      // Snap every (x, y) pair in the path d-string. Crude — assumes pairs
+      // are coordinates (ignores arc rotation flags etc) — but for
+      // architectural shapes drawn via M/L/V/H/C/Z it works.
+      let pairIdx = 0;
+      g.d = g.d.replace(/-?\d+(?:\.\d+)?/g, (m) => {
+        const v = parseFloat(m);
+        const isX = (pairIdx++ % 2 === 0);
+        return snap(v, isX ? xC : yC).toFixed(2);
+      });
+      s.bbox = pathBBox(g.d) || s.bbox;
+    } else if (g.type === 'line') {
+      g.x1 = snap(g.x1, xC); g.x2 = snap(g.x2, xC);
+      g.y1 = snap(g.y1, yC); g.y2 = snap(g.y2, yC);
+      s.bbox = {
+        x: Math.min(g.x1, g.x2), y: Math.min(g.y1, g.y2),
+        w: Math.abs(g.x2 - g.x1), h: Math.abs(g.y2 - g.y1),
+      };
+    }
+  }
+
+  return { xClusters: xC.length, yClusters: yC.length };
+}
+
+const snapStats = snapEdges(shapes, 2.5);
+console.log(`edge-snap: ${snapStats.xClusters} unique X edges, ${snapStats.yClusters} unique Y edges`);
+
+// --------------------------------------------------------------------
 // 4) Filter / report.
 // --------------------------------------------------------------------
 // Keep a shape if at least 50% of its bbox area falls inside the canvas, OR
