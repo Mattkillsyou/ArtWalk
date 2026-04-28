@@ -177,11 +177,10 @@ function parseUnits(unitsStr) {
         const lo = parseInt(n1, 10), hi = parseInt(n2, 10);
         if (hi - lo + 1 <= MAX_RANGE) {
           for (let i = lo; i <= hi; i++) units.push(prefix + i);
-        } else {
-          // Range too wide ("101-500" = 5 floors of rooms, not 400 unique
-          // studios). Keep just the endpoints so the user can capture them.
-          units.push(prefix + lo, prefix + hi);
         }
+        // Range > MAX_RANGE (e.g. 600's "101-500" = floor designators not
+        // unique studios; 1984's "200-500"): treat the building as one
+        // address, no sub-units. Just capture the parent.
         continue;
       }
     }
