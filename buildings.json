@@ -278,5 +278,21 @@
     "floors": 1,
     "position": "southwest area",
     "notes": null
+  },
+  {
+    "address": "688 Moulton Avenue",
+    "name": "688 Moulton",
+    "units": "A-C",
+    "floors": 1,
+    "position": "southwest area, between 690 and the SW edge",
+    "notes": "Visible on the printed map; not in the official 2026 program"
+  },
+  {
+    "address": "694 Moulton Avenue",
+    "name": "694 Moulton",
+    "units": null,
+    "floors": 1,
+    "position": "southwest area, beneath 690",
+    "notes": "Visible on the printed map; not in the official 2026 program"
   }
 ]
