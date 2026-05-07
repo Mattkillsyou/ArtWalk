@@ -19,40 +19,43 @@ These three rejection risks must be solved before submitting:
 ## Phase A — what I can build from Windows now
 
 ### A1. Native features (kills the 4.2 web-wrapper risk)
-- [ ] **(WIN)** Service worker for offline cache (`www/sw.js`) — caches index.html, JSON, map images
-- [ ] **(WIN)** Register service worker in `index.html` (graceful no-op in non-Capacitor browsers)
-- [ ] **(WIN)** Add `@capacitor/geolocation` to `package.json` dependencies
-- [ ] **(WIN)** "Show me on the map" button → blue dot SVG overlay using Geolocation API
-- [ ] **(WIN)** Add `@capacitor/preferences` for favorites persistence (works on web & native)
-- [ ] **(WIN)** Heart icon on each artist card → toggle favorite, persisted via Preferences
-- [ ] **(WIN)** Filter chip: "Favorites only"
+- [x] **(WIN)** Service worker for offline cache (`sw.js`) — caches index.html, JSON, map images, artist photos
+- [x] **(WIN)** Register service worker in `index.html` (graceful no-op in Capacitor's `capacitor://` scheme)
+- [x] **(WIN)** Add `@capacitor/geolocation` to `package.json` dependencies
+- [x] **(WIN)** "Find me" button → blue pulsing GPS dot SVG overlay using lat/lng → SVG affine
+- [x] **(WIN)** Add `@capacitor/preferences` for favorites persistence (Capacitor on native, localStorage fallback on web)
+- [x] **(WIN)** Star button on artist detail → toggle favorite, persisted
+- [x] **(WIN)** Filter chip: "★ Favorites"
 
 ### A2. Self-hosted assets (kills the 5.2 risk + offline)
-- [ ] **(WIN)** Download Inter Tight woff2 files locally → `www/fonts/`, kill the Google Fonts CDN link
-- [ ] **(WIN)** Audit `artists.json` image URLs — write a script that downloads them all to `www/img/artists/`
-- [ ] **(WIN)** Update artist data to point at local paths
-- [ ] **(WIN)** Compress images to WebP if reasonable, otherwise JPEG quality 80
+- [x] **(WIN)** Download Inter Tight woff2 file locally → `fonts/inter-tight.woff2` (45 KB), kill the Google Fonts CDN link
+- [x] **(WIN)** `download-artist-images.mjs` — downloaded all 197 unique images from breweryartwalk.com to `img/artists/`
+- [x] **(WIN)** Rewrote `artists.json` to point at local paths (`img/artists/<slug>.jpeg`)
+- [x] **(WIN)** `compress-artist-images.mjs` — resized to max 1280px @ JPEG q78 (54 MB → 31 MB)
 
 ### A3. Privacy Manifest + permission strings (kills the hard blocker)
-- [ ] **(WIN)** Create `ios/App/App/PrivacyInfo.xcprivacy` (template ready to drop in once `npx cap add ios` runs)
-- [ ] **(WIN)** Draft `NSLocationWhenInUseUsageDescription` text
-- [ ] **(WIN)** Draft Info.plist additions documented in this file
+- [x] **(WIN)** Created `PrivacyInfo.xcprivacy` at repo root — `npm run ios:add` script auto-copies it into `ios/App/App/` after `cap add`
+- [x] **(WIN)** Drafted `NSLocationWhenInUseUsageDescription` text (in this file)
+- [x] **(WIN)** Drafted Info.plist additions
 
 ### A4. App "About" panel (Guideline 1.5 + 5.1.1)
-- [ ] **(WIN)** Info button in top-right → modal with: support email, privacy policy URL, version number, copyright
+- [x] **(WIN)** "i" button in header → modal with: version, support URL, privacy policy URL, brewery org link, copyright, "no accounts/no ads/no tracking" line
+- [x] **(WIN)** "◎" Find me button next to it
 
 ### A5. Icons + launch screen
-- [ ] **(WIN)** Generate placeholder 1024×1024 app icon (or use your source if you have one)
-- [ ] **(WIN)** Generate every iOS icon size (will be applied on Mac via `cap sync`)
-- [ ] **(WIN)** Generate launch screen image (Capacitor uses storyboard, but logo PNG is needed)
+- [x] **(WIN)** Placeholder 1024×1024 app icon → `ios-icon-stash/icon-1024.png` + SVG source `app-icon-1024.svg`
+- [x] **(WIN)** Apple Touch Icon (180px) + PWA icons (192/512) generated → `icons/`
+- [x] **(WIN)** Web manifest (`manifest.webmanifest`) for PWA & home-screen installs
+- [x] **(WIN)** `npm run ios:icons` script ready: runs `npx capacitor-assets generate` from the 1024 master once on Mac
+- [ ] **(MAC)** Launch screen storyboard — Capacitor's default scaffolds with `cap add ios`; replace assets later
 
 ### A6. App Store Connect copy (drafts in this file)
-- [ ] **(WIN)** App name + subtitle drafted
-- [ ] **(WIN)** Description (≤4000 char) drafted
-- [ ] **(WIN)** Keywords (≤100 char comma-separated) drafted
-- [ ] **(WIN)** Promotional text (≤170 char) drafted
-- [ ] **(WIN)** Privacy Policy text drafted
-- [ ] **(WIN)** Support page text drafted
+- [x] **(WIN)** App name + subtitle drafted
+- [x] **(WIN)** Description (≤4000 char) drafted
+- [x] **(WIN)** Keywords (≤100 char comma-separated) drafted
+- [x] **(WIN)** Promotional text (≤170 char) drafted
+- [x] **(WIN)** Privacy Policy text drafted (also live at `docs/privacy.md` — enable GitHub Pages and the URL is `https://mattkillsyou.github.io/ArtWalk/privacy/`)
+- [x] **(WIN)** Support page text drafted (also at `docs/support.md`)
 
 ---
 
@@ -85,10 +88,9 @@ These three rejection risks must be solved before submitting:
 cd ~/path/to/ArtWalk
 git pull
 npm install                                        # runs prepare.js automatically
-npx cap add ios                                    # creates ios/ folder
-cp PrivacyInfo.xcprivacy ios/App/App/              # the file we'll generate in A3
-npx cap sync ios                                   # copies www/ + plugins
-npx cap open ios                                   # opens Xcode
+npm run ios:add                                    # cap add ios + auto-copies PrivacyInfo.xcprivacy
+npm run ios:icons                                  # generates every iOS icon size from master 1024 png
+npm run ios:open                                   # syncs www/ and opens Xcode
 ```
 
 ### B5. In Xcode `(MAC)`
@@ -325,15 +327,43 @@ The `C617.1` reason code = "Inside app container, accessing same app's files."
 
 ---
 
-## What I'm doing right now
+## ✅ Phase A complete
 
-Working on Phase A items in this order:
-1. Service worker (offline)
-2. Geolocation "you are here" button
-3. Favorites (Preferences plugin)
-4. Embed Inter Tight font files locally (kill CDN)
-5. About panel
-6. Privacy Manifest file
-7. Placeholder app icon
+What landed in this repo (Windows):
 
-Will check each item off above as it lands.
+**Native features that defeat the 4.2 web-wrapper rejection**
+- Service worker for full offline (`sw.js`)
+- Geolocation w/ pulsing GPS dot on map (Capacitor + browser fallback)
+- Favorites with star button + filter chip (Capacitor Preferences + localStorage fallback)
+
+**Content rights resolution (5.2)**
+- All 197 artist images downloaded to `img/artists/` and bundled in the app
+- `artists.json` rewritten to local paths
+- 31 MB of local images replace ~200 third-party HTTP requests
+- Inter Tight font self-hosted — no Google Fonts CDN dependency
+
+**Apple-mandated Privacy Manifest**
+- `PrivacyInfo.xcprivacy` ready at repo root
+- `npm run ios:add` auto-copies it after `cap add ios`
+
+**Apple guideline 1.5 + 5.1.1**
+- About modal with version, support, privacy policy, copyright
+- All link to live URLs at `mattkillsyou.github.io/ArtWalk/...`
+
+**Submission-ready artifacts**
+- `app-icon-1024.svg` (placeholder — replace with real logo any time)
+- `icons/` (apple-touch-icon, favicon, PWA icons)
+- `manifest.webmanifest` for PWA / home-screen install
+- `docs/privacy.md` + `docs/support.md` for GitHub Pages
+- `APP_STORE_PREP.md` (this file) with all the App Store copy drafts
+
+## What's left to ship
+
+Per Phase B above. Short version:
+
+1. Apple Developer Account ($99/yr) `(YOU)`
+2. Get permission letter from Brewery Art Walk org `(YOU)`
+3. Enable GitHub Pages on this repo, settings → Pages → branch `main` / folder `/docs` `(YOU)`
+4. On the Mac: `npm install && npm run ios:add && npm run ios:icons && npm run ios:open` `(MAC)`
+5. In Xcode: pick signing team, paste `NSLocationWhenInUseUsageDescription` from this file, archive, upload to App Store Connect `(MAC)`
+6. App Store Connect: paste copy from this file, take 4 screenshots in iOS Simulator, fill privacy questionnaire, TestFlight, submit `(APPLE)`

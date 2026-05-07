@@ -1,0 +1,16 @@
+title: Brewery Art Walk
+description: The official-style guide app to the Brewery, LA's largest live-work art colony.
+theme: jekyll-theme-minimal
+permalink: /:title/
+markdown: kramdown
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: false
+include:
+  - privacy.md
+  - support.md
+exclude:
+  - "*.svg"
+  - Gemfile*

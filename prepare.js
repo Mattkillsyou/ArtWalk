@@ -63,29 +63,44 @@ fs.writeFileSync(htmlPath, html);
 if (!fs.existsSync(wwwDir)) fs.mkdirSync(wwwDir, { recursive: true });
 fs.writeFileSync(wwwHtmlPath, html);
 
-// Copy static assets the HTML references via relative URL.
-// Calibration overlays — silhouette and labeled greyscale.
-const assets = ['bw map.jpg', 'map_greyscale.jpg'];
+// Mirror static assets from repo-root source dirs into www/.
+//   · top-level files: maps, sw.js, manifest
+//   · fonts/ → www/fonts/
+//   · icons/ → www/icons/
+//   · img/artists/ → www/img/artists/  (bundled offline image set)
 const copied = [];
-for (const name of assets) {
-  const src = path.join(root, name);
-  if (!fs.existsSync(src)) continue;
-  const dest = path.join(wwwDir, name);
+
+function copyFile(rel) {
+  const src = path.join(root, rel);
+  if (!fs.existsSync(src)) return;
+  const dest = path.join(wwwDir, rel);
+  const destDir = path.dirname(dest);
+  if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
   fs.copyFileSync(src, dest);
-  copied.push(name);
+  copied.push(rel);
 }
 
-// Mirror the fonts/ directory (self-hosted Inter Tight kills the
-// Google Fonts CDN dependency — required for full offline + no IP leak).
-const fontsSrc = path.join(root, 'www', 'fonts');
-if (fs.existsSync(fontsSrc)) {
-  // Already in www, but ensure it exists in the destination tree.
-  for (const name of fs.readdirSync(fontsSrc)) {
-    copied.push('fonts/' + name);
+function copyDir(rel) {
+  const src = path.join(root, rel);
+  if (!fs.existsSync(src)) return;
+  const dest = path.join(wwwDir, rel);
+  if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
+  for (const name of fs.readdirSync(src)) {
+    const srcChild = path.join(src, name);
+    const destChild = path.join(dest, name);
+    const stat = fs.statSync(srcChild);
+    if (stat.isDirectory()) copyDir(path.join(rel, name));
+    else { fs.copyFileSync(srcChild, destChild); copied.push(path.join(rel, name)); }
   }
 }
+
+// Top-level files the HTML references via relative URL.
+['bw map.jpg', 'map_greyscale.jpg', 'sw.js', 'manifest.webmanifest'].forEach(copyFile);
+
+// Bundled directories.
+['fonts', 'icons', 'img/artists'].forEach(copyDir);
 
 const after = html.length;
 console.log(`Inlined ${artistsData.length} artists + ${buildingsData.length} buildings.`);
 console.log(`index.html: ${before.toLocaleString()} → ${after.toLocaleString()} bytes`);
-console.log(`Wrote: index.html, www/index.html` + (copied.length ? ', ' + copied.map(n => 'www/' + n).join(', ') : ''));
+console.log(`Mirrored ${copied.length} files to www/.`);

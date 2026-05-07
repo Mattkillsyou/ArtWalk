@@ -6,10 +6,14 @@
   "scripts": {
     "build": "node prepare.js",
     "postinstall": "node prepare.js",
-    "ios:add": "npx cap add ios",
+    "ios:add": "npx cap add ios && cp PrivacyInfo.xcprivacy ios/App/App/",
+    "ios:icons": "npx capacitor-assets generate --iconBackgroundColor '#0a0a0a' --iconSourcePath ios-icon-stash/icon-1024.png",
     "ios:sync": "npm run build && npx cap sync ios",
     "ios:open": "npm run build && npx cap sync ios && npx cap open ios",
-    "ios:run": "npm run build && npx cap run ios"
+    "ios:run": "npm run build && npx cap run ios",
+    "images:download": "node download-artist-images.mjs",
+    "images:compress": "node compress-artist-images.mjs",
+    "icons:placeholder": "node generate-placeholder-icons.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^6.0.0",
@@ -18,6 +22,7 @@
     "@capacitor/preferences": "^6.0.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.0.0",
     "jimp": "^1.6.1",
     "tesseract.js": "^7.0.0"
