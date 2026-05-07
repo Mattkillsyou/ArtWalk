@@ -75,6 +75,16 @@ for (const name of assets) {
   copied.push(name);
 }
 
+// Mirror the fonts/ directory (self-hosted Inter Tight kills the
+// Google Fonts CDN dependency — required for full offline + no IP leak).
+const fontsSrc = path.join(root, 'www', 'fonts');
+if (fs.existsSync(fontsSrc)) {
+  // Already in www, but ensure it exists in the destination tree.
+  for (const name of fs.readdirSync(fontsSrc)) {
+    copied.push('fonts/' + name);
+  }
+}
+
 const after = html.length;
 console.log(`Inlined ${artistsData.length} artists + ${buildingsData.length} buildings.`);
 console.log(`index.html: ${before.toLocaleString()} → ${after.toLocaleString()} bytes`);

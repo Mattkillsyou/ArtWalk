@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Placeholder Brewery Art Walk app icon, 1024×1024.
+     Convert to PNG on the Mac with:
+       sips -s format png -z 1024 1024 app-icon-1024.svg --out app-icon-1024.png
+     Or use any SVG-to-PNG tool. The Capacitor "@capacitor/assets" package
+     can then generate every iOS size from the single 1024 master:
+       npm install --save-dev @capacitor/assets
+       npx capacitor-assets generate --iconSourcePath app-icon-1024.png
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Solid black background — App Store icons can't have transparency. -->
+  <rect x="0" y="0" width="1024" height="1024" fill="#0a0a0a"/>
+
+  <!-- Schematic Brewery campus footprint, traced from the actual map.
+       Grouped, scaled, centered. Pure white silhouettes evoke the
+       greyscale site plan inside the app. -->
+  <g transform="translate(150,180) scale(0.72)" fill="#ffffff" fill-opacity="0.94">
+    <!-- North row: 1910 -->
+    <rect x="139" y="64"  width="89"  height="77"/>
+    <!-- N. Main upper row -->
+    <rect x="293" y="273" width="43"  height="52"/>
+    <rect x="337" y="272" width="40"  height="54"/>
+    <rect x="379" y="272" width="37"  height="54"/>
+    <!-- 600 Moulton block -->
+    <rect x="418" y="274" width="135" height="147"/>
+    <!-- 614/616 stack -->
+    <rect x="289" y="326" width="129" height="53"/>
+    <rect x="289" y="379" width="129" height="42"/>
+    <!-- 618 row -->
+    <rect x="289" y="421" width="48"  height="50"/>
+    <rect x="337" y="421" width="40"  height="50"/>
+    <rect x="377" y="421" width="41"  height="50"/>
+    <rect x="418" y="421" width="51"  height="50"/>
+    <rect x="469" y="421" width="45"  height="49"/>
+    <rect x="514" y="421" width="39"  height="49"/>
+    <!-- 642 W/E long strips -->
+    <rect x="437" y="616" width="38"  height="275"/>
+    <rect x="475" y="616" width="36"  height="275"/>
+    <!-- SW polygons (670/650 area) -->
+    <polygon points="170,520 176,605 97,604 129,522 167,521"/>
+    <polygon points="182,608 126,744 46,749 99,605 178,605"/>
+    <!-- 2100 polygon NE -->
+    <polygon points="952,99 780,94 782,299 877,298 878,225 953,226"/>
+    <!-- 620 polygon and 620 (101-115) polygon -->
+    <polygon points="631,328 697,326 695,299 752,300 750,500 697,502 695,518 635,516"/>
+    <polygon points="754,299 783,300 782,514 698,520 698,502 750,505"/>
+    <!-- 670/672/650 SA21 -->
+    <rect x="556" y="639" width="65"  height="55"/>
+    <rect x="553" y="742" width="193" height="50"/>
+    <rect x="790" y="740" width="184" height="48"/>
+  </g>
+
+  <!-- Wordmark in the corner — small, restrained. -->
+  <g transform="translate(60, 940)" fill="#ffffff" font-family="Inter Tight, system-ui, sans-serif" font-weight="600">
+    <text font-size="46" letter-spacing="2">BAW</text>
+  </g>
+  <g transform="translate(60, 985)" fill="#999999" font-family="Inter Tight, system-ui, sans-serif" font-weight="500">
+    <text font-size="22" letter-spacing="6">BREWERY ART WALK</text>
+  </g>
+</svg>

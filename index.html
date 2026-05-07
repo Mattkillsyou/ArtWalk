@@ -7,9 +7,19 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Brewery Art Walk</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap">
+<style>
+  /* Self-hosted Inter Tight (variable font, latin subset) — kills the
+     external CDN dependency so the app works fully offline and doesn't
+     leak your IP to Google Fonts. */
+  @font-face {
+    font-family: "Inter Tight";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("./fonts/inter-tight.woff2") format("woff2-variations"),
+         url("./fonts/inter-tight.woff2") format("woff2");
+  }
+</style>
 <style>
   *, *::before, *::after {
     box-sizing: border-box;
@@ -41,13 +51,41 @@
     border-bottom: 1px solid #000;
     z-index: 5;
   }
+  #title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0 0 8px;
+  }
   #title {
-    font: 11px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    font: 11px/1 "Inter Tight", ui-sans-serif, system-ui, sans-serif;
     letter-spacing: 0.18em;
     color: #000;
-    margin: 0 0 8px;
+    margin: 0;
     text-transform: uppercase;
+    font-weight: 600;
   }
+  #header-buttons {
+    display: flex;
+    gap: 6px;
+  }
+  #header-buttons button {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #000;
+    background: #fff;
+    color: #000;
+    font: 13px/1 "Inter Tight", system-ui, sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 0;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  #header-buttons button:active { background: #000; color: #fff; }
+  #locate-me.active { background: #000; color: #fff; }
   #search {
     width: 100%;
     height: 44px;
@@ -417,11 +455,149 @@
     .chip { font-size: 12px; padding: 0 12px; }
     #title { font-size: 10px; }
   }
+
+  /* ----- About modal (Apple guideline 1.5 + 5.1.1 — visible contact + privacy link) ----- */
+  #about-modal {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 24px;
+  }
+  #about-modal[aria-hidden="false"] { display: flex; }
+  #about-card {
+    background: #fff;
+    border: 1px solid #000;
+    width: 100%;
+    max-width: 360px;
+    padding: 28px 24px 22px;
+    position: relative;
+    font-family: "Inter Tight", system-ui, sans-serif;
+  }
+  #about-card h2 {
+    font: 600 22px/1.1 "Inter Tight", system-ui, sans-serif;
+    letter-spacing: -0.01em;
+    margin: 0 0 4px;
+  }
+  #about-card .about-tag {
+    font-size: 13px;
+    color: #555;
+    margin: 0 0 18px;
+    line-height: 1.4;
+  }
+  #about-card .about-section {
+    border-top: 1px solid #ddd;
+    padding: 12px 0 4px;
+  }
+  #about-card .about-row {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: #333;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  #about-card .about-link {
+    display: block;
+    font: 600 14px/1 "Inter Tight", system-ui, sans-serif;
+    color: #000;
+    text-decoration: none;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+  }
+  #about-card .about-link:last-child { border-bottom: none; }
+  #about-card .about-link:active { color: #888; }
+  #about-card .about-fine {
+    font-size: 10px;
+    color: #888;
+    line-height: 1.5;
+    margin: 16px 0 0;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+  }
+  #about-close {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 32px; height: 32px;
+    background: transparent;
+    border: none;
+    font: 22px/1 "Inter Tight", system-ui, sans-serif;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  /* ----- Toast (geolocation feedback / generic transient status) ----- */
+  #toast {
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom) + 24px);
+    left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #000; color: #fff;
+    font: 12px/1 "Inter Tight", system-ui, sans-serif;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    border: 1px solid #000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s, transform 0.18s;
+    z-index: 60;
+    max-width: 80vw;
+    text-align: center;
+  }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ----- Favorite star button (in artist detail view) ----- */
+  .fav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid #000;
+    padding: 8px 14px;
+    font: 600 12px/1 "Inter Tight", system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: #000;
+    cursor: pointer;
+    margin: 12px 0 0;
+  }
+  .fav-btn .fav-glyph { font-size: 16px; line-height: 1; }
+  .fav-btn.is-fav { background: #000; color: #fff; }
+  .fav-btn:active { transform: scale(0.97); }
+
+  /* ----- "You are here" GPS dot on the SVG map ----- */
+  .gps-dot {
+    fill: #007aff;
+    stroke: #fff;
+    stroke-width: 3;
+  }
+  .gps-pulse {
+    fill: #007aff;
+    opacity: 0.18;
+    animation: gpsPulse 2.4s ease-out infinite;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+  @keyframes gpsPulse {
+    0%   { transform: scale(1);   opacity: 0.4; }
+    100% { transform: scale(2.6); opacity: 0; }
+  }
 </style>
 </head>
 <body>
 <header>
-  <p id="title">Brewery Art Walk · 108 artists · 35 buildings</p>
+  <div id="title-row">
+    <p id="title">Brewery Art Walk</p>
+    <div id="header-buttons">
+      <button id="locate-me" type="button" aria-label="Find me on the map" title="Find me">◎</button>
+      <button id="info-btn" type="button" aria-label="About this app" title="About">i</button>
+    </div>
+  </div>
   <input type="search" id="search" placeholder="Search artists, mediums, addresses" autocomplete="off" autocapitalize="none" spellcheck="false">
 </header>
 
@@ -449,6 +625,30 @@
   <div id="sheet-body"></div>
 </aside>
 
+<!-- Lightweight "About" modal — shown via #info-btn. Holds the legally
+     required contact + privacy URL + version info (Apple guidelines 1.5
+     and 5.1.1). -->
+<div id="about-modal" role="dialog" aria-modal="true" aria-labelledby="about-title" aria-hidden="true">
+  <div id="about-card">
+    <button id="about-close" aria-label="Close">×</button>
+    <h2 id="about-title">Brewery Art Walk</h2>
+    <p class="about-tag">LA's largest live-work art colony, on a map you can walk with.</p>
+    <div class="about-section">
+      <div class="about-row"><span>Version</span><span id="about-version">1.0.0</span></div>
+      <div class="about-row"><span>Made with</span><span>♡ in Los Angeles</span></div>
+    </div>
+    <div class="about-section">
+      <a class="about-link" href="mailto:hello@breweryartwalk.app">Support &amp; feedback</a>
+      <a class="about-link" href="https://breweryartwalk.app/privacy" target="_blank" rel="noopener">Privacy policy</a>
+      <a class="about-link" href="https://breweryartwalk.com" target="_blank" rel="noopener">Brewery Art Walk org</a>
+    </div>
+    <p class="about-fine">Artist names, bios &amp; images used with permission.<br>© 2026 Brewery Art Walk · No accounts. No ads. No tracking.</p>
+  </div>
+</div>
+
+<!-- Live status toast for geolocation feedback -->
+<div id="toast" role="status" aria-live="polite"></div>
+
 <!-- Inline data: populated by node prepare.js. Base64-encoded to keep JSON
      content from confusing the HTML parser. Falls back to fetch if empty. -->
 <script id="data-injected">
@@ -468,7 +668,160 @@
   const search = $('#search');
   const chipsBar = $('#chips');
   const mapContainer = $('#map-container');
+  const aboutModal = $('#about-modal');
+  const aboutClose = $('#about-close');
+  const infoBtn = $('#info-btn');
+  const locateBtn = $('#locate-me');
+  const toast = $('#toast');
   const NS = 'http://www.w3.org/2000/svg';
+
+  // -------- Persistent favorites (Capacitor Preferences if available, else localStorage) --------
+  const FAV_KEY = 'baw.favorites.v1';
+  const favorites = new Set();
+  async function loadFavorites() {
+    try {
+      if (window.Capacitor?.Plugins?.Preferences) {
+        const { value } = await window.Capacitor.Plugins.Preferences.get({ key: FAV_KEY });
+        if (value) JSON.parse(value).forEach(k => favorites.add(k));
+      } else {
+        const v = localStorage.getItem(FAV_KEY);
+        if (v) JSON.parse(v).forEach(k => favorites.add(k));
+      }
+    } catch (e) { /* corrupted store — start empty */ }
+  }
+  async function saveFavorites() {
+    const arr = JSON.stringify([...favorites]);
+    try {
+      if (window.Capacitor?.Plugins?.Preferences) {
+        await window.Capacitor.Plugins.Preferences.set({ key: FAV_KEY, value: arr });
+      } else {
+        localStorage.setItem(FAV_KEY, arr);
+      }
+    } catch (e) { /* quota / private mode — best-effort */ }
+  }
+  function favKey(a) {
+    return (a.name || '') + '|' + (a.address || '') + '|' + (a.unit || '');
+  }
+  function isFav(a) { return favorites.has(favKey(a)); }
+  function toggleFav(a) {
+    const k = favKey(a);
+    if (favorites.has(k)) favorites.delete(k); else favorites.add(k);
+    saveFavorites();
+  }
+
+  // -------- Toast helper --------
+  let toastTimer = null;
+  function showToast(msg, ms = 2400) {
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), ms);
+  }
+
+  // -------- About modal --------
+  function openAbout() { aboutModal.setAttribute('aria-hidden', 'false'); }
+  function closeAbout() { aboutModal.setAttribute('aria-hidden', 'true'); }
+  if (infoBtn) infoBtn.addEventListener('click', openAbout);
+  if (aboutClose) aboutClose.addEventListener('click', closeAbout);
+  if (aboutModal) aboutModal.addEventListener('click', (e) => {
+    if (e.target === aboutModal) closeAbout();
+  });
+
+  // -------- "Find me" / GPS --------
+  // Brewery Art Colony approximate corners (used to map lat/lng → SVG coords).
+  // Calibrated against satellite imagery centered around 34.0644°N, 118.2179°W.
+  // Two-point affine: NW corner (lat, lng) → SVG (0, 0); SE corner → (1019, 913).
+  const GEO = {
+    nw: { lat: 34.06600, lng: -118.21950 },
+    se: { lat: 34.06280, lng: -118.21560 },
+    radiusMeters: 800,   // "near campus" threshold
+  };
+  function latLngToSvg(lat, lng) {
+    const ux = (lng - GEO.nw.lng) / (GEO.se.lng - GEO.nw.lng);
+    const uy = (GEO.nw.lat - lat) / (GEO.nw.lat - GEO.se.lat);
+    return { x: ux * 1019, y: uy * 913, ux, uy };
+  }
+  function distanceMeters(lat1, lng1, lat2, lng2) {
+    const R = 6371000, toRad = d => d * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
+    return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  let gpsLayer = null;
+  function paintGpsDot(svgX, svgY) {
+    if (gpsLayer) gpsLayer.remove();
+    gpsLayer = document.createElementNS(NS, 'g');
+    gpsLayer.setAttribute('class', 'gps-layer');
+    const pulse = document.createElementNS(NS, 'circle');
+    pulse.setAttribute('class', 'gps-pulse');
+    pulse.setAttribute('cx', svgX); pulse.setAttribute('cy', svgY); pulse.setAttribute('r', 11);
+    const dot = document.createElementNS(NS, 'circle');
+    dot.setAttribute('class', 'gps-dot');
+    dot.setAttribute('cx', svgX); dot.setAttribute('cy', svgY); dot.setAttribute('r', 7);
+    gpsLayer.appendChild(pulse); gpsLayer.appendChild(dot);
+    svg.appendChild(gpsLayer);
+  }
+  function clearGpsDot() {
+    if (gpsLayer) { gpsLayer.remove(); gpsLayer = null; }
+  }
+  async function getCurrentPos() {
+    // Prefer Capacitor plugin (has its own permission UX) when running native.
+    if (window.Capacitor?.Plugins?.Geolocation) {
+      const r = await window.Capacitor.Plugins.Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 8000,
+      });
+      return { lat: r.coords.latitude, lng: r.coords.longitude, acc: r.coords.accuracy };
+    }
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) return reject(new Error('Geolocation unavailable'));
+      navigator.geolocation.getCurrentPosition(
+        (p) => resolve({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy }),
+        (e) => reject(e),
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    });
+  }
+  async function findMe() {
+    if (locateBtn.classList.contains('active')) {
+      // Toggle off
+      clearGpsDot();
+      locateBtn.classList.remove('active');
+      return;
+    }
+    showToast('Finding you…');
+    locateBtn.classList.add('active');
+    try {
+      const pos = await getCurrentPos();
+      const center = { lat: (GEO.nw.lat + GEO.se.lat) / 2, lng: (GEO.nw.lng + GEO.se.lng) / 2 };
+      const distM = distanceMeters(pos.lat, pos.lng, center.lat, center.lng);
+      if (distM > GEO.radiusMeters) {
+        clearGpsDot();
+        locateBtn.classList.remove('active');
+        showToast(`You're ${(distM/1000).toFixed(1)} km from the campus`, 3000);
+        return;
+      }
+      const { x, y } = latLngToSvg(pos.lat, pos.lng);
+      paintGpsDot(x, y);
+      showToast(`You're at the campus (±${Math.round(pos.acc)} m)`, 2400);
+    } catch (e) {
+      locateBtn.classList.remove('active');
+      const msg = (e && e.message) ? e.message : 'Location unavailable';
+      showToast(msg.includes('denied') || msg.includes('Permission') ? 'Location permission denied' : 'Couldn’t get your location');
+    }
+  }
+  if (locateBtn) locateBtn.addEventListener('click', findMe);
+
+  // -------- Service worker registration (offline cache) --------
+  // Skipped in Capacitor's WebView (capacitor:// scheme) since the bundle is
+  // already on-device — only useful when served over http(s).
+  if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => { /* dev — fine */ });
+    });
+  }
 
   // -------- Building positions (manual layout for greyscale site plan) --------
   // Coordinates in SVG units: 0,0 = top-left (NW), 1200,1400 = bottom-right (SE).
@@ -632,10 +985,13 @@
   });
 
   // -------- Render chips --------
+  let favOnly = false;   // when true, only show artists in the favorites set
   function renderChips() {
     chipsBar.innerHTML = '';
-    const all = makeChip('All', '', activeFilters.size === 0);
+    const all = makeChip('All', '', activeFilters.size === 0 && !favOnly);
     chipsBar.appendChild(all);
+    const favChip = makeChip('★ Favorites', '__fav__', favOnly);
+    chipsBar.appendChild(favChip);
     categories.forEach(cat => chipsBar.appendChild(makeChip(cat, cat, activeFilters.has(cat))));
   }
   function makeChip(label, cat, active) {
@@ -646,6 +1002,9 @@
     b.addEventListener('click', () => {
       if (cat === '') {
         activeFilters.clear();
+        favOnly = false;
+      } else if (cat === '__fav__') {
+        favOnly = !favOnly;
       } else {
         if (activeFilters.has(cat)) activeFilters.delete(cat);
         else activeFilters.add(cat);
@@ -793,6 +1152,7 @@
 
   // -------- Filter / search application --------
   function matchesFilter(a) {
+    if (favOnly && !isFav(a)) return false;
     return activeFilters.size === 0 || activeFilters.has(a.category);
   }
   function matchesSearch(a) {
@@ -806,7 +1166,7 @@
 
   function applyFilters() {
     let total = 0;
-    const filterActive = activeFilters.size > 0 || !!searchQuery;
+    const filterActive = activeFilters.size > 0 || favOnly || !!searchQuery;
     Object.entries(POSITIONS).forEach(([addr]) => {
       const arts = artistsByAddress[addr] || [];
       const matching = arts.filter(a => matchesFilter(a) && matchesSearch(a));
@@ -910,17 +1270,31 @@
     if (a.profile_url) links.push(`<a href="${esc(a.profile_url)}" target="_blank" rel="noopener">Profile</a>`);
     if (a.other_links) a.other_links.forEach(l => links.push(`<a href="${esc(l)}" target="_blank" rel="noopener">${esc(displayHost(l))}</a>`));
 
+    const fav = isFav(a);
     const html = `
       ${returnAddr ? `<button class="back-btn" id="back-to-list">← Back to ${esc(POSITIONS[returnAddr] ? (POSITIONS[returnAddr].short) : prettyAddr(returnAddr))}</button>` : ''}
       <div class="building-head">${esc(prettyAddr(a.address))}${a.unit ? ' · Unit ' + esc(a.unit) : ''}</div>
       <h2>${esc(a.name)}</h2>
       <div class="meta">${esc(a.category)}${a.medium ? ' · ' + esc(a.medium) : ''}</div>
+      <button class="fav-btn ${fav ? 'is-fav' : ''}" id="fav-toggle">
+        <span class="fav-glyph">${fav ? '★' : '☆'}</span>
+        <span class="fav-label">${fav ? 'Favorited' : 'Save to favorites'}</span>
+      </button>
       ${a.images && a.images.length ? `<img class="thumb" src="${esc(a.images[0])}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
       ${a.bio ? `<div class="bio">${esc(a.bio)}</div>` : ''}
       ${links.length ? '<div class="links">' + links.join('') + '</div>' : ''}`;
     openSheet(html);
     const back = sheetBody.querySelector('#back-to-list');
     if (back) back.addEventListener('click', () => showBuildingArtists(returnAddr));
+    const favBtn = sheetBody.querySelector('#fav-toggle');
+    if (favBtn) favBtn.addEventListener('click', () => {
+      toggleFav(a);
+      const nowFav = isFav(a);
+      favBtn.classList.toggle('is-fav', nowFav);
+      favBtn.querySelector('.fav-glyph').textContent = nowFav ? '★' : '☆';
+      favBtn.querySelector('.fav-label').textContent = nowFav ? 'Favorited' : 'Save to favorites';
+      showToast(nowFav ? 'Added to favorites' : 'Removed from favorites', 1600);
+    });
   }
 
   function showSearchResults(matches) {
@@ -1142,6 +1516,7 @@
     status.textContent = '';
   }
 
+  await loadFavorites();
   renderChips();
   renderMap();
   resetView();
