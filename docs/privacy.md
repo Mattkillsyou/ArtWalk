@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Privacy Policy — Brewery Art Walk
+permalink: /privacy.html
 ---
 
 # Brewery Art Walk — Privacy Policy

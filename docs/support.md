@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Support — Brewery Art Walk
+permalink: /support.html
 ---
 
 # Brewery Art Walk — Support

@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Brewery Art Walk
+permalink: /
 ---
 
 # Brewery Art Walk
