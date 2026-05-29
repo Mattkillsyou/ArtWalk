@@ -62,7 +62,8 @@ function makeIcon(size) {
 console.log('Generating neutral placeholder app icons…');
 for (const t of targets) {
   const img = makeIcon(t.size);
-  const buf = await img.getBuffer(JimpMime.png);
+  // colorType 2 = RGB, no alpha channel — App Store icons must not be transparent.
+  const buf = await img.getBuffer(JimpMime.png, { colorType: 2 });
   const dest = join(t.dir, t.name);
   writeFileSync(dest, buf);
   console.log(`  ${t.size}px → ${dest.replace(__dirname + '/', '')}  (${Math.round(buf.length / 1024)} KB)`);

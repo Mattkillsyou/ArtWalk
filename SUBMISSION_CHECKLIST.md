@@ -1,0 +1,79 @@
+# Submission Checklist — Lincoln Heights Studio Map
+
+Independent, unofficial app. Generated at the end of the autonomous rebrand run.
+See `CHANGELOG_REBRAND.md` for the full decision log and `AUDIT.md` for findings.
+
+## ✅ Done in this repo (automated)
+
+- [x] **Bugs fixed** — all 108 artists reachable on the map (address→shape resolver);
+  calibration verified by render; stale comments fixed.
+- [x] **De-branded** — name `Lincoln Heights Studio Map`, bundle id
+  `com.lincolnheights.studiomap`, neutral icon (no wordmark / no map trace),
+  nominative reference + not-affiliated disclaimer in About + docs.
+- [x] **Content stripped to facts** — 197 photos, 34 bios, official map + traces, and
+  41 org profile-links removed (archived to gitignored `_archive/`); photos replaced
+  with generated initials tiles. `www/` ships only HTML/SW/manifest/fonts/icons.
+- [x] **Privacy** — `PrivacyInfo.xcprivacy` present (location=App Functionality, no
+  tracking; UserDefaults `CA92.1`, file-timestamp `C617.1`); honest
+  `NSLocationWhenInUseUsageDescription` in `Info.plist`; privacy/support docs corrected.
+- [x] **Native project rebuilt** — the previously-broken Xcode project was
+  regenerated; **`xcodebuild` simulator build SUCCEEDS** (iPhone 17 Pro Max, iOS 26.4
+  SDK). App runs and renders correctly (verified).
+- [x] **Icons** — neutral, alpha-free PNGs at all sizes incl. the 1024 App Store icon.
+- [x] **Screenshots** — 4 captured at 1320×2868 (6.9") in `store/screenshots/`:
+  `01-map-home`, `02-building-list`, `03-artist-detail`, `04-filter-active`.
+- [x] **Store copy + review notes** — `store/metadata.md` (name/subtitle/promo/
+  description/keywords all within limits) and `store/review-notes.md` (proactive
+  5.2 / 4.2 / privacy notes).
+- [x] **Toolchain meets Apple's Apr-28-2026 rule** — built with Xcode 26.5 / iOS 26 SDK.
+
+## Left to do (human-only — Claude Code cannot do these)
+
+Ordered. Items marked (GUI)/(WEB)/(ACCOUNT) are off-CLI.
+
+1. **(ACCOUNT)** Apple Developer Program enrollment ($99/yr); Apple ID sign-in + 2FA
+   in Xcode. (Team `RPV54B2NK5` was used on a prior archive — confirm it's still valid.)
+2. **(WEB)** Enable **GitHub Pages** (repo → Settings → Pages → branch `main`,
+   folder `/docs`) so the privacy/support URLs resolve:
+   `https://mattkillsyou.github.io/ArtWalk/privacy.html` and `/support.html`.
+3. **(GUI)** In Xcode (`ios/App/App.xcworkspace`):
+   - Signing & Capabilities → select Team; confirm bundle id
+     `com.lincolnheights.studiomap`; let automatic signing provision.
+   - **Add `PrivacyInfo.xcprivacy` to the App target** — it sits in `ios/App/App/` but
+     is **not yet referenced by the project**, so it won't ship until you drag it into
+     the App target (check "App" in Target Membership). Required because the app uses
+     UserDefaults (a required-reason API).
+   - Set Version `1.0`, Build `1`.
+4. **(GUI/CLI)** Archive for device: Product → Archive (or
+   `xcodebuild -workspace ios/App/App.xcworkspace -scheme App archive` once signing is
+   set). Then Distribute → App Store Connect → Upload. (CLI IPA upload via the App
+   Store Connect API is possible — creds are in the gitignored `.env.testflight` — but
+   only after a signed archive exists.)
+5. **(WEB)** App Store Connect → create the app entry (bundle id above, name
+   "Lincoln Heights Studio Map", iOS). Paste copy from `store/metadata.md`; upload the
+   4 screenshots from `store/screenshots/`; set category Travel/Reference, age 4+,
+   price Free.
+6. **(WEB)** Fill the **App Privacy** questionnaire per `store/metadata.md`
+   (Track: none; Linked: none; Not linked: Precise Location → App Functionality).
+7. **(WEB)** Add the **App Review notes** from `store/review-notes.md`.
+8. **(WEB)** TestFlight: install on a device, walk the campus, sanity-check the GPS dot.
+9. **(WEB)** **Submit for Review.**
+
+## Residual risk (be honest)
+
+- **Guideline 5.2.** De-brand + facts-only substantially lowers exposure (no protected
+  imagery, copied text, or trademarked name/icon), and the review notes pre-empt the
+  question — but an app that is clearly a companion to one specific named event can
+  still draw a 5.2 inquiry; Apple has discretion. The only thing that takes this near
+  zero is written content permission from the org/artists (owner has declined to pursue).
+- The geolocation dot is an approximate (north-up linear) projection — fine for
+  orientation, not survey-accurate. Noted in `AUDIT.md`.
+
+## Notes / decisions (see CHANGELOG_REBRAND.md)
+
+- Support contact routes to GitHub issues (no app email exists) — add a real email in
+  `docs/support.md` / `docs/privacy.md` if preferred.
+- `1984 N. Main` (1 artist, no footprint on our schematic) is aliased to the adjacent
+  `1980 N. Main` block; `2024 N. Main` (0 artists) is intentionally undrawn.
+- Optional: rename the GitHub repo off `ArtWalk` to fully neutralize the URL path.
+- The old broken iOS project is preserved at `_archive/ios-broken/` (gitignored).

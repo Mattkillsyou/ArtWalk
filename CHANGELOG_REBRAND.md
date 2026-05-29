@@ -225,4 +225,62 @@ SVG schematic (confirmed by the Phase 2 render).
 
 ## Phase 5 — App Store prep
 
-_(pending)_
+**Verified Apple requirements (this run):** new submissions need the **iOS 26 SDK /
+Xcode 26** (in force since Apr 28 2026) — we have Xcode 26.5 / iOS 26.4 SDK.
+Screenshots captured at the simulator's **native 6.9" resolution (1320×2868)**, an
+accepted size, sidestepping spec ambiguity.
+
+**Native project regenerated (fixes the Audit 1D blocker).** Moved the broken
+`ios/` (missing `project.pbxproj` + `Info.plist`) to `_archive/ios-broken/` and ran
+`npx cap add ios`, which regenerated a clean project from the rebranded
+`capacitor.config.json` → bundle id `com.lincolnheights.studiomap`, display name
+"Lincoln Heights Studio Map". CocoaPods 1.16.2 `pod install` ran.
+
+**Privacy / permission strings.** Added an honest `NSLocationWhenInUseUsageDescription`
+to the new `Info.plist` and copied `PrivacyInfo.xcprivacy` into `ios/App/App/`.
+**Caveat:** the manifest is **not yet referenced by the Xcode project**, so it won't
+ship until dragged into the App target — flagged as a human GUI step in
+`SUBMISSION_CHECKLIST.md`.
+
+**Build + run verified.** `xcodebuild … -destination 'iPhone 17 Pro Max'
+CODE_SIGNING_ALLOWED=NO build` → **BUILD SUCCEEDED**. Installed + launched on the
+simulator and captured 4 real screenshots to `store/screenshots/`:
+- `01-map-home` — header "LINCOLN HEIGHTS STUDIO MAP", full schematic, "Showing 108 of 108 artists"
+- `02-building-list` — "620 MOULTON · 8 artists" (facts only, no photos/bios)
+- `03-artist-detail` — Joey Forsyte + the generated initials placeholder tile (no photo)
+- `04-filter-active` — "Showing 25 of 108 artists" with non-matching buildings dimmed
+(An intermittent simulator iCloud nag was cleared with `simctl erase` before recapture.
+Interactive states were driven by injecting a DOM-click script into the *built bundle*
+only — source untouched.)
+
+**Icons hardened.** Regenerated all PNGs **without an alpha channel** (`colorType:2`)
+since App Store icons can't be transparent; installed the neutral 1024 icon as the
+AppIcon. Fixed the broken `ios:icons` npm script (`npx capacitor-assets` → 404; now
+runs the local generator + copies the master).
+
+**Docs written:** `store/metadata.md` (name 26/30, subtitle 22/30, promo 158/170,
+keywords 97/100, description, category, App-Privacy answers), `store/review-notes.md`
+(proactive 5.2/4.2/privacy notes), and `SUBMISSION_CHECKLIST.md` (done vs. the ordered
+human-only steps + residual 5.2 risk).
+
+**Committed the regenerated `ios/` project** so the working build, `Info.plist`, and
+neutral AppIcon persist (Pods/build/public stay gitignored).
+
+**Could not do (human gates):** Apple ID/2FA, Xcode signing/Team + adding the privacy
+manifest to the target, App Store Connect entry/privacy questionnaire/metadata+screenshot
+upload, and Submit for Review. A device **archive** needs signing, so it's deferred to
+the human (a CLI IPA upload via the ASC API in `.env.testflight` is possible only after
+a signed archive exists).
+
+---
+
+## Summary of decisions made on the owner's behalf
+
+- **App name:** Lincoln Heights Studio Map (alts: Avenue 21 Studio Guide, Moulton
+  Studios Map). **Bundle id:** com.lincolnheights.studiomap.
+- **Archived (not deleted)** all unlicensed assets to gitignored `_archive/`.
+- **Facts-only data:** removed bios, photos, and org profile-links; kept directory facts
+  + genuine artist website/IG links.
+- **`1984 N. Main`** aliased to `1980 N. Main`; **`2024 N. Main`** left undrawn.
+- **Support** routed to GitHub issues (no app email); **legal-conservative** throughout
+  (assumed zero license).
