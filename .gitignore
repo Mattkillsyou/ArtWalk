@@ -51,6 +51,7 @@ capacitor.config.json.bak
 .env
 .env.local
 .env.*.local
+.env.testflight
 *.pem
 *.p12
 *.mobileprovision
