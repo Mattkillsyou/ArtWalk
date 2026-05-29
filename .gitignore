@@ -60,6 +60,9 @@ capacitor.config.json.bak
 wetransfer_*.zip
 *.tar.gz
 
-# Throwaway preview server (sandbox cwd workaround)
+# Archived unlicensed assets — kept on disk, must never ship or be committed
+_archive/
+
+# Throwaway preview server / audit render artifacts (sandbox cwd workaround)
 _preview-server.js
 _audit/
