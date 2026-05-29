@@ -2,6 +2,12 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "Static (node)",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["/Users/mbrown/Desktop/Art Walk/_preview-server.js"],
+      "port": 8000
+    },
+    {
       "name": "Web preview (npx serve)",
       "runtimeExecutable": "npx",
       "runtimeArgs": ["serve", "-l", "8000", "."],
@@ -9,7 +15,7 @@
     },
     {
       "name": "Web preview (Python http.server)",
-      "runtimeExecutable": "python",
+      "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8000"],
       "port": 8000
     },

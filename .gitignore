@@ -59,3 +59,7 @@ capacitor.config.json.bak
 # Large transfer artifacts (do not commit)
 wetransfer_*.zip
 *.tar.gz
+
+# Throwaway preview server (sandbox cwd workaround)
+_preview-server.js
+_audit/

@@ -835,12 +835,12 @@
   }
 
   // -------- Building positions (manual layout for greyscale site plan) --------
-  // Coordinates in SVG units: 0,0 = top-left (NW), 1200,1400 = bottom-right (SE).
+  // Coordinates in SVG units: 0,0 = top-left (NW), 1019,913 = bottom-right (SE).
   // Layout cross-checked against (a) the official Brewery Artwalk Spring 2026
   // printed map and (b) Google/OSM satellite imagery of the campus at
   // ~34.067°N, -118.217°W. The campus is a wedge: Moulton Ave runs NW→SE on
   // the west, with the SOUTH end further west than the north end. So west-side
-  // building x-coordinates DECREASE going south. viewBox is 1200×1400.
+  // building x-coordinates DECREASE going south. viewBox is 1019×913.
   //
   //   N. Main Street : top horizontal strip,  y=0..85
   //   Moulton Ave    : diagonal polygon,      east edge x=170 (top) → x=95 (bottom)
@@ -930,6 +930,41 @@
     "113 Moulton Avenue": { x: 629, y: 379, w: 30, h: 18, short: "113", parts: [{"type":"rect","x":629,"y":379,"w":30,"h":18}] },
   };
 
+  // Some artists file under a bare street address (e.g. "618 Moulton Avenue")
+  // while the map splits that building into sub-unit shapes ("618 Moulton
+  // Avenue #A".."#F") or merges a numbered range ("630-638 Moulton Avenue").
+  // Resolve an artist's address to the map shape that should represent it, so
+  // every artist stays tappable on the map and zoomable from search. Exact
+  // matches pass through unchanged.
+  const POS_ALIAS = {
+    // No own footprint in the V1 schematic — shown on the adjacent block.
+    '1984 N. Main Street': '1980 N. Main Street',
+  };
+  const POS_KEYS = Object.keys(POSITIONS);
+  const _posKeyCache = {};
+  function resolvePosKey(addr) {
+    if (addr == null) return null;
+    if (addr in _posKeyCache) return _posKeyCache[addr];
+    let key = null;
+    if (POSITIONS[addr]) key = addr;                                   // exact
+    else if (POS_ALIAS[addr] && POSITIONS[POS_ALIAS[addr]]) key = POS_ALIAS[addr];
+    else {
+      key = POS_KEYS.find(k => k.startsWith(addr + ' #')) || null;     // first sub-unit
+      if (!key) {                                                      // numbered range
+        const m = addr.match(/^(\d+)\s+(.+)$/);
+        if (m) {
+          const num = +m[1], street = m[2];
+          key = POS_KEYS.find(k => {
+            const r = k.match(/^(\d+)-(\d+)\s+(.+)$/);
+            return r && r[3] === street && num >= +r[1] && num <= +r[2];
+          }) || null;
+        }
+      }
+    }
+    _posKeyCache[addr] = key;
+    return key;
+  }
+
   // -------- ViewBox / zoom --------
   const NATURAL = { w: 1019, h: 913 };
   const VIEW = { x: 0, y: 0, w: NATURAL.w, h: NATURAL.h };
@@ -992,7 +1027,8 @@
   categories = [...new Set(artists.map(x => x.category).filter(Boolean))].sort();
   artistsByAddress = {};
   artists.forEach(x => {
-    (artistsByAddress[x.address] = artistsByAddress[x.address] || []).push(x);
+    const key = resolvePosKey(x.address) || x.address;
+    (artistsByAddress[key] = artistsByAddress[key] || []).push(x);
   });
 
   // -------- Render chips --------
@@ -1326,10 +1362,11 @@
     sheetBody.querySelectorAll('button[data-artist-idx]').forEach(btn => {
       btn.addEventListener('click', () => {
         const a = artists[parseInt(btn.dataset.artistIdx, 10)];
-        zoomTo(a.address);
-        selectedAddress = a.address;
-        highlightBuilding(a.address);
-        showArtistDetail(a, a.address);
+        const key = resolvePosKey(a.address) || a.address;
+        zoomTo(key);
+        selectedAddress = key;
+        highlightBuilding(key);
+        showArtistDetail(a, key);
       });
     });
   }
