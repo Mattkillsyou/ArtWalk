@@ -176,7 +176,50 @@ intended nominative disclaimers. `node prepare.js` re-inlined + mirrored to `www
 
 ## Phase 4 — Content rights (strip & rebuild on facts)
 
-_(pending)_
+Removed everything copyrightable; rebuilt the directory on facts only. Nothing was
+hard-deleted — tracked assets were `git rm --cached` (untracked, kept in history)
+and physically moved to the gitignored **`_archive/`**, so the action is reversible
+and nothing ships.
+
+**Archived (moved to `_archive/`, untracked):**
+- **197 artist photos** (`img/artists/`) — third-party © .
+- Official map + derivatives: `Map.jpg`, `bw map.jpg`, `map_greyscale.jpg`,
+  `image00001.jpeg`, `IMG_1075 copy.png`, `IMG_1077 copy.png`.
+- Map traces / OCR: `template.svg`, `template-shapes.json`, `ocr.json`.
+- Map-tracing dev tools: `capture.html`, `numbered.html`.
+- `wetransfer_*.zip` (265 MB raw source; was already gitignored).
+
+**`artists.json` blanked (facts kept):** `bio` → null (34 removed), `images` → []
+(41 lists, 202 refs removed), `profile_url` → null (41 `breweryartwalk.com`
+portfolio deep-links removed). **Kept:** name, address, unit, category +
+`category_original`, medium, and genuine public `website` (27) / `instagram` (5) /
+`other_links` (19) — verified 0 of those are org-domain. 0 residual
+`breweryartwalk`/`img/artists` strings in the file.
+
+**Photos → generated placeholder.** Added `placeholderTile(a)` — a
+category-colored rounded tile with the artist's initials (our own original SVG,
+`esc()`-safe), replacing the old `<img>`. Verified the design renders cleanly across
+all 11 categories.
+
+**Map images severed from the build:**
+- `prepare.js`: dropped `bw map.jpg` / `map_greyscale.jpg` and `img/artists` from
+  the copy lists; **now wipes `www/` before each rebuild** so removed assets can't
+  linger in the Capacitor bundle (was a real leak — stale photos survived in `www/`).
+- `sw.js`: removed `bw map.jpg` / `map_greyscale.jpg` from the precache SHELL and
+  deleted the dead `breweryartwalk.com` remote-image branch.
+- `index.html`: removed the vestigial `OVERLAY`/overlay-mode code + CSS (it named the
+  map images and was already non-functional — no `<image>` was ever injected).
+
+**Docs / permission claims fixed:** rewrote `docs/privacy.md` (dropped "images loaded
+from breweryartwalk.com" and "used with permission"; now states facts-only, no remote
+content, with the disclaimer) and `docs/support.md` (dropped "built with permission"
+and the event-promo link; contact via GitHub issues, since no app email exists —
+flagged for the owner). The in-app About claim was already fixed in Phase 3.
+
+**Verification:** `node prepare.js` → `www/` contains only HTML/SW/manifest/fonts/icons
+(no photos, no maps); `index.html` has no `a.images`/`img/artists`/map/OVERLAY refs;
+app script + `sw.js` parse; `www/index.html` matches source. The map remains our own
+SVG schematic (confirmed by the Phase 2 render).
 
 ---
 

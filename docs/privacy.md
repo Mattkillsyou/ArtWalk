@@ -1,25 +1,25 @@
 ---
 layout: default
-title: Privacy Policy — Brewery Art Walk
+title: Privacy Policy — Lincoln Heights Studio Map
 permalink: /privacy.html
 ---
 
-# Brewery Art Walk — Privacy Policy
+# Lincoln Heights Studio Map — Privacy Policy
 
 _Last updated: May 2026_
 
-Brewery Art Walk respects your privacy. This is a short policy because
-the app collects very little data.
+Lincoln Heights Studio Map respects your privacy. This is a short policy
+because the app collects very little data.
 
 ## What we collect
 
 * **Your location** — only when you tap "find me on the map." Your
-  location is used solely to display a blue dot showing your position
-  on the campus map. It is **never transmitted off your device**, never
-  stored, and never shared with us or any third party.
-* **Your favorites** — when you tap the star icon on an artist, we
-  store that preference locally on your device using iOS's standard
-  preferences storage. We never see this data.
+  location is used solely to display a dot showing your position on the
+  studio map. It is **never transmitted off your device**, never stored,
+  and never shared with us or any third party.
+* **Your favorites** — when you tap the star icon on an artist, we store
+  that preference locally on your device using iOS's standard preferences
+  storage. We never see this data.
 
 ## What we do NOT collect
 
@@ -33,18 +33,21 @@ the app collects very little data.
 
 ## Network requests
 
-The app loads artist images from `breweryartwalk.com`. Your IP address
-is visible to that server like any normal web request. We do not log
-or analyze this access. Once an image has been viewed, it's cached on
-your device so the request doesn't need to repeat.
+The app's map, directory, and all of its data are bundled inside the app.
+It does not load remote images or other third-party content, and it works
+fully offline. In normal use the app makes no network requests at all.
 
-If you use the app entirely offline (e.g. while walking the campus
-with no signal), no network requests are made at all.
+## Content
 
-## Third-party content
+All studio and artist information in the app is **factual directory data**
+drawn from publicly available sources — artist names, public studio
+addresses and unit numbers, medium/category, and public website or social
+links. The app contains **no third-party photographs and no copied
+biographies**. The campus map is our own original schematic.
 
-Artist names, bios, and images are used with permission from the
-Brewery Art Walk organization (breweryartwalk.com).
+This is an independent, unofficial guide. It is not affiliated with,
+endorsed by, sponsored by, or authorized by the Brewery Art Walk, the
+Brewery Arts Complex, or any artist listed.
 
 ## Children's privacy
 
@@ -58,4 +61,5 @@ version in the app's "About" screen.
 
 ## Contact
 
-Questions? Email **hello@breweryartwalk.app**.
+Questions or corrections? Please open an issue at
+[github.com/Mattkillsyou/ArtWalk/issues](https://github.com/Mattkillsyou/ArtWalk/issues).
