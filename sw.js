@@ -1,4 +1,4 @@
-// Brewery Art Walk service worker.
+// Lincoln Heights Studio Map service worker.
 // Strategy:
 //  - The app shell (index.html + map images) is precached on install so the
 //    map loads with no signal once the user has opened the app once.
@@ -7,7 +7,7 @@
 //    available offline.
 //  - Everything else falls through to the network.
 
-const CACHE = 'baw-shell-v1';
+const CACHE = 'studiomap-shell-v1';
 const SHELL = [
   './',
   './index.html',

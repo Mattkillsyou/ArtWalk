@@ -132,7 +132,45 @@ overlay/map-image removal is folded into Phase 4 with the map-asset strip._
 
 ## Phase 3 — De-brand (unofficial, unbranded)
 
-_(pending)_
+**Name (my pick):** **Lincoln Heights Studio Map**. Purely geographic (the LA
+neighborhood) + functional, 26 chars, contains no protected mark, avoids "Walk".
+- Alternates considered: *Avenue 21 Studio Guide*, *Moulton Studios Map* (both
+  reference public street names; rejected as less clear/broad than the neighborhood).
+- **Bundle id:** `com.breweryartwalk.app` → **`com.lincolnheights.studiomap`**
+  (root `capacitor.config.json`; the Xcode target id is a human GUI step). Internal
+  slug `baw` → `studiomap` (SW cache `studiomap-shell-v1`, `FAV_KEY`
+  `studiomap.favorites.v1` — safe to rename; app never shipped).
+
+**Applied the name everywhere it shipped** (per Audit 1B): `index.html` `<title>`,
+header, `apple-mobile-web-app-title`, description/og meta, svg aria-label, About
+heading/tagline; `manifest.webmanifest`; `package.json` name/description; `sw.js`
+header + cache; `PrivacyInfo.xcprivacy` comment; `docs/index.md` + `_config.yml`;
+`README.md`; `MAC_SETUP.md` bundle id; rewrote `APP_STORE_PREP.md` to the unofficial
+strategy. Also neutralized two branded code comments.
+
+**Nominative reference + disclaimer.** Replaced the About panel's false
+"images used with permission · © Brewery Art Walk" line and dropped the
+`breweryartwalk.com` "org" link. About now carries one plain-text factual line
+(names the neighborhood) plus the verbatim disclaimer: *"This is an independent,
+unofficial guide. It is not affiliated with, endorsed by, sponsored by, or
+authorized by the Brewery Art Walk, the Brewery Arts Complex, or any artist listed.
+All studio and artist information is drawn from publicly available sources."* No
+logo, wordmark, colors, or "official". Same disclaimer added to `docs/index.md` +
+`README.md`.
+
+**Icon (both problems).** The old `app-icon-1024.svg`/`favicon.svg` embedded a
+footprint "traced from the actual map" **and** a "BAW" / "BREWERY ART WALK"
+wordmark; `generate-placeholder-icons.mjs` stamped "BAW". Replaced all three with a
+**neutral abstract mark** — four white "studio" blocks + a blue "you-are-here" dot
+on a dark ground (generic geometry, no text, no real coordinates) — and regenerated
+every PNG size (`icons/*.png`, `ios-icon-stash/icon-1024.png`). Verified visually.
+
+**Deferred to Phase 4** (content, not name): the `sw.js` `breweryartwalk.com`
+remote-image branch + map-image precache, and `docs/privacy.md` / `docs/support.md`
+"with permission" claims.
+
+Sweep of the shipping surface confirms the only remaining "Brewery" mentions are the
+intended nominative disclaimers. `node prepare.js` re-inlined + mirrored to `www/`.
 
 ---
 

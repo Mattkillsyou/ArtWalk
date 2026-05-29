@@ -1,8 +1,8 @@
 {
-  "name": "artwalk",
+  "name": "lincoln-heights-studio-map",
   "version": "1.0.0",
   "private": true,
-  "description": "iOS app for the Brewery Art Walk — interactive campus map of the LA Brewery Art Colony.",
+  "description": "Independent, unofficial iOS map of artist studios in the Lincoln Heights arts district of Los Angeles.",
   "scripts": {
     "build": "node prepare.js",
     "postinstall": "node prepare.js",

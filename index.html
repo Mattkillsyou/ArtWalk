@@ -8,16 +8,16 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Brewery">
+<meta name="apple-mobile-web-app-title" content="Studio Map">
 <meta name="format-detection" content="telephone=no">
-<meta name="description" content="The official-style guide to the Brewery, the largest live-work art colony in the world. 100+ artist studios on a campus map you can walk with.">
-<meta property="og:title" content="Brewery Art Walk">
-<meta property="og:description" content="100+ artist studios across the historic LA Brewery campus, on a map you can walk with.">
+<meta name="description" content="An independent, unofficial map of 100+ artist studios in the Lincoln Heights arts district of Los Angeles. Search, filter, and find studios on a walkable campus map.">
+<meta property="og:title" content="Lincoln Heights Studio Map">
+<meta property="og:description" content="An independent, unofficial map of 100+ artist studios in the Lincoln Heights arts district of Los Angeles.">
 <meta property="og:type" content="website">
 <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 <link rel="manifest" href="./manifest.webmanifest">
-<title>Brewery Art Walk</title>
+<title>Lincoln Heights Studio Map</title>
 <style>
   /* Self-hosted Inter Tight (variable font, latin subset) — kills the
      external CDN dependency so the app works fully offline and doesn't
@@ -603,7 +603,7 @@
 <body>
 <header>
   <div id="title-row">
-    <p id="title">Brewery Art Walk</p>
+    <p id="title">Lincoln Heights Studio Map</p>
     <div id="header-buttons">
       <button id="locate-me" type="button" aria-label="Find me on the map" title="Find me">◎</button>
       <button id="info-btn" type="button" aria-label="About this app" title="About">i</button>
@@ -615,7 +615,7 @@
 <nav id="chips" aria-label="Filter by category"></nav>
 
 <main id="map-container">
-  <svg id="map" viewBox="0 0 1019 913" role="img" aria-label="Brewery Art Colony campus map" preserveAspectRatio="xMidYMid meet">
+  <svg id="map" viewBox="0 0 1019 913" role="img" aria-label="Studio campus map" preserveAspectRatio="xMidYMid meet">
     <defs>
       <pattern id="diag" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
         <line x1="0" y1="0" x2="0" y2="6" stroke="#ddd" stroke-width="1"/>
@@ -642,8 +642,8 @@
 <div id="about-modal" role="dialog" aria-modal="true" aria-labelledby="about-title" aria-hidden="true">
   <div id="about-card">
     <button id="about-close" aria-label="Close">×</button>
-    <h2 id="about-title">Brewery Art Walk</h2>
-    <p class="about-tag">LA's largest live-work art colony, on a map you can walk with.</p>
+    <h2 id="about-title">Lincoln Heights Studio Map</h2>
+    <p class="about-tag">An independent guide to artist studios in the Lincoln Heights arts district of Los Angeles.</p>
     <div class="about-section">
       <div class="about-row"><span>Version</span><span id="about-version">1.0.0</span></div>
       <div class="about-row"><span>Made with</span><span>♡ in Los Angeles</span></div>
@@ -651,9 +651,8 @@
     <div class="about-section">
       <a class="about-link" href="https://mattkillsyou.github.io/ArtWalk/support/" target="_blank" rel="noopener">Support &amp; feedback</a>
       <a class="about-link" href="https://mattkillsyou.github.io/ArtWalk/privacy/" target="_blank" rel="noopener">Privacy policy</a>
-      <a class="about-link" href="https://breweryartwalk.com" target="_blank" rel="noopener">Brewery Art Walk org</a>
     </div>
-    <p class="about-fine">Artist names, bios &amp; images used with permission.<br>© 2026 Brewery Art Walk · No accounts. No ads. No tracking.</p>
+    <p class="about-fine">This is an independent, unofficial guide. It is not affiliated with, endorsed by, sponsored by, or authorized by the Brewery Art Walk, the Brewery Arts Complex, or any artist listed. All studio and artist information is drawn from publicly available sources.<br>No accounts. No ads. No tracking.</p>
   </div>
 </div>
 
@@ -687,7 +686,7 @@
   const NS = 'http://www.w3.org/2000/svg';
 
   // -------- Persistent favorites (Capacitor Preferences if available, else localStorage) --------
-  const FAV_KEY = 'baw.favorites.v1';
+  const FAV_KEY = 'studiomap.favorites.v1';
   const favorites = new Set();
   async function loadFavorites() {
     try {
@@ -740,7 +739,7 @@
   });
 
   // -------- "Find me" / GPS --------
-  // Brewery Art Colony approximate corners (used to map lat/lng → SVG coords).
+  // Studio campus approximate corners (used to map lat/lng → SVG coords).
   // Calibrated against satellite imagery centered around 34.0644°N, 118.2179°W.
   // Two-point affine: NW corner (lat, lng) → SVG (0, 0); SE corner → (1019, 913).
   const GEO = {
@@ -836,8 +835,7 @@
 
   // -------- Building positions (manual layout for greyscale site plan) --------
   // Coordinates in SVG units: 0,0 = top-left (NW), 1019,913 = bottom-right (SE).
-  // Layout cross-checked against (a) the official Brewery Artwalk Spring 2026
-  // printed map and (b) Google/OSM satellite imagery of the campus at
+  // Layout cross-checked against public satellite/OSM imagery of the campus at
   // ~34.067°N, -118.217°W. The campus is a wedge: Moulton Ave runs NW→SE on
   // the west, with the SOUTH end further west than the north end. So west-side
   // building x-coordinates DECREASE going south. viewBox is 1019×913.

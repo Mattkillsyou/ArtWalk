@@ -142,7 +142,7 @@ If the build fails with code-signing errors on the simulator, that's unusual —
 2. In Xcode, select your iPhone from the device dropdown.
 3. Open **Project navigator → App → Signing & Capabilities**:
    - **Team**: pick your personal team (the Apple ID associated with your Apple Developer account).
-   - **Bundle Identifier**: confirm it's `com.breweryartwalk.app` (must be unique on the App Store; we can change later).
+   - **Bundle Identifier**: set it to `com.lincolnheights.studiomap` (must be unique on the App Store; match `capacitor.config.json`).
 4. On the iPhone: Settings → General → VPN & Device Management → trust your developer certificate the first time.
 5. Press **▶** in Xcode.
 
