@@ -1,4 +1,4 @@
-# Lincoln Heights Studio Map — App Store Prep
+# ArtWalk LA — App Store Prep
 
 > Prep notes for shipping V1 as an **independent, unofficial** app.
 > Final submission-ready metadata, review notes, and the human-only checklist
@@ -59,7 +59,7 @@ is **abandoned** — it was the thing most likely to get the app rejected.
 ## Store copy drafts (de-branded)
 
 ```
-Name (≤30):      Lincoln Heights Studio Map        (26)
+Name (≤30):      ArtWalk LA        (26)
 Subtitle (≤30):  Find LA artist studios            (21)
 Promo (≤170):    An independent, unofficial map of 100+ artist studios in the
                  Lincoln Heights arts district of Los Angeles. Search, filter,
@@ -69,7 +69,7 @@ Promo (≤170):    An independent, unofficial map of 100+ artist studios in the
 ### Description (≤4000)
 
 ```
-Lincoln Heights Studio Map is an independent, unofficial guide to artist studios
+ArtWalk LA is an independent, unofficial guide to artist studios
 in the Lincoln Heights arts district of Los Angeles — a dense cluster of working
 studios in a historic former brewery complex.
 
@@ -104,7 +104,7 @@ discoverability — keywords stay geographic/functional._
 
 ```xml
 <key>NSLocationWhenInUseUsageDescription</key>
-<string>Lincoln Heights Studio Map uses your location only to show your position on the studio map. Your location stays on your device and is never sent anywhere.</string>
+<string>ArtWalk LA uses your location only to show your position on the studio map. Your location stays on your device and is never sent anywhere.</string>
 ```
 
 ---
@@ -115,7 +115,7 @@ discoverability — keywords stay geographic/functional._
 |---|---|---|
 | 1.5 | Easy contact info | About panel + support URL |
 | 2.3.1 | Accurate, honest metadata | Copy above is honest, unofficial framing |
-| 2.3.7 | Unique app name ≤30 | "Lincoln Heights Studio Map" (26) |
+| 2.3.7 | Unique app name ≤30 | "ArtWalk LA" (26) |
 | 4.2 | More than a web wrapper | Geolocation + offline + favorites |
 | 5.1.1 | Privacy policy in app + ASC | About panel + `docs/privacy.md` |
 | 5.1.5 | Clear location purpose string | `NSLocationWhenInUseUsageDescription` above |

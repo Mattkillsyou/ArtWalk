@@ -1,4 +1,4 @@
-# Lincoln Heights Studio Map
+# ArtWalk LA
 
 An **independent, unofficial** iOS app: an interactive map of artist studios in
 the Lincoln Heights arts district of Los Angeles — 108 artists across the campus,

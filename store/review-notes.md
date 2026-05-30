@@ -1,4 +1,4 @@
-# App Review Notes — Lincoln Heights Studio Map
+# App Review Notes — ArtWalk LA
 
 Paste this into App Store Connect → App Review Information → Notes.
 

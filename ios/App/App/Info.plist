@@ -5,9 +5,9 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>Lincoln Heights Studio Map</string>
+        <string>ArtWalk LA</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Lincoln Heights Studio Map uses your location only to show your position on the studio map. Your location stays on your device and is never sent anywhere.</string>
+	<string>ArtWalk LA uses your location only to show your position on the studio map. Your location stays on your device and is never sent anywhere.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

@@ -1,10 +1,10 @@
-# App Store metadata — Lincoln Heights Studio Map (final, honest)
+# App Store metadata — ArtWalk LA (final, honest)
 
 Character limits are Apple's; counts shown are current.
 
 | Field | Limit | Value | Count |
 |---|---|---|---|
-| Name | 30 | `Lincoln Heights Studio Map` | 26 |
+| Name | 30 | `ArtWalk LA` | 10 |
 | Subtitle | 30 | `Find LA artist studios` | 22 |
 | Promotional text | 170 | see below | 156 |
 
@@ -15,7 +15,7 @@ An independent, unofficial map of 100+ artist studios in the Lincoln Heights art
 
 **Description (≤4000):**
 ```
-Lincoln Heights Studio Map is an independent, unofficial guide to artist studios
+ArtWalk LA is an independent, unofficial guide to artist studios
 in the Lincoln Heights arts district of Los Angeles — a dense cluster of working
 studios in a historic former brewery complex.
 

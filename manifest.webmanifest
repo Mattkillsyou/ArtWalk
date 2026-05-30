@@ -1,6 +1,6 @@
 {
-  "name": "Lincoln Heights Studio Map",
-  "short_name": "Studio Map",
+  "name": "ArtWalk LA",
+  "short_name": "ArtWalk LA",
   "description": "An independent, unofficial map of 100+ artist studios in the Lincoln Heights arts district of Los Angeles.",
   "start_url": "./index.html",
   "scope": "./",

@@ -1,14 +1,14 @@
 ---
 layout: default
-title: Privacy Policy — Lincoln Heights Studio Map
+title: Privacy Policy — ArtWalk LA
 permalink: /privacy.html
 ---
 
-# Lincoln Heights Studio Map — Privacy Policy
+# ArtWalk LA — Privacy Policy
 
 _Last updated: May 2026_
 
-Lincoln Heights Studio Map respects your privacy. This is a short policy
+ArtWalk LA respects your privacy. This is a short policy
 because the app collects very little data.
 
 ## What we collect

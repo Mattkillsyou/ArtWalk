@@ -1,4 +1,4 @@
-# Submission Checklist — Lincoln Heights Studio Map
+# Submission Checklist — ArtWalk LA
 
 Independent, unofficial app. Generated at the end of the autonomous rebrand run.
 See `CHANGELOG_REBRAND.md` for the full decision log and `AUDIT.md` for findings.
@@ -7,7 +7,7 @@ See `CHANGELOG_REBRAND.md` for the full decision log and `AUDIT.md` for findings
 
 - [x] **Bugs fixed** — all 108 artists reachable on the map (address→shape resolver);
   calibration verified by render; stale comments fixed.
-- [x] **De-branded** — name `Lincoln Heights Studio Map`, bundle id
+- [x] **De-branded** — name `ArtWalk LA`, bundle id
   `com.lincolnheights.studiomap`, neutral icon (no wordmark / no map trace),
   nominative reference + not-affiliated disclaimer in About + docs.
 - [x] **Content stripped to facts** — 197 photos, 34 bios, official map + traces, and
@@ -50,7 +50,7 @@ Ordered. Items marked (GUI)/(WEB)/(ACCOUNT) are off-CLI.
    Store Connect API is possible — creds are in the gitignored `.env.testflight` — but
    only after a signed archive exists.)
 5. **(WEB)** App Store Connect → create the app entry (bundle id above, name
-   "Lincoln Heights Studio Map", iOS). Paste copy from `store/metadata.md`; upload the
+   "ArtWalk LA", iOS). Paste copy from `store/metadata.md`; upload the
    4 screenshots from `store/screenshots/`; set category Travel/Reference, age 4+,
    price Free.
 6. **(WEB)** Fill the **App Privacy** questionnaire per `store/metadata.md`
@@ -61,11 +61,17 @@ Ordered. Items marked (GUI)/(WEB)/(ACCOUNT) are off-CLI.
 
 ## Residual risk (be honest)
 
-- **Guideline 5.2.** De-brand + facts-only substantially lowers exposure (no protected
-  imagery, copied text, or trademarked name/icon), and the review notes pre-empt the
-  question — but an app that is clearly a companion to one specific named event can
-  still draw a 5.2 inquiry; Apple has discretion. The only thing that takes this near
-  zero is written content permission from the org/artists (owner has declined to pursue).
+- **Guideline 5.2 + trademark (ELEVATED by the name choice).** Stripping content +
+  the neutral icon/bundle id still removes the copyright exposure (no protected imagery
+  or copied text). **But the display name "ArtWalk LA" (owner's choice) uses the
+  distinctive "Art Walk" phrase as the brand**, which re-opens the trademark /
+  impersonation angle and raises 5.2 rejection risk; it is also confusingly close to
+  the separately trademarked **"Downtown LA Art Walk."** The not-affiliated disclaimer
+  and review notes mitigate but do not eliminate this. A neutral name (e.g. the prior
+  "Lincoln Heights Studio Map") would keep this risk low; written content/name
+  permission would take it near zero. See `CHANGELOG_REBRAND.md` → "Post-run change".
+- The geolocation dot is an approximate (north-up linear) projection — fine for
+  orientation, not survey-accurate. Noted in `AUDIT.md`.
 - The geolocation dot is an approximate (north-up linear) projection — fine for
   orientation, not survey-accurate. Noted in `AUDIT.md`.
 

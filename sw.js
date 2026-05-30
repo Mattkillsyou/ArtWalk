@@ -1,4 +1,4 @@
-// Lincoln Heights Studio Map service worker.
+// ArtWalk LA service worker.
 // Strategy:
 //  - The app shell (index.html) is precached on install so the map loads with
 //    no signal once the user has opened it once. All data is inlined in

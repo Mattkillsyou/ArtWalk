@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Lincoln Heights Studio Map
+title: ArtWalk LA
 permalink: /
 ---
 
-# Lincoln Heights Studio Map
+# ArtWalk LA
 
 An **independent, unofficial** map of artist studios in the Lincoln Heights
 arts district of Los Angeles — 100+ studios on a clean, walkable campus map.

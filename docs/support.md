@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Support — Lincoln Heights Studio Map
+title: Support — ArtWalk LA
 permalink: /support.html
 ---
 
-# Lincoln Heights Studio Map — Support
+# ArtWalk LA — Support
 
 Need help with the app? Found a wrong address, a missing artist, or a
 bug? Want to suggest a feature?
@@ -17,7 +17,7 @@ We usually reply within a few days.
 
 ### The app says "Location permission denied" when I tap Find me
 
-iOS → Settings → Lincoln Heights Studio Map → Location → set to
+iOS → Settings → ArtWalk LA → Location → set to
 **While Using the App**.
 
 ### My favorites disappeared after reinstalling

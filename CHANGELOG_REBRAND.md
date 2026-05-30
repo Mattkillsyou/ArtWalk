@@ -284,3 +284,27 @@ a signed archive exists).
 - **`1984 N. Main`** aliased to `1980 N. Main`; **`2024 N. Main`** left undrawn.
 - **Support** routed to GitHub issues (no app email); **legal-conservative** throughout
   (assumed zero license).
+
+---
+
+## Post-run change — display name → "ArtWalk LA" (owner override)
+
+After the run, the owner directed renaming the app's **display name** to **ArtWalk LA**.
+Applied across all user-facing/shipping/store surfaces (display name, title,
+`apple-mobile-web-app-title`, manifest name/short_name, About heading, `Info.plist`
+`CFBundleDisplayName` + `NSLocation` string, docs, README, `package.json` name,
+`store/metadata.md` + `review-notes.md`, checklist). **Bundle id kept neutral**
+(`com.lincolnheights.studiomap`); descriptive "Lincoln Heights arts district" copy and
+the not-affiliated disclaimer were left intact. Rebuilt + verified in the simulator
+(header reads "ARTWALK LA").
+
+**⚠️ Recorded risk (owner accepted, against the documented strategy).** I flagged that
+this reverses the core de-brand: "Art Walk" is the distinctive part of the protected
+event mark, so using it *as the app's name* (not merely a factual reference) re-opens
+the **trademark / impersonation** problem and the **App Store Guideline 5.2** rejection
+risk the rebrand was built to eliminate. "ArtWalk LA" is also **confusingly similar to
+the separately trademarked "Downtown LA Art Walk"**, a different LA event — a second,
+independent mark it could collide with. The owner chose to proceed anyway. The
+content-rights work (facts only, no photos/bios/official map) is unaffected and still
+holds; this risk is purely on the **name/trademark/5.2** axis. Mitigations still in
+place: neutral bundle id/icon and the prominent not-affiliated disclaimer.
