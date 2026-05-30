@@ -51,6 +51,7 @@ capacitor.config.json.bak
 .env
 .env.local
 .env.*.local
+.env.testflight
 *.pem
 *.p12
 *.mobileprovision
@@ -58,3 +59,10 @@ capacitor.config.json.bak
 # Large transfer artifacts (do not commit)
 wetransfer_*.zip
 *.tar.gz
+
+# Archived unlicensed assets — kept on disk, must never ship or be committed
+_archive/
+
+# Throwaway preview server / audit render artifacts (sandbox cwd workaround)
+_preview-server.js
+_audit/

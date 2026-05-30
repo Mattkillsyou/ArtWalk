@@ -1,6 +1,6 @@
 {
-  "appId": "com.breweryartwalk.app",
-  "appName": "Brewery Art Walk",
+  "appId": "com.lincolnheights.studiomap",
+  "appName": "Lincoln Heights Studio Map",
   "webDir": "www",
   "server": {
     "iosScheme": "https"

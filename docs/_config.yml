@@ -1,5 +1,5 @@
-title: Brewery Art Walk
-description: The official-style guide app to the Brewery, LA's largest live-work art colony.
+title: Lincoln Heights Studio Map
+description: An independent, unofficial map of artist studios in the Lincoln Heights arts district of Los Angeles.
 theme: jekyll-theme-minimal
 permalink: /:title/
 markdown: kramdown

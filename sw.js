@@ -1,18 +1,15 @@
-// Brewery Art Walk service worker.
+// Lincoln Heights Studio Map service worker.
 // Strategy:
-//  - The app shell (index.html + map images) is precached on install so the
-//    map loads with no signal once the user has opened the app once.
-//  - Artist images (breweryartwalk.com/wp-content/...) use cache-first with
-//    network fallback so once you've opened an artist their photos stay
-//    available offline.
-//  - Everything else falls through to the network.
+//  - The app shell (index.html) is precached on install so the map loads with
+//    no signal once the user has opened it once. All data is inlined in
+//    index.html and the map is drawn in-app — there are no remote assets.
+//  - Same-origin requests are cache-first; everything else passes through to
+//    the network with a cache fallback.
 
-const CACHE = 'baw-shell-v1';
+const CACHE = 'studiomap-shell-v1';
 const SHELL = [
   './',
   './index.html',
-  './bw map.jpg',
-  './map_greyscale.jpg',
 ];
 
 self.addEventListener('install', (event) => {
@@ -54,24 +51,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Artist images on breweryartwalk.com — cache-first, persist on first hit.
-  if (url.hostname.endsWith('breweryartwalk.com')) {
-    event.respondWith(
-      caches.match(req).then((cached) => {
-        if (cached) return cached;
-        return fetch(req).then((res) => {
-          if (res && (res.status === 200 || res.type === 'opaque')) {
-            const clone = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, clone)).catch(() => {});
-          }
-          return res;
-        }).catch(() => cached || new Response('', { status: 504, statusText: 'offline' }));
-      })
-    );
-    return;
-  }
-
-  // Anything else (Google Fonts, etc.) — pass-through with cache fallback.
+  // Anything else — pass-through with cache fallback.
   event.respondWith(
     fetch(req).catch(() => caches.match(req))
   );

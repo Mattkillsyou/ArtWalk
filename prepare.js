@@ -59,15 +59,18 @@ html = inject(html, '__BUILDINGS_B64__', buildingsB64);
 
 fs.writeFileSync(htmlPath, html);
 
-// Mirror into www/ for Capacitor (webDir).
-if (!fs.existsSync(wwwDir)) fs.mkdirSync(wwwDir, { recursive: true });
+// Mirror into www/ for Capacitor (webDir). Start clean so assets removed from
+// the source tree (e.g. archived images) can't linger in the shipped bundle.
+fs.rmSync(wwwDir, { recursive: true, force: true });
+fs.mkdirSync(wwwDir, { recursive: true });
 fs.writeFileSync(wwwHtmlPath, html);
 
 // Mirror static assets from repo-root source dirs into www/.
-//   · top-level files: maps, sw.js, manifest
+//   · top-level files: sw.js, manifest
 //   · fonts/ → www/fonts/
 //   · icons/ → www/icons/
-//   · img/artists/ → www/img/artists/  (bundled offline image set)
+// NB: no map images or artist photos ship — the map is our own in-app SVG and
+// the directory is facts-only (no third-party photos).
 const copied = [];
 
 function copyFile(rel) {
@@ -95,10 +98,10 @@ function copyDir(rel) {
 }
 
 // Top-level files the HTML references via relative URL.
-['bw map.jpg', 'map_greyscale.jpg', 'sw.js', 'manifest.webmanifest'].forEach(copyFile);
+['sw.js', 'manifest.webmanifest'].forEach(copyFile);
 
 // Bundled directories.
-['fonts', 'icons', 'img/artists'].forEach(copyDir);
+['fonts', 'icons'].forEach(copyDir);
 
 const after = html.length;
 console.log(`Inlined ${artistsData.length} artists + ${buildingsData.length} buildings.`);

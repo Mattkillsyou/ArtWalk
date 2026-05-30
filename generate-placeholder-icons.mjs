@@ -1,91 +1,71 @@
 // generate-placeholder-icons.mjs
 //
 // Renders raster PNG icons at every size iOS / Apple Touch / PWA need.
-// Placeholder design: solid #0a0a0a background, white "BAW" wordmark
-// centered. Replace with a real icon by:
-//   1. Drop a 1024×1024 PNG at app-icon-1024.png in repo root
-//   2. Re-run this script (it'll detect and use the master PNG instead)
+// Neutral placeholder design (no wordmark, no trademark, not a map trace):
+// solid #0a0a0a background, four abstract white "studio" blocks leaving a
+// cross-shaped street gap, and a blue "you are here" dot at the crossing.
+// Mirrors the vector master in app-icon-1024.svg / icons/favicon.svg.
 //
 //   node generate-placeholder-icons.mjs
+//
+// On a Mac you can then regenerate the full iOS icon set from the 1024 master:
+//   npx capacitor-assets generate --iconSourcePath ios-icon-stash/icon-1024.png
 
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Jimp, JimpMime, loadFont } from 'jimp';
-import { SANS_64_WHITE, SANS_128_WHITE } from 'jimp/fonts';
+import { Jimp, JimpMime } from 'jimp';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const wwwIconsDir = join(__dirname, 'icons');   // source; prepare.js mirrors to www/icons
-const iosIconsDir = join(__dirname, 'ios-icon-stash');   // for cap-assets to consume on Mac
+const wwwIconsDir = join(__dirname, 'icons');            // source; prepare.js mirrors to www/icons
+const iosIconsDir = join(__dirname, 'ios-icon-stash');   // master for cap-assets to consume on Mac
 if (!existsSync(wwwIconsDir)) mkdirSync(wwwIconsDir, { recursive: true });
 if (!existsSync(iosIconsDir)) mkdirSync(iosIconsDir, { recursive: true });
 
-// Sizes the iOS app + Apple Touch + PWA need.
 const targets = [
-  // PWA / Apple Touch
-  { name: 'apple-touch-icon.png',     size: 180, dir: wwwIconsDir },
-  { name: 'icon-192.png',             size: 192, dir: wwwIconsDir },
-  { name: 'icon-512.png',             size: 512, dir: wwwIconsDir },
-  { name: 'icon-1024.png',            size: 1024, dir: iosIconsDir },  // master for cap-assets
-  // Safari favicon raster fallback for non-SVG-aware contexts
-  { name: 'favicon-32.png',           size: 32,  dir: wwwIconsDir },
-  { name: 'favicon-180.png',          size: 180, dir: wwwIconsDir },
+  { name: 'apple-touch-icon.png', size: 180,  dir: wwwIconsDir },
+  { name: 'icon-192.png',         size: 192,  dir: wwwIconsDir },
+  { name: 'icon-512.png',         size: 512,  dir: wwwIconsDir },
+  { name: 'icon-1024.png',        size: 1024, dir: iosIconsDir },  // master for cap-assets
+  { name: 'favicon-32.png',       size: 32,   dir: wwwIconsDir },
+  { name: 'favicon-180.png',      size: 180,  dir: wwwIconsDir },
 ];
 
-function makeIcon(size) {
-  // Black background, square.
-  const img = new Jimp({ width: size, height: size, color: 0x0a0a0aff });
+const BG = 0x0a0a0aff, BLOCK = 0xecececff, DOT = 0x3b82f6ff;
 
-  // Draw a thin off-white border inset for a poster-edge feel.
-  const inset = Math.round(size * 0.06);
-  const border = Math.max(1, Math.round(size * 0.012));
-  for (let i = 0; i < border; i++) {
-    const x0 = inset + i, y0 = inset + i;
-    const x1 = size - inset - 1 - i, y1 = size - inset - 1 - i;
-    for (let x = x0; x <= x1; x++) {
-      img.setPixelColor(0xffffff20, x, y0);
-      img.setPixelColor(0xffffff20, x, y1);
-    }
-    for (let y = y0; y <= y1; y++) {
-      img.setPixelColor(0xffffff20, x0, y);
-      img.setPixelColor(0xffffff20, x1, y);
+function fillRect(img, x, y, w, h, color) {
+  const x1 = Math.round(x), y1 = Math.round(y), x2 = Math.round(x + w), y2 = Math.round(y + h);
+  for (let yy = y1; yy < y2; yy++) for (let xx = x1; xx < x2; xx++) img.setPixelColor(color, xx, yy);
+}
+function fillCircle(img, cx, cy, r, color) {
+  const r2 = r * r;
+  for (let yy = Math.round(cy - r); yy <= cy + r; yy++) {
+    for (let xx = Math.round(cx - r); xx <= cx + r; xx++) {
+      const dx = xx - cx, dy = yy - cy;
+      if (dx * dx + dy * dy <= r2) img.setPixelColor(color, xx, yy);
     }
   }
+}
+
+function makeIcon(size) {
+  const img = new Jimp({ width: size, height: size, color: BG });
+  const u = v => v * size;
+  fillRect(img, u(0.16), u(0.16), u(0.30), u(0.30), BLOCK);  // top-left
+  fillRect(img, u(0.54), u(0.16), u(0.30), u(0.18), BLOCK);  // top-right
+  fillRect(img, u(0.54), u(0.40), u(0.30), u(0.44), BLOCK);  // right (tall)
+  fillRect(img, u(0.16), u(0.54), u(0.30), u(0.30), BLOCK);  // bottom-left
+  fillCircle(img, u(0.50), u(0.50), size * 0.053, BG);       // dark ring
+  fillCircle(img, u(0.50), u(0.50), size * 0.039, DOT);      // you-are-here dot
   return img;
 }
 
-console.log('Generating placeholder app icons…');
-
+console.log('Generating neutral placeholder app icons…');
 for (const t of targets) {
   const img = makeIcon(t.size);
-
-  // Add wordmark only if the icon is large enough to render text legibly.
-  // Jimp's bundled bitmap fonts come in a few sizes — pick the closest.
-  if (t.size >= 64) {
-    try {
-      const fontPath = t.size >= 256 ? SANS_128_WHITE : SANS_64_WHITE;
-      const font = await loadFont(fontPath);
-      const text = 'BAW';
-      const textW = (await import('jimp')).measureText(font, text);
-      const textH = (await import('jimp')).measureTextHeight(font, text, t.size);
-      img.print({
-        font,
-        x: Math.round((t.size - textW) / 2),
-        y: Math.round((t.size - textH) / 2),
-        text,
-      });
-    } catch (e) {
-      // Fonts in Jimp v1 may need different import — log and continue.
-      // The icons still ship as solid black squares with the framed border.
-    }
-  }
-
-  const buf = await img.getBuffer(JimpMime.png);
+  // colorType 2 = RGB, no alpha channel — App Store icons must not be transparent.
+  const buf = await img.getBuffer(JimpMime.png, { colorType: 2 });
   const dest = join(t.dir, t.name);
   writeFileSync(dest, buf);
-  console.log(`  ${t.size}px → ${dest.replace(__dirname + '\\', '').replace(__dirname + '/', '')}  (${Math.round(buf.length / 1024)} KB)`);
+  console.log(`  ${t.size}px → ${dest.replace(__dirname + '/', '')}  (${Math.round(buf.length / 1024)} KB)`);
 }
-
-console.log('\nDone.');
-console.log('Replace www/icons/* and ios-icon-stash/icon-1024.png with a real');
-console.log('logo at any time, then re-run this script and `npx capacitor-assets generate`.');
+console.log('\nDone. Replace icons/* and ios-icon-stash/icon-1024.png with a real logo any time.');

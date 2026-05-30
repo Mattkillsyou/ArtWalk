@@ -1,7 +1,7 @@
 {
-  "name": "Brewery Art Walk",
-  "short_name": "Brewery",
-  "description": "Interactive guide to LA's largest live-work art colony — 100+ artist studios on a campus map you can walk with.",
+  "name": "Lincoln Heights Studio Map",
+  "short_name": "Studio Map",
+  "description": "An independent, unofficial map of 100+ artist studios in the Lincoln Heights arts district of Los Angeles.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
