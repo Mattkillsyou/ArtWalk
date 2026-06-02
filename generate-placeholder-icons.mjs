@@ -32,7 +32,7 @@ const targets = [
 ];
 
 const MASTER = 2048, S = MASTER / 1024;   // supersample; design space is 1024
-const OX = -20, OY = -16;                 // optical-centering nudge (design space)
+const OX = -64, OY = -42;                 // optical-centering nudge (design space)
 
 const hex = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
 const cl = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -78,22 +78,18 @@ function strokePath(img, ptsD, rD, shade) {
   }
 }
 
-// ---- geometry (1024 design space) ----
-const BODY = [[250, 340], [628, 340], [608, 820], [598, 842], [578, 857], [562, 860], [316, 860], [300, 857], [280, 842], [270, 820]];
-const FOAM_BASE = [238, 302, 402, 72];
-const FOAM_BUMPS = [[302, 302, 66], [398, 274, 78], [496, 282, 72], [590, 300, 64], [350, 266, 42], [548, 262, 42]];
+// ---- geometry (1024 design space) — foamless tankard: flat top, slight taper, rounded bottom ----
+const BODY = [[300, 235], [660, 235], [644, 836], [634, 858], [612, 872], [598, 873], [362, 873], [348, 872], [326, 858], [316, 836]];
 // Smooth C-handle: right half of an ellipse so the curve is clean.
-const HANDLE = (() => { const cx = 623, cy = 556, rx = 166, ry = 104, p = []; for (let i = 0; i <= 30; i++) { const a = (-90 + i / 30 * 180) * Math.PI / 180; p.push([cx + rx * Math.cos(a), cy + ry * Math.sin(a)]); } return p; })();
-const HANDLE_R = 32;
-const ARROW = [[440, 452], [548, 712], [440, 660], [332, 712]];
+const HANDLE = (() => { const cx = 652, cy = 500, rx = 168, ry = 120, p = []; for (let i = 0; i <= 30; i++) { const a = (-90 + i / 30 * 180) * Math.PI / 180; p.push([cx + rx * Math.cos(a), cy + ry * Math.sin(a)]); } return p; })();
+const HANDLE_R = 33;
+const ARROW = [[480, 419], [590, 689], [480, 635], [370, 689]];
 
 function drawMaster() {
   const img = new Jimp({ width: MASTER, height: MASTER, color: 0xFFFFFFFF });  // white tile
   const ink = solid(hex('#000000')), white = solid(hex('#FFFFFF'));
   strokePath(img, HANDLE, HANDLE_R, ink);            // handle first; body covers the join
   fillPoly(img, BODY, ink);
-  fillRect(img, ...FOAM_BASE, ink);
-  for (const b of FOAM_BUMPS) fillEllipse(img, b[0], b[1], b[2], b[2], ink);
   fillPoly(img, ARROW, white);                       // navigation arrow knocked out
   return img;
 }

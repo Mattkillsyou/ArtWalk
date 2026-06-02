@@ -180,3 +180,11 @@ our own geometry, not anyone's mark.
   the iOS asset catalog. Still pure black/white, RGB no-alpha.
 - Explored gradient/colour directions (amber tile, dark "real-beer", light+amber) in the
   gitignored `_logo/` but the owner chose flat black-on-white.
+
+## Owner feedback round 4 — drop the foam
+
+Removed the foam head. The icon is now a clean foamless **tankard** (flat top) +
+navigation arrow. Reproportioned so it still fills the tile and stays centred
+without the foam (taller body, handle re-centred, optical offset retuned).
+`generate-placeholder-icons.mjs` + `icons/app-icon.svg` + `icons/favicon.svg`
+updated; all sizes + the iOS asset catalog regenerated.
