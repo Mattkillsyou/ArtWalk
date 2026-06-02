@@ -584,6 +584,89 @@
     0%   { transform: scale(1);   opacity: 0.4; }
     100% { transform: scale(2.6); opacity: 0; }
   }
+
+  /* === UX: wayfind === */
+  /* Route line drawn on the SVG from the GPS dot to a studio centroid. */
+  #ux-route .ux-route-line {
+    fill: none;
+    stroke: #007aff;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 10 8;
+    opacity: 0.95;
+    animation: uxRouteDash 0.9s linear infinite;
+  }
+  #ux-route .ux-route-halo {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.9;
+  }
+  #ux-route .ux-route-target {
+    fill: #007aff;
+    stroke: #fff;
+    stroke-width: 2;
+  }
+  @keyframes uxRouteDash { to { stroke-dashoffset: -36; } }
+
+  /* "Studios near you" list — distance badge on each row. */
+  #sheet-body .ux-near-list { list-style: none; padding: 0; margin: 0; }
+  #sheet-body .ux-near-list li { border-bottom: 1px solid #000; }
+  #sheet-body .ux-near-list li:first-child { border-top: 1px solid #000; }
+  #sheet-body .ux-near-list button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    padding: 12px 4px;
+    background: none;
+    border: 0;
+    color: #000;
+    cursor: pointer;
+    min-height: 56px;
+    font: 14px/1.3 inherit;
+  }
+  #sheet-body .ux-near-list button:active { background: #f0f0f0; }
+  #sheet-body .ux-near-list .ux-near-main { flex: 1 1 auto; min-width: 0; }
+  #sheet-body .ux-near-list .a-name { font-weight: 600; }
+  #sheet-body .ux-near-list .a-meta { font-size: 12px; color: #555; }
+  #sheet-body .ux-dist-badge {
+    flex: 0 0 auto;
+    font: 700 12px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    letter-spacing: 0.02em;
+    color: #000;
+    background: #fff;
+    border: 1px solid #000;
+    padding: 6px 8px;
+    white-space: nowrap;
+  }
+
+  /* "Take me there" button inside the artist detail view. */
+  #sheet-body .ux-route-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #007aff;
+    border: 1px solid #007aff;
+    padding: 10px 16px;
+    font: 600 12px/1 "Inter Tight", system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: #fff;
+    cursor: pointer;
+    margin: 12px 8px 0 0;
+    min-height: 44px;
+  }
+  #sheet-body .ux-route-btn:active { transform: scale(0.97); }
+
+  @media (prefers-reduced-motion: reduce) {
+    #ux-route .ux-route-line { animation: none; }
+  }
+  /* === /UX === */
 </style>
 </head>
 <body>
@@ -1301,6 +1384,7 @@
         <span class="fav-glyph">${fav ? '★' : '☆'}</span>
         <span class="fav-label">${fav ? 'Favorited' : 'Save to favorites'}</span>
       </button>
+      <button class="ux-route-btn" id="ux-route-btn" type="button" aria-label="Take me there — draw a walking route from your location">➤ Take me there</button>${/* UX:wayfind */ ''}
       ${placeholderTile(a)}
       ${a.bio ? `<div class="bio">${esc(a.bio)}</div>` : ''}
       ${links.length ? '<div class="links">' + links.join('') + '</div>' : ''}`;
@@ -1316,6 +1400,9 @@
       favBtn.querySelector('.fav-label').textContent = nowFav ? 'Favorited' : 'Save to favorites';
       showToast(nowFav ? 'Added to favorites' : 'Removed from favorites', 1600);
     });
+    /* UX:wayfind */
+    const uxRouteBtn = sheetBody.querySelector('#ux-route-btn');
+    if (uxRouteBtn) uxRouteBtn.addEventListener('click', () => window.UX?.routeTo?.(a.address));
   }
 
   function showSearchResults(matches) {
@@ -1547,6 +1634,200 @@
   // Resize handler
   window.addEventListener('resize', () => setView(VIEW.x, VIEW.y, VIEW.w));
   window.addEventListener('orientationchange', () => setTimeout(() => setView(VIEW.x, VIEW.y, VIEW.w), 100));
+
+  // === UX: wayfind ===
+  // Real-world wayfinding built on the existing geolocation block: rank studios
+  // by GPS distance ("Studios near me") and draw a route line from the user's
+  // GPS dot to a studio centroid ("Take me there"). Everything is computed from
+  // the SVG POSITIONS shapes via the linear inverse of latLngToSvg — no new
+  // network calls, no third-party maps. Entry points are exposed on window.UX so
+  // the (separately built) bottom action bar and other features can call in.
+  window.UX = window.UX || {};
+  // prefers-reduced-motion is honoured in CSS (the === UX: wayfind === block
+  // drops the route's marching-ants animation under that media query).
+  const UX_WALK_M_PER_MIN = 80;          // ~3 mph average walking pace
+  const UX_FEET_THRESHOLD_MI = 0.1;      // below this, show feet instead of miles
+
+  // Centroid of a studio's map shape, in SVG units. Resolves aliases/sub-units
+  // through resolvePosKey so a bare street address still finds a footprint.
+  function uxCentroidSvg(addr) {
+    const key = resolvePosKey(addr) || (POSITIONS[addr] ? addr : null);
+    if (!key) return null;
+    const pos = POSITIONS[key];
+    if (!pos) return null;
+    return { cx: pos.x + pos.w / 2, cy: pos.y + pos.h / 2, key };
+  }
+  // Same centroid, projected to lat/lng via the inverse of latLngToSvg (linear
+  // over the GEO corners), so we can haversine against the user's fix.
+  function uxCentroidLatLng(addr) {
+    const c = uxCentroidSvg(addr);
+    if (!c) return null;
+    return {
+      lat: GEO.nw.lat - (c.cy / 913) * (GEO.nw.lat - GEO.se.lat),
+      lng: GEO.nw.lng + (c.cx / 1019) * (GEO.se.lng - GEO.nw.lng),
+    };
+  }
+  // Smart distance label: feet when very close, else miles.
+  function uxFmtDistance(meters) {
+    const miles = meters / 1609.344;
+    if (miles < UX_FEET_THRESHOLD_MI) {
+      const ft = Math.round(meters * 3.28084 / 10) * 10;   // nearest 10 ft
+      return Math.max(10, ft) + ' ft';
+    }
+    return (miles < 10 ? miles.toFixed(1) : Math.round(miles)) + ' mi';
+  }
+  // 8-point compass bearing from user → target, as a short "head NE" hint.
+  function uxBearingHint(fromLat, fromLng, toLat, toLng) {
+    const toRad = d => d * Math.PI / 180;
+    const y = Math.sin(toRad(toLng - fromLng)) * Math.cos(toRad(toLat));
+    const x = Math.cos(toRad(fromLat)) * Math.sin(toRad(toLat)) -
+              Math.sin(toRad(fromLat)) * Math.cos(toRad(toLat)) * Math.cos(toRad(toLng - fromLng));
+    let brg = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+    const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    return dirs[Math.round(brg / 45) % 8];
+  }
+  // Resolve a usable GPS fix: reuse a cached one (<60 s) else ask the OS, then
+  // gate on the campus radius exactly like findMe(). Returns { pos, svg } or null
+  // (after toasting the reason). `silent` skips the "Finding you…" chatter.
+  let uxFixPromise = null;
+  async function uxUserFix(silent) {
+    const cached = window.UX.lastPos;
+    if (cached && (Date.now() - cached.t) < 60000) {
+      return { pos: cached, svg: latLngToSvg(cached.lat, cached.lng) };
+    }
+    if (uxFixPromise) return uxFixPromise;
+    if (!silent) showToast('Finding you…');
+    uxFixPromise = (async () => {
+      try {
+        const pos = await getCurrentPos();
+        const center = { lat: (GEO.nw.lat + GEO.se.lat) / 2, lng: (GEO.nw.lng + GEO.se.lng) / 2 };
+        const distM = distanceMeters(pos.lat, pos.lng, center.lat, center.lng);
+        if (distM > GEO.radiusMeters) {
+          showToast(`You're ${(distM / 1000).toFixed(1)} km away — get closer to use this`, 3200);
+          return null;
+        }
+        window.UX.lastPos = { lat: pos.lat, lng: pos.lng, acc: pos.acc, t: Date.now() };
+        return { pos: window.UX.lastPos, svg: latLngToSvg(pos.lat, pos.lng) };
+      } catch (e) {
+        const msg = (e && e.message) ? e.message : '';
+        showToast(/denied|permission/i.test(msg) ? 'Location permission denied' : 'Couldn’t get your location', 3000);
+        return null;
+      } finally {
+        uxFixPromise = null;
+      }
+    })();
+    return uxFixPromise;
+  }
+
+  // ---- Item 1: "Studios near me" ----
+  async function uxNearMe() {
+    const fix = await uxUserFix();
+    if (!fix) return;
+    const { pos } = fix;
+    const ranked = artists.map(a => {
+      const ll = uxCentroidLatLng(a.address);
+      if (!ll) return null;
+      return { a, d: distanceMeters(pos.lat, pos.lng, ll.lat, ll.lng) };
+    }).filter(Boolean).sort((p, q) => p.d - q.d);
+
+    if (!ranked.length) { showToast('No studios to locate'); return; }
+
+    const rows = ranked.map(({ a, d }) => `
+      <li><button data-artist-idx="${artists.indexOf(a)}">
+        <span class="ux-near-main">
+          <span class="a-name">${esc(a.name)}</span>
+          <span class="a-meta">${esc(a.category)}${a.medium ? ' · ' + esc(a.medium) : ''} · ${esc(prettyAddr(a.address))}${a.unit ? ' #' + esc(a.unit) : ''}</span>
+        </span>
+        <span class="ux-dist-badge">${esc(uxFmtDistance(d))}</span>
+      </button></li>`).join('');
+    openSheet(`
+      <div class="building-head">Sorted by distance · ±${Math.round(pos.acc || 0)} m</div>
+      <h2>Studios near you</h2>
+      <ul class="ux-near-list">${rows}</ul>`);
+
+    // Tapping a row mirrors the search-result behaviour: zoom, highlight, detail.
+    sheetBody.querySelectorAll('button[data-artist-idx]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const a = artists[parseInt(btn.dataset.artistIdx, 10)];
+        const key = resolvePosKey(a.address) || a.address;
+        zoomTo(key);
+        selectedAddress = key;
+        highlightBuilding(key);
+        showArtistDetail(a, key);
+      });
+    });
+  }
+
+  // ---- distanceLabel: string|null (null until we have a GPS fix) ----
+  function uxDistanceLabel(addr) {
+    const fix = window.UX.lastPos;
+    if (!fix) return null;
+    const ll = uxCentroidLatLng(addr);
+    if (!ll) return null;
+    return uxFmtDistance(distanceMeters(fix.lat, fix.lng, ll.lat, ll.lng));
+  }
+
+  // ---- Item 2: "Take me there" ----
+  function uxClearRoute() {
+    const g = svg.querySelector('#ux-route');
+    if (g) g.remove();
+  }
+  async function uxRouteTo(addr) {
+    const target = uxCentroidSvg(addr);
+    if (!target) { showToast('Can’t locate that studio on the map'); return; }
+    const fix = await uxUserFix();
+    if (!fix) return;
+    const { pos, svg: user } = fix;
+
+    // GPS dot (reuse the shared painter) + active state on the locate button.
+    paintGpsDot(user.x, user.y);
+    if (locateBtn) locateBtn.classList.add('active');
+
+    uxClearRoute();
+    const g = el('g', { id: 'ux-route' });
+    g.setAttribute('aria-hidden', 'true');
+    const d = `M ${user.x} ${user.y} L ${target.cx} ${target.cy}`;
+    g.appendChild(el('path', { class: 'ux-route-halo', d }));
+    g.appendChild(el('path', { class: 'ux-route-line', d, 'marker-end': 'url(#ux-arrow)' }));
+    g.appendChild(el('circle', { class: 'ux-route-target', cx: target.cx, cy: target.cy, r: 6 }));
+    // Arrowhead marker (define once, scoped to the route group's defs).
+    const defs = el('defs', {});
+    const marker = el('marker', {
+      id: 'ux-arrow', viewBox: '0 0 10 10', refX: 8, refY: 5,
+      markerWidth: 5, markerHeight: 5, orient: 'auto-start-reverse',
+    });
+    marker.appendChild(el('path', { d: 'M0,0 L10,5 L0,10 z', fill: '#007aff' }));
+    defs.appendChild(marker);
+    g.appendChild(defs);
+    svg.appendChild(g);
+
+    // Frame the route: fit both endpoints with a little padding. setView is a
+    // direct viewBox set (no momentum), so this is motion-safe by construction.
+    const minX = Math.min(user.x, target.cx), maxX = Math.max(user.x, target.cx);
+    const minY = Math.min(user.y, target.cy), maxY = Math.max(user.y, target.cy);
+    const pad = 90;
+    const w = Math.max(MIN_W, (maxX - minX) + pad * 2);
+    setView(minX - pad, minY - pad, w);
+
+    // Distance + walking ETA + a compass hint.
+    const ll = uxCentroidLatLng(addr);
+    const meters = ll ? distanceMeters(pos.lat, pos.lng, ll.lat, ll.lng) : 0;
+    const mins = Math.max(1, Math.round(meters / UX_WALK_M_PER_MIN));
+    const hint = ll ? uxBearingHint(pos.lat, pos.lng, ll.lat, ll.lng) : '';
+    showToast(`${uxFmtDistance(meters)} · ~${mins} min walk${hint ? ' · head ' + hint : ''}`, 4200);
+  }
+
+  // Expose the wayfinding surface for the action bar + sibling features.
+  window.UX.nearMe = uxNearMe;
+  window.UX.routeTo = uxRouteTo;
+  window.UX.clearRoute = uxClearRoute;
+  window.UX.distanceLabel = uxDistanceLabel;
+
+  // Action-bar hook (the bar is built by the visual agent; guard with ?. so this
+  // worktree, which has no bar yet, stays robust). The window.UX.nearMe hook is
+  // the real contract.
+  document.getElementById('ux-act-near')?.addEventListener('click', () => window.UX.nearMe());
+  // === /UX ===
 
   // -------- Init --------
   function showError(msg) {
