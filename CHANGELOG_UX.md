@@ -62,7 +62,35 @@ and the `window.UX` hooks present.
   integration breakage. One native build + on-device run is done at the end.
 
 ## Verification & screenshots
-_(filled after the simulator run + review agent)_
+- **Simulator build + run:** `xcodebuild … iPhone 17 Pro Max` → **BUILD SUCCEEDED**;
+  installed + launched; all four feature sets confirmed working at runtime (no crash,
+  108 artists rendered). 8 screenshots in `store/screenshots/ux/`: `01-home` (action
+  bar + per-building studio counts "642 · 13"), `02-building`, `03-artist` (refined
+  tile with category glyph + "Take me there"), `04-filter` (multi-select), `05-sunlight`
+  (max-contrast theme), `06-dark`, `07-nearme` (distance-ranked list), `08-route`.
+- **Fresh review agent** diffed `ux-upgrades` vs `main`: **no P0s** — no regressions to
+  existing IDs/handlers, offline-first intact (zero new network/CDN/font/script deps),
+  no third-party media or brand-as-brand, `window.UX` hook collisions resolve correctly
+  by load order (authoritative impls win), inverse lat/lng projection is the exact
+  inverse of `latLngToSvg`, JS parses, `www/` mirror identical.
+- **Fixes applied (commit `48ae93c`):**
+  - **P1** — three action-bar buttons (near/search/recenter) had *duplicate* click
+    listeners (visual + the owning agent) → double-fire. Removed visual's three; each
+    button now binds exactly once.
+  - **P2 contrast (AA):** route button `#007aff`→`#0058d0` (white text ≥4.5:1);
+    count suffix `#b0b0b0`→`#8a8a8a` + `html[data-theme="sunlight"] tspan.ux-count{fill:#000}`;
+    default-theme label token `--ux-label #8c8c8c`→`#6a6a6a`.
 
 ## Residual risks / follow-ups
-_(filled at the end)_
+- **Dead code (P2, deferred):** visual's superseded `window.UX.nearMe/recenter/focusSearch`
+  stub functions remain (overwritten by load order — harmless; safe to delete later).
+- **Reduced-motion:** discovery/wayfind read the media query at load; mapgest reads it
+  live. Toggling the OS setting mid-session needs a reload for the sheet/route animations
+  (most apps treat PRM as load-time — minor).
+- **Dark-theme hairline dividers** are faint (`--ux-line` ≈1.68:1) — cosmetic.
+- **Map count labels** in auto/dark themes are intentionally light secondary text;
+  the **sunlight** theme is the AA-compliant outdoor-readability mode (labels → black).
+- **Gesture feel** (momentum/pinch/double-tap) validated by code review + the simulator
+  run; not hand-tested on a physical device.
+- This work lives on **branch `ux-upgrades`** (not merged to `main`); the submitted V1
+  App Store build is unaffected. Per-agent branches `ux-feat-*` retained for reference.
