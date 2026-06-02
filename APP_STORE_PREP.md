@@ -12,9 +12,10 @@
 This app is **unofficial and unbranded**. We assume **zero license** to the event's
 trademarks, photos, bios, or official map. Two separate problems, two fixes:
 
-1. **Trademark (the name/look)** → solved by a neutral name (**Lincoln Heights
-   Studio Map**), bundle id `com.lincolnheights.studiomap`, no logo/wordmark/colors,
-   and a single plain-text nominative reference + disclaimer (nominative fair use).
+1. **Trademark (the name/look)** → addressed by no logo/wordmark/colors and a single
+   plain-text nominative reference + disclaimer (nominative fair use). (Shipped name is
+   **ArtWalk LA** — owner's choice, see Residual risk; bundle id `com.breweryartwalk.app`
+   matches the App Store Connect record and is reverse-DNS only, never user-visible.)
 2. **Copyright (the content)** → solved by **shipping facts only**: artist names,
    public studio addresses, units, medium/category, and public website/Instagram
    links. **No** third-party photos, **no** copied bios, **no** official-map image.
@@ -94,7 +95,7 @@ available sources.
 ### Keywords (≤100, comma-separated)
 
 ```
-art studios,open studios,artist,gallery,studio map,Lincoln Heights,Los Angeles,sculpture,painting,ceramics
+art studios,open studios,artist,gallery,studio map,Lincoln Heights,LA,sculpture,painting,ceramics
 ```
 
 _Note: deliberately avoid using the protected event name as a keyword to ride its

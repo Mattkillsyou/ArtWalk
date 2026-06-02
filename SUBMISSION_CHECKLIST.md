@@ -7,9 +7,12 @@ See `CHANGELOG_REBRAND.md` for the full decision log and `AUDIT.md` for findings
 
 - [x] **Bugs fixed** — all 108 artists reachable on the map (address→shape resolver);
   calibration verified by render; stale comments fixed.
-- [x] **De-branded** — name `ArtWalk LA`, bundle id
-  `com.lincolnheights.studiomap`, neutral icon (no wordmark / no map trace),
-  nominative reference + not-affiliated disclaimer in About + docs.
+- [x] **De-branded** — name `ArtWalk LA`, neutral icon (no wordmark / no map trace),
+  nominative reference + not-affiliated disclaimer in About + docs. **Bundle id is
+  `com.breweryartwalk.app`** — it matches the existing App Store Connect record (app id
+  6766774479) and is reverse-DNS only, never shown to users. Switching to a fully neutral
+  id (e.g. `com.<owner>.artwalkla`) is possible **only before the first upload** and means
+  creating a new ASC record — an owner decision (see Residual risk + `AUDIT_FULL.md`).
 - [x] **Content stripped to facts** — 197 photos, 34 bios, official map + traces, and
   41 org profile-links removed (archived to gitignored `_archive/`); photos replaced
   with generated initials tiles. `www/` ships only HTML/SW/manifest/fonts/icons.
@@ -20,8 +23,12 @@ See `CHANGELOG_REBRAND.md` for the full decision log and `AUDIT.md` for findings
   regenerated; **`xcodebuild` simulator build SUCCEEDS** (iPhone 17 Pro Max, iOS 26.4
   SDK). App runs and renders correctly (verified).
 - [x] **Icons** — neutral, alpha-free PNGs at all sizes incl. the 1024 App Store icon.
-- [x] **Screenshots** — 4 captured at 1320×2868 (6.9") in `store/screenshots/`:
-  `01-map-home`, `02-building-list`, `03-artist-detail`, `04-filter-active`.
+- [x] **Screenshots** — current 6.9" iPhone set in **`store/screenshots/ux2/`**
+  (`01-home`…`06-sunlight`; the ArtWalk LA UI with the bottom action bar). The older
+  top-level `01-04*.png` and `store/screenshots/ux/` sets show the **abandoned** name
+  and the removed route feature — archived, do NOT upload them. The 13" iPad set in
+  `store/screenshots/ipad/` predates the action-bar upgrade and should be re-captured
+  from the current build (iPad is a declared target).
 - [x] **Store copy + review notes** — `store/metadata.md` (name/subtitle/promo/
   description/keywords all within limits) and `store/review-notes.md` (proactive
   5.2 / 4.2 / privacy notes).
@@ -38,20 +45,26 @@ Ordered. Items marked (GUI)/(WEB)/(ACCOUNT) are off-CLI.
    `https://mattkillsyou.github.io/ArtWalk/privacy.html` and `/support.html`.
 3. **(GUI)** In Xcode (`ios/App/App.xcworkspace`):
    - Signing & Capabilities → select Team; confirm bundle id
-     `com.lincolnheights.studiomap`; let automatic signing provision.
+     `com.breweryartwalk.app` (must match the App Store Connect record); let
+     automatic signing provision.
    - **Add `PrivacyInfo.xcprivacy` to the App target** — it sits in `ios/App/App/` but
      is **not yet referenced by the project**, so it won't ship until you drag it into
      the App target (check "App" in Target Membership). Required because the app uses
      UserDefaults (a required-reason API).
-   - Set Version `1.0`, Build `1`.
+   - Set Version `1.0`, Build `1` (use a higher build number if one already exists
+     on the record).
+   - **Export compliance:** `Info.plist` now declares
+     `ITSAppUsesNonExemptEncryption=false` (no custom crypto, standard HTTPS only), so
+     App Store Connect shouldn't prompt; if it does, answer **No / exempt**.
 4. **(GUI/CLI)** Archive for device: Product → Archive (or
    `xcodebuild -workspace ios/App/App.xcworkspace -scheme App archive` once signing is
    set). Then Distribute → App Store Connect → Upload. (CLI IPA upload via the App
    Store Connect API is possible — creds are in the gitignored `.env.testflight` — but
    only after a signed archive exists.)
 5. **(WEB)** App Store Connect → create the app entry (bundle id above, name
-   "ArtWalk LA", iOS). Paste copy from `store/metadata.md`; upload the
-   4 screenshots from `store/screenshots/`; set category Travel/Reference, age 4+,
+   "ArtWalk LA", iOS). Paste copy from `store/metadata.md`; upload the current
+   screenshots from `store/screenshots/ux2/` (plus a re-captured 13" iPad set); set
+   category Travel/Reference, age 4+,
    price Free.
 6. **(WEB)** Fill the **App Privacy** questionnaire per `store/metadata.md`
    (Track: none; Linked: none; Not linked: Precise Location → App Functionality).
@@ -70,8 +83,6 @@ Ordered. Items marked (GUI)/(WEB)/(ACCOUNT) are off-CLI.
   and review notes mitigate but do not eliminate this. A neutral name (e.g. the prior
   "Lincoln Heights Studio Map") would keep this risk low; written content/name
   permission would take it near zero. See `CHANGELOG_REBRAND.md` → "Post-run change".
-- The geolocation dot is an approximate (north-up linear) projection — fine for
-  orientation, not survey-accurate. Noted in `AUDIT.md`.
 - The geolocation dot is an approximate (north-up linear) projection — fine for
   orientation, not survey-accurate. Noted in `AUDIT.md`.
 

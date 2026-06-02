@@ -2,6 +2,8 @@
 
 The campus SVG map is **in-progress**. Building positions are still drifting from the printed `Map.jpg`. The hard work below is calibrating the building footprints to overlay the printed map exactly.
 
+> **STATUS (2026-06-02): largely historical.** The map is calibrated and shipping; all three "known wrong" items below are **resolved** — `1910 N. Main` is in the NW corner, the previously-missing small buildings are present, and the `?overlay=1` calibration mode was **removed** from `index.html`. The `POSITIONS`/`renderMap()` line numbers cited below are stale. Kept for reference only.
+
 ## Quick start (any Mac/Linux/Win box with git + node)
 
 ```bash

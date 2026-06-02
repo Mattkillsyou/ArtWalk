@@ -136,10 +136,11 @@ overlay/map-image removal is folded into Phase 4 with the map-asset strip._
 neighborhood) + functional, 26 chars, contains no protected mark, avoids "Walk".
 - Alternates considered: *Avenue 21 Studio Guide*, *Moulton Studios Map* (both
   reference public street names; rejected as less clear/broad than the neighborhood).
-- **Bundle id:** `com.breweryartwalk.app` → **`com.lincolnheights.studiomap`**
-  (root `capacitor.config.json`; the Xcode target id is a human GUI step). Internal
-  slug `baw` → `studiomap` (SW cache `studiomap-shell-v1`, `FAV_KEY`
-  `studiomap.favorites.v1` — safe to rename; app never shipped).
+- **Bundle id:** *planned* `com.breweryartwalk.app` → `com.lincolnheights.studiomap`,
+  but **this was later reverted** — the shipped id stayed `com.breweryartwalk.app` to
+  match the App Store Connect record (app id 6766774479) created afterward. The internal
+  slug did migrate (SW cache `studiomap-shell-v1`, `FAV_KEY` `studiomap.favorites.v1`).
+  The reverse-DNS bundle id is not user-visible; see `AUDIT_FULL.md` for the trade-off.
 
 **Applied the name everywhere it shipped** (per Audit 1B): `index.html` `<title>`,
 header, `apple-mobile-web-app-title`, description/og meta, svg aria-label, About
