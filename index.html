@@ -2,7 +2,7 @@
 <html lang="en" data-theme="auto">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="light">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -210,6 +210,8 @@
   .bld-group.selected .bld-rect { fill: #222; }
   .bld-group.selected .bld-label { fill: #fff; }
   .bld-group.selected .bld-name { fill: #fff; }
+  .bld-group:focus { outline: none; }
+  .bld-group:focus-visible .bld-rect { stroke: var(--ux-accent, #007aff); stroke-width: 3; }
   /* Address + street typography — sleek modern sans (Inter Tight), small,
      all caps, soft grey. Buildings are the click target so labels stay
      understated and don't compete for attention. */
@@ -995,7 +997,7 @@
 <nav id="chips" aria-label="Filter by category"></nav>
 
 <main id="map-container">
-  <svg id="map" viewBox="0 0 1019 913" role="img" aria-label="Studio campus map" preserveAspectRatio="xMidYMid meet">
+  <svg id="map" viewBox="0 0 1019 913" role="group" aria-label="Studio campus map; each building is a button" preserveAspectRatio="xMidYMid meet">
     <defs>
       <pattern id="diag" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
         <line x1="0" y1="0" x2="0" y2="6" stroke="#ddd" stroke-width="1"/>
@@ -1136,12 +1138,37 @@
   }
 
   // -------- About modal --------
-  function openAbout() { aboutModal.setAttribute('aria-hidden', 'false'); }
-  function closeAbout() { aboutModal.setAttribute('aria-hidden', 'true'); }
+  let aboutReturnFocus = null;
+  function openAbout() {
+    aboutReturnFocus = document.activeElement;
+    aboutModal.setAttribute('aria-hidden', 'false');
+    const f = aboutModal.querySelector('#about-close');
+    if (f) { try { f.focus({ preventScroll: true }); } catch (_) { f.focus(); } }
+  }
+  function closeAbout() {
+    aboutModal.setAttribute('aria-hidden', 'true');
+    if (aboutReturnFocus && aboutReturnFocus.focus) { try { aboutReturnFocus.focus({ preventScroll: true }); } catch (_) { aboutReturnFocus.focus(); } }
+    aboutReturnFocus = null;
+  }
   if (infoBtn) infoBtn.addEventListener('click', openAbout);
   if (aboutClose) aboutClose.addEventListener('click', closeAbout);
   if (aboutModal) aboutModal.addEventListener('click', (e) => {
     if (e.target === aboutModal) closeAbout();
+  });
+  // Trap Tab within the open About dialog; Escape handled globally below.
+  if (aboutModal) aboutModal.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+    const f = aboutModal.querySelectorAll('button, a[href]');
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  // Global Escape closes whichever overlay is open (About first, then the sheet).
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (aboutModal && aboutModal.getAttribute('aria-hidden') === 'false') closeAbout();
+    else if (sheet && sheet.classList.contains('open')) closeSheet();
   });
 
   // -------- "Find me" / GPS --------
@@ -1534,7 +1561,12 @@
     // No artist-count badges (per request) — just the number.
     const buildingsG = el('g', { id: 'buildings' });
     Object.entries(POSITIONS).forEach(([addr, pos]) => {
-      const g = el('g', { class: 'bld-group', 'data-address': addr });
+      const _n = (artistsByAddress[addr] || []).length;
+      const g = el('g', {
+        class: 'bld-group', 'data-address': addr,
+        role: 'button', tabindex: '0',
+        'aria-label': (pos.short || prettyAddr(addr)) + (_n ? ', ' + _n + ' studio' + (_n === 1 ? '' : 's') : '')
+      });
 
       if (pos.parts && pos.parts.length) {
         pos.parts.forEach(part => {
@@ -1580,6 +1612,9 @@
       g.addEventListener('click', () => {
         if (suppressClick) return;
         onBuildingTap(addr);
+      });
+      g.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onBuildingTap(addr); }
       });
 
       buildingsG.appendChild(g);
@@ -1664,11 +1699,16 @@
   }
 
   // -------- Bottom sheet --------
+  let sheetReturnFocus = null;
   function openSheet(html) {
+    if (!sheet.classList.contains('open')) sheetReturnFocus = document.activeElement;
     sheetBody.innerHTML = html;
     sheetBody.scrollTop = 0;
     /* UX:sheet — present at the HALF snap (keeps current snap if already open) */
     UXSheet.present();
+    // Move focus into the sheet for keyboard / VoiceOver users.
+    const f = sheet.querySelector('#sheet-close');
+    if (f) { try { f.focus({ preventScroll: true }); } catch (_) { f.focus(); } }
   }
   function closeSheet() {
     sheet.classList.remove('open');
@@ -1676,6 +1716,8 @@
     UXSheet.dismiss();          /* UX:sheet — reset snap state + transform */
     selectedAddress = null;
     clearHighlight();
+    if (sheetReturnFocus && sheetReturnFocus.focus) { try { sheetReturnFocus.focus({ preventScroll: true }); } catch (_) { sheetReturnFocus.focus(); } }
+    sheetReturnFocus = null;
   }
   sheetClose.addEventListener('click', closeSheet);
 
