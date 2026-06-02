@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ArtWalk LA mark: an original beer-stein silhouette (a nod to the historic
-     brewery building) with a navigation arrow knocked out of the body. Black on
-     white, our own original work — no wordmark, no trademark, no map trace. -->
+<!-- ArtWalk LA mark: an original solid-black beer-stein silhouette (a nod to the
+     historic brewery building) with a navigation arrow knocked out of the body.
+     Black on white, our own original work — no wordmark, no trademark. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
   <rect width="1024" height="1024" fill="#FFFFFF"/>
-  <g fill="#15171C">
-    <path d="M648 452 C 786 452 812 506 812 556 C 812 606 786 660 648 660 L648 606 C 730 606 744 580 744 556 C 744 532 730 506 648 506 Z"/>
-    <path d="M306 392 L654 392 L640 792 Q636 822 606 822 L354 822 Q324 822 320 792 Z"/>
-    <rect x="294" y="362" width="366" height="46" rx="14"/>
-    <circle cx="330" cy="356" r="52"/><circle cx="398" cy="330" r="60"/><circle cx="470" cy="340" r="56"/>
-    <circle cx="542" cy="330" r="58"/><circle cx="612" cy="356" r="50"/>
-    <circle cx="432" cy="308" r="44"/><circle cx="510" cy="308" r="44"/>
+  <g transform="translate(-20 -16)">
+    <path d="M623 452 A 166 104 0 0 1 623 660" fill="none" stroke="#000000" stroke-width="64" stroke-linecap="round"/>
+    <g fill="#000000">
+      <polygon points="250,340 628,340 608,820 598,842 578,857 562,860 316,860 300,857 280,842 270,820"/>
+      <rect x="238" y="302" width="402" height="72"/>
+      <circle cx="302" cy="302" r="66"/><circle cx="398" cy="274" r="78"/><circle cx="496" cy="282" r="72"/>
+      <circle cx="590" cy="300" r="64"/><circle cx="350" cy="266" r="42"/><circle cx="548" cy="262" r="42"/>
+    </g>
+    <polygon points="440,452 548,712 440,660 332,712" fill="#FFFFFF"/>
   </g>
-  <polygon fill="#FFFFFF" points="480,486 582,728 480,678 378,728"/>
 </svg>

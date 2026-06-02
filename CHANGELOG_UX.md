@@ -164,3 +164,19 @@ our own geometry, not anyone's mark.
 - **Design scratch:** alternative concepts (route-pin, "A" monogram, footsteps, and
   the stein treatments) live in the gitignored `_logo/`.
 - The new icon takes effect in the **next** iOS build; the submitted V1 is untouched.
+
+## Owner feedback round 3 — icon redesign, header mark removed
+
+- **Removed the in-app header mark** (the `#brand` group): the header is text-only
+  "ArtWalk LA" again, per owner request ("don't add the logo to the app, just the icon").
+- **Redesigned the icon to look professional** while keeping the owner's spec
+  (**black stein, white background, white arrow, no gradients**). Fixes vs the first
+  cut: the mug now **fills the tile** (was small with wide margins), the **C-handle is
+  joined to the body** (was a detached floating ring — now a smooth right-half-ellipse
+  arc, stroked with round caps and tucked under the body), shapes are cleaner, and the
+  composition is **optically centred** (handle's rightward weight offset left).
+  `generate-placeholder-icons.mjs` gained `strokePath` + an optical-centre offset;
+  `icons/app-icon.svg` + `icons/favicon.svg` updated to match. Regenerated every size +
+  the iOS asset catalog. Still pure black/white, RGB no-alpha.
+- Explored gradient/colour directions (amber tile, dark "real-beer", light+amber) in the
+  gitignored `_logo/` but the owner chose flat black-on-white.
