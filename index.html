@@ -82,8 +82,8 @@
     gap: 6px;
   }
   #header-buttons button {
-    width: 28px;
-    height: 28px;
+    width: 44px;
+    height: 44px;
     border: 1px solid #000;
     background: #fff;
     color: #000;
@@ -131,13 +131,13 @@
   #chips::-webkit-scrollbar { display: none; }
   .chip {
     flex: 0 0 auto;
-    height: 36px;
+    height: 44px;
     min-width: 44px;
     padding: 0 14px;
     border: 1px solid #000;
     background: #fff;
     color: #000;
-    font: 15px/34px inherit;
+    font: 15px/42px inherit;
     letter-spacing: 0.02em;
     cursor: pointer;
     white-space: nowrap;
@@ -231,7 +231,7 @@
   .bld-label.lbl-lg { font-size: 15px; }
   .bld-label.lbl-xl { font-size: 18px; }
   .bld-street {
-    fill: #b2b2b2;
+    fill: #6a6a6a;
     font-weight: 500;
     font-size: 8px;
     letter-spacing: 0.18em;
@@ -261,7 +261,7 @@
   .badge-hidden { display: none; }
   .street-strip { fill: #ededed; }
   .street-label {
-    fill: #777;
+    fill: #595959;
     font: 11px/1 ui-monospace, "SF Mono", Menlo, monospace;
     letter-spacing: 0.22em;
     pointer-events: none;
@@ -408,13 +408,13 @@
   }
   #sheet-body .back-btn {
     display: inline-block;
-    height: 32px;
-    line-height: 30px;
-    padding: 0 12px;
+    height: 44px;
+    line-height: 42px;
+    padding: 0 14px;
     border: 1px solid #000;
     background: #fff;
     color: #000;
-    font: 12px/30px inherit;
+    font: 13px/42px inherit;
     cursor: pointer;
     margin-bottom: 12px;
   }
@@ -496,7 +496,7 @@
   #about-card .about-link:active { color: #888; }
   #about-card .about-fine {
     font-size: 10px;
-    color: #888;
+    color: #6a6a6a;
     line-height: 1.5;
     margin: 16px 0 0;
     text-align: center;
@@ -506,7 +506,7 @@
   #about-close {
     position: absolute;
     top: 8px; right: 8px;
-    width: 32px; height: 32px;
+    width: 44px; height: 44px;
     background: transparent;
     border: none;
     font: 22px/1 "Inter Tight", system-ui, sans-serif;
@@ -1761,9 +1761,9 @@
 
   function showArtistDetail(a, returnAddr) {
     const links = [];
-    if (a.website)     links.push(`<a href="${esc(a.website)}" target="_blank" rel="noopener">Website</a>`);
-    if (a.instagram)   links.push(`<a href="${esc(a.instagram)}" target="_blank" rel="noopener">Instagram</a>`);
-    if (a.other_links) a.other_links.forEach(l => links.push(`<a href="${esc(l)}" target="_blank" rel="noopener">${esc(displayHost(l))}</a>`));
+    if (a.website)     links.push(`<a href="${esc(safeUrl(a.website))}" target="_blank" rel="noopener">Website</a>`);
+    if (a.instagram)   links.push(`<a href="${esc(safeUrl(a.instagram))}" target="_blank" rel="noopener">Instagram</a>`);
+    if (a.other_links) a.other_links.forEach(l => links.push(`<a href="${esc(safeUrl(l))}" target="_blank" rel="noopener">${esc(displayHost(l))}</a>`));
 
     const fav = isFav(a);
     const html = `
@@ -1833,6 +1833,11 @@
   function displayHost(url) {
     try { return new URL(url).host.replace(/^www\./, ''); }
     catch { return url; }
+  }
+  // Only allow http(s) in data-derived hrefs (neutralizes javascript:/data: etc.).
+  function safeUrl(u) {
+    const s = String(u == null ? '' : u).trim();
+    return /^https?:\/\//i.test(s) ? s : '#';
   }
   // Neutral, generated artist tile (we ship no third-party photos): a
   // category-colored square with an ORIGINAL per-category glyph + the artist's
@@ -1911,7 +1916,6 @@
   }
   function updateZoomLevel() {
     const lvl = currentZoomLevel();
-    svg.querySelectorAll('text.bld-name').forEach(t => t.classList.toggle('hidden', lvl < 2));
     if (typeof UXdeclutter === 'function') UXdeclutter(lvl); /* UX:declutter */
   }
   function zoomTo(addr) {
@@ -2315,13 +2319,13 @@
     const fix = await uxUserFix();
     if (!fix) return;
     const { pos } = fix;
-    const ranked = artists.map(a => {
+    const ranked = artists.filter(a => matchesFilter(a)).map(a => {
       const ll = uxCentroidLatLng(a.address);
       if (!ll) return null;
       return { a, d: distanceMeters(pos.lat, pos.lng, ll.lat, ll.lng) };
     }).filter(Boolean).sort((p, q) => p.d - q.d);
 
-    if (!ranked.length) { showToast('No studios to locate'); return; }
+    if (!ranked.length) { showToast('No studios match the current filter'); return; }
 
     const rows = ranked.map(({ a, d }) => `
       <li><button data-artist-idx="${artists.indexOf(a)}">
