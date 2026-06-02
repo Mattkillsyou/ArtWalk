@@ -951,6 +951,13 @@
   @media (prefers-reduced-motion: reduce) {
     #ux-route .ux-route-line { animation: none; }
   }
+  /* === UX: gestures + declutter === */
+  /* Collision-/zoom-hidden building-number labels. Separate from the legacy
+     .bld-name.hidden mechanism so the lead can reconcile cleanly. */
+  text.bld-label.ux-collapsed { display: none; }
+  /* The " · N" studio-count suffix shown on prominent buildings at campus zoom.
+     Slightly lighter than the number so the address still reads first. */
+  tspan.ux-count { fill: #b0b0b0; font-weight: 500; }
   /* === /UX === */
 </style>
 </head>
@@ -1830,6 +1837,7 @@
   function updateZoomLevel() {
     const lvl = currentZoomLevel();
     svg.querySelectorAll('text.bld-name').forEach(t => t.classList.toggle('hidden', lvl < 2));
+    if (typeof UXdeclutter === 'function') UXdeclutter(lvl); /* UX:declutter */
   }
   function zoomTo(addr) {
     const pos = POSITIONS[addr];
@@ -1859,10 +1867,12 @@
   let touchMoved = false;
 
   svg.addEventListener('mousedown', e => {
+    UXmomentum.cancel(); /* UX:gestures — stop any inertia on new grab */
     isPanning = true;
     panStart = { x: e.clientX, y: e.clientY };
     panStartView = { ...VIEW };
     touchMoved = false;
+    UXmomentum.sample(e.clientX, e.clientY); /* UX:gestures */
     e.preventDefault();
   });
   window.addEventListener('mousemove', e => {
@@ -1874,14 +1884,16 @@
     const sx = panStartView.w / rect.width;
     const sy = panStartView.h / rect.height;
     setView(panStartView.x - dx * sx, panStartView.y - dy * sy, panStartView.w);
+    UXmomentum.sample(e.clientX, e.clientY); /* UX:gestures */
   });
   window.addEventListener('mouseup', () => {
-    if (touchMoved) { suppressClick = true; setTimeout(() => suppressClick = false, 80); }
+    if (touchMoved) { suppressClick = true; setTimeout(() => suppressClick = false, 80); UXmomentum.flick(); } /* UX:gestures */
     isPanning = false;
   });
 
   svg.addEventListener('wheel', e => {
     e.preventDefault();
+    UXmomentum.cancel(); /* UX:gestures — wheel interrupts any inertia */
     const factor = Math.exp(-e.deltaY * 0.0015);
     const rect = svg.getBoundingClientRect();
     const px = (e.clientX - rect.left) / rect.width;
@@ -1895,14 +1907,18 @@
   }, { passive: false });
 
   svg.addEventListener('touchstart', e => {
+    UXmomentum.cancel(); /* UX:gestures — stop inertia on new touch */
     if (e.touches.length === 1) {
       const t = e.touches[0];
       isPanning = true;
       panStart = { x: t.clientX, y: t.clientY };
       panStartView = { ...VIEW };
       touchMoved = false;
+      UXmomentum.sample(t.clientX, t.clientY); /* UX:gestures */
+      UXdoubleTap.onTouchStart(t, e); /* UX:gestures — double-tap-to-zoom */
     } else if (e.touches.length === 2) {
       isPanning = false;
+      UXmomentum.markPinch(); /* UX:gestures — suppress flick after a pinch */
       const t1 = e.touches[0], t2 = e.touches[1];
       pinchStartDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
       pinchStartView = { ...VIEW };
@@ -1925,6 +1941,7 @@
       const sx = panStartView.w / rect.width;
       const sy = panStartView.h / rect.height;
       setView(panStartView.x - dx * sx, panStartView.y - dy * sy, panStartView.w);
+      UXmomentum.sample(t.clientX, t.clientY); /* UX:gestures */
     } else if (e.touches.length === 2 && pinchStartView) {
       e.preventDefault();
       const t1 = e.touches[0], t2 = e.touches[1];
@@ -1940,8 +1957,10 @@
       touchMoved = true;
     }
   }, { passive: false });
-  svg.addEventListener('touchend', () => {
+  svg.addEventListener('touchend', e => {
     if (touchMoved) { suppressClick = true; setTimeout(() => suppressClick = false, 80); }
+    /* UX:gestures — flick only when the LAST finger lifts off a single-finger pan */
+    if ((!e || e.touches.length === 0)) UXmomentum.flick();
     isPanning = false;
     pinchStartView = null;
   });
@@ -2339,6 +2358,284 @@
   // worktree, which has no bar yet, stays robust). The window.UX.nearMe hook is
   // the real contract.
   document.getElementById('ux-act-near')?.addEventListener('click', () => window.UX.nearMe());
+  // === UX: gestures + declutter ===
+  // Item 6 (robust gestures) + item 7 (label decluttering). Everything here is
+  // built ON TOP of the existing setView()/VIEW projection — it never replaces
+  // the projection and always routes motion through setView(), so setView's
+  // MIN_W/MAX_W + overshoot clamping is preserved. Tap-vs-drag selection is left
+  // entirely to the existing suppressClick/touchMoved gating; the only thing we
+  // add is momentum AFTER the gesture ends (post-suppressClick) and a separate
+  // double-tap recognizer that does not interfere with single-tap selection.
+  window.UX = window.UX || {};
+
+  const UXreduceMotion = (() => {
+    let mq = null;
+    try { mq = window.matchMedia('(prefers-reduced-motion: reduce)'); } catch (e) {}
+    return () => !!(mq && mq.matches);
+  })();
+
+  // Map a client point (px) to the focus fraction of the current viewBox.
+  function uxClientToFrac(clientX, clientY) {
+    const rect = svg.getBoundingClientRect();
+    return {
+      px: (clientX - rect.left) / rect.width,
+      py: (clientY - rect.top) / rect.height,
+      rect,
+    };
+  }
+
+  // ---- Momentum / inertia pan after a flick -------------------------------
+  // We sample pointer positions during a drag, then on release fling the view
+  // with a velocity that decays via requestAnimationFrame. Each frame calls
+  // setView(), so the fling decelerates naturally when it hits setView's clamp.
+  const UXmomentum = (() => {
+    const FRICTION = 0.93;          // per-frame velocity multiplier (~16ms frames)
+    const MIN_SPEED = 0.015;        // px/ms below which we stop
+    const MAX_SPEED = 4.0;          // px/ms cap, guards against jumpy samples
+    const SAMPLE_WINDOW = 90;       // ms of recent samples used for velocity
+    let samples = [];               // {x,y,t} in client px
+    let raf = 0;
+    let pinchThisGesture = false;
+
+    function cancel() {
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    }
+    function markPinch() { pinchThisGesture = true; }
+    function sample(x, y) {
+      const t = performance.now();
+      samples.push({ x, y, t });
+      // keep a little more than the window so we always have 2+ points
+      while (samples.length > 2 && t - samples[0].t > SAMPLE_WINDOW) samples.shift();
+    }
+    function reset() { samples = []; pinchThisGesture = false; }
+
+    function flick() {
+      cancel();
+      const wasPinch = pinchThisGesture;
+      const pts = samples.slice();
+      reset();
+      if (wasPinch || pts.length < 2 || UXreduceMotion()) return; // no inertia
+      const last = pts[pts.length - 1];
+      // first sample within the window
+      let first = pts[0];
+      for (let i = pts.length - 1; i >= 0; i--) {
+        if (last.t - pts[i].t >= SAMPLE_WINDOW) { first = pts[i]; break; }
+        first = pts[i];
+      }
+      const dt = last.t - first.t;
+      if (dt <= 0) return;
+      // client-px velocity
+      let vx = (last.x - first.x) / dt;   // px/ms
+      let vy = (last.y - first.y) / dt;
+      let speed = Math.hypot(vx, vy);
+      if (speed < 0.05) return;            // too slow to be a flick
+      if (speed > MAX_SPEED) { const k = MAX_SPEED / speed; vx *= k; vy *= k; }
+
+      const rect = svg.getBoundingClientRect();
+      // Convert client-px/ms → viewBox-units/frame (dragging right moves view left)
+      let dxView = -vx * (VIEW.w / rect.width) * 16;
+      let dyView = -vy * (VIEW.h / rect.height) * 16;
+
+      const step = () => {
+        const prevX = VIEW.x, prevY = VIEW.y;
+        setView(VIEW.x + dxView, VIEW.y + dyView, VIEW.w);
+        // If a clamp pinned an axis (no movement), kill that axis's velocity so
+        // we don't burn frames pushing against the wall.
+        if (VIEW.x === prevX) dxView = 0;
+        if (VIEW.y === prevY) dyView = 0;
+        dxView *= FRICTION; dyView *= FRICTION;
+        const remaining = Math.hypot(
+          dxView / (VIEW.w / rect.width),
+          dyView / (VIEW.h / rect.height)
+        ) / 16; // back to px/ms for the threshold check
+        if (remaining > MIN_SPEED && (dxView !== 0 || dyView !== 0)) {
+          raf = requestAnimationFrame(step);
+        } else { raf = 0; }
+      };
+      raf = requestAnimationFrame(step);
+    }
+    return { sample, flick, cancel, markPinch, reset };
+  })();
+
+  // ---- Smooth viewBox tween (used by recenter + double-tap) ---------------
+  let uxTweenRaf = 0;
+  function uxCancelTween() { if (uxTweenRaf) { cancelAnimationFrame(uxTweenRaf); uxTweenRaf = 0; } }
+  // Animate VIEW from its current box to (tx,ty,tw) over `ms`, then run done().
+  function uxAnimateView(tx, ty, tw, ms, done) {
+    uxCancelTween();
+    UXmomentum.cancel();
+    if (UXreduceMotion() || ms <= 0) { setView(tx, ty, tw); if (done) done(); return; }
+    const x0 = VIEW.x, y0 = VIEW.y, w0 = VIEW.w;
+    const t0 = performance.now();
+    const ease = p => 1 - Math.pow(1 - p, 3); // ease-out cubic
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / ms);
+      const k = ease(p);
+      setView(x0 + (tx - x0) * k, y0 + (ty - y0) * k, w0 + (tw - w0) * k);
+      if (p < 1) { uxTweenRaf = requestAnimationFrame(tick); }
+      else { uxTweenRaf = 0; if (done) done(); }
+    };
+    uxTweenRaf = requestAnimationFrame(tick);
+  }
+
+  // ---- Recenter to campus (exposed as window.UX.recenter) -----------------
+  // Computes the exact framing resetView() would land on, animates to it, then
+  // calls resetView() so the final state is pixel-identical to the reset path.
+  function uxRecenterTarget() {
+    const rect = svg.getBoundingClientRect();
+    const aspectScreen = rect.height / rect.width;
+    const w = aspectScreen >= NATURAL.h / NATURAL.w ? NATURAL.w : NATURAL.h / aspectScreen;
+    return { x: (NATURAL.w - w) / 2, y: 0, w };
+  }
+  function uxRecenter() {
+    const t = uxRecenterTarget();
+    uxAnimateView(t.x, t.y, t.w, 450, () => resetView());
+  }
+  window.UX.recenter = uxRecenter;
+
+  // ---- Double-tap to zoom at the tapped point -----------------------------
+  // Self-contained recognizer. It only ACTS on the second tap of a quick
+  // double-tap; single taps fall through untouched so building selection (via
+  // the existing g.click handler + suppressClick gating) is unaffected.
+  const UXdoubleTap = (() => {
+    const MAX_GAP = 300;   // ms between taps
+    const MAX_DIST = 32;   // px between taps (client)
+    let lastT = 0, lastX = 0, lastY = 0;
+    function onTouchStart(touch, e) {
+      const now = performance.now();
+      if (now - lastT < MAX_GAP &&
+          Math.hypot(touch.clientX - lastX, touch.clientY - lastY) < MAX_DIST) {
+        lastT = 0; // consume
+        if (e && e.cancelable) e.preventDefault();
+        // Suppress the tap-select that would otherwise follow this touch.
+        suppressClick = true; setTimeout(() => suppressClick = false, 350);
+        zoomAtPoint(touch.clientX, touch.clientY);
+      } else {
+        lastT = now; lastX = touch.clientX; lastY = touch.clientY;
+      }
+    }
+    return { onTouchStart };
+  })();
+
+  // Zoom toward a client point by `factor` (>1 zooms in), keeping that point
+  // fixed on screen. If we're already near max zoom, recenter to campus instead
+  // so double-tap acts as a familiar toggle. Routes through setView clamping.
+  function zoomAtPoint(clientX, clientY, factor) {
+    factor = factor || 2.2;
+    const { px, py, rect } = uxClientToFrac(clientX, clientY);
+    // Already deep in? Toggle back out to campus.
+    if (VIEW.w <= MIN_W * 1.15) { uxRecenter(); return; }
+    const fx = VIEW.x + px * VIEW.w;
+    const fy = VIEW.y + py * VIEW.h;
+    const newW = Math.max(MIN_W, VIEW.w / factor);
+    const aspectScreen = rect.height / rect.width;
+    const newH = newW * aspectScreen;
+    uxAnimateView(fx - px * newW, fy - py * newH, newW, 260);
+  }
+  // Desktop parity: double-click on the map zooms at the cursor too.
+  svg.addEventListener('dblclick', e => {
+    e.preventDefault();
+    suppressClick = true; setTimeout(() => suppressClick = false, 350);
+    zoomAtPoint(e.clientX, e.clientY);
+  });
+
+  // ---- Label decluttering by zoom (item 7) --------------------------------
+  // At campus zoom (level 1) building-number labels overlap and turn to mush.
+  // We hide the labels that collide with a more-prominent neighbour and, for the
+  // prominent ones, append a " · N" studio count when it fits inside the shape.
+  // Reveal everything as the user zooms in. Label rects are precomputed from
+  // POSITIONS (no getBBox / layout reads), so this is cheap to run on every
+  // zoom change. Approx glyph width ≈ 0.62·fontSize (Inter Tight digits).
+  const UX_GLYPH_W = 0.62;
+  let uxLabelRects = null;   // built lazily after renderMap, invalidated on rerender
+  function uxBuildLabelRects() {
+    uxLabelRects = [];
+    for (const [addr, pos] of Object.entries(POSITIONS)) {
+      const txt = svg.querySelector(
+        `g.bld-group[data-address="${cssEscape(addr)}"] text.bld-label`);
+      if (!txt) continue;
+      const short = String(pos.short == null ? '' : pos.short);
+      const minSide = Math.min(pos.w, pos.h);
+      const fontSize = minSide < 22 ? 7 : minSide < 36 ? 8 : minSide < 70 ? 10 : minSide < 130 ? 12 : 14;
+      const pad = 3;
+      const x = pos.x + pad;
+      const y = pos.y + pad;                 // top of the glyph box (text baseline is y+fontSize)
+      const w = short.length * fontSize * UX_GLYPH_W;
+      uxLabelRects.push({
+        addr, el: txt, short, fontSize,
+        x, y, w, h: fontSize,
+        shapeW: pos.w, area: pos.w * pos.h,
+        count: (artistsByAddress[addr]?.length || 0),
+      });
+    }
+    // Most prominent first → they win collisions and earn a studio count.
+    uxLabelRects.sort((a, b) => b.area - a.area);
+  }
+  function uxRectsOverlap(a, b) {
+    return !(a.x + a.w <= b.x || b.x + b.w <= a.x ||
+             a.y + a.h <= b.y || b.y + b.h <= a.y);
+  }
+  // Replace a label's content with "NNN · N" (count as a styled tspan) or back
+  // to plain "NNN". Idempotent; avoids touching the DOM when unchanged.
+  function uxSetLabel(rec, withCount) {
+    const el = rec.el;
+    const hasCount = !!el.querySelector('tspan.ux-count');
+    if (withCount && rec.count > 0) {
+      if (hasCount) return;
+      el.textContent = rec.short + ' · ';
+      const ts = document.createElementNS(NS, 'tspan');
+      ts.setAttribute('class', 'ux-count');
+      ts.textContent = String(rec.count);
+      el.appendChild(ts);
+    } else {
+      if (!hasCount && el.textContent === rec.short) return;
+      el.textContent = rec.short;
+    }
+  }
+  // Called from updateZoomLevel() (hooked via the `UXdeclutter` global below).
+  function uxDeclutter(level) {
+    if (!uxLabelRects) uxBuildLabelRects();
+    if (!uxLabelRects || !uxLabelRects.length) return;
+    if (level >= 2) {
+      // Zoomed in: reveal every label, strip the counts (numbers read clearly).
+      for (const r of uxLabelRects) {
+        r.el.classList.remove('ux-collapsed');
+        uxSetLabel(r, false);
+      }
+      return;
+    }
+    // Campus level: greedily keep prominent, non-overlapping labels.
+    const kept = [];
+    for (const r of uxLabelRects) {
+      // The label-with-count is wider; reserve that width when deciding overlap
+      // for buildings that will show a count, so the count never collides.
+      const willCount = r.count > 0 &&
+        (String(r.short).length + 3 + String(r.count).length) * r.fontSize * UX_GLYPH_W <= r.shapeW - 2;
+      const effW = willCount
+        ? (String(r.short).length + 3 + String(r.count).length) * r.fontSize * UX_GLYPH_W
+        : r.w;
+      const probe = { x: r.x, y: r.y, w: effW, h: r.h };
+      let collides = false;
+      for (const k of kept) { if (uxRectsOverlap(probe, k.box)) { collides = true; break; } }
+      if (collides) {
+        r.el.classList.add('ux-collapsed');
+      } else {
+        r.el.classList.remove('ux-collapsed');
+        uxSetLabel(r, willCount);
+        kept.push({ box: probe });
+      }
+    }
+  }
+  // Bridge so the tiny edit inside updateZoomLevel() can find us regardless of
+  // declaration order; updateZoomLevel calls `UXdeclutter(lvl)` if it's a fn.
+  function UXdeclutter(level) { uxDeclutter(level); }
+  // renderMap() rebuilds the label DOM, so any cached rects are stale.
+  const uxOrigRenderMap = renderMap;
+  renderMap = function () { uxLabelRects = null; return uxOrigRenderMap.apply(this, arguments); };
+
+  // Wire the shared bottom-bar recenter button if/when it exists (visual agent
+  // owns the markup; guard per the cross-agent contract).
+  document.getElementById('ux-act-recenter')?.addEventListener('click', () => window.UX.recenter());
   // === /UX ===
 
   // -------- Init --------
