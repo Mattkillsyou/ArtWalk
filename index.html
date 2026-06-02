@@ -616,7 +616,7 @@
     --ux-bld-stroke-w: 1.4;
     --ux-street-fill: #ededed;
     --ux-street-strip: #ededed;
-    --ux-label: #8c8c8c;
+    --ux-label: #6a6a6a;
     --ux-label-strong: #5a5a5a;
   }
 
@@ -922,8 +922,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #007aff;
-    border: 1px solid #007aff;
+    background: #0058d0;
+    border: 1px solid #0058d0;
     padding: 10px 16px;
     font: 600 12px/1 "Inter Tight", system-ui, sans-serif;
     text-transform: uppercase;
@@ -944,7 +944,8 @@
   text.bld-label.ux-collapsed { display: none; }
   /* The " · N" studio-count suffix shown on prominent buildings at campus zoom.
      Slightly lighter than the number so the address still reads first. */
-  tspan.ux-count { fill: #b0b0b0; font-weight: 500; }
+  tspan.ux-count { fill: #8a8a8a; font-weight: 500; }
+  html[data-theme="sunlight"] tspan.ux-count { fill: #000; }
   /* === UX: discovery (filters + sheet snap points) === */
   /* --- multi-select category chips --- */
   /* Show the running filter state with an accent ring so several chips can read as
@@ -2243,11 +2244,10 @@
       });
     };
 
-    // ---- Wire the bottom action bar (guarded; the bar may be merged in later) ----
-    document.getElementById('ux-act-near')?.addEventListener('click', () => window.UX.nearMe?.());
+    // ---- Wire the bottom action bar. Locate + theme are owned here; near, search,
+    // and recenter are wired by the wayfind/discovery/mapgest blocks below — binding
+    // them here too would double-fire (per integration review). ----
     document.getElementById('ux-act-locate')?.addEventListener('click', () => document.getElementById('locate-me')?.click());
-    document.getElementById('ux-act-search')?.addEventListener('click', () => window.UX.focusSearch?.());
-    document.getElementById('ux-act-recenter')?.addEventListener('click', () => window.UX.recenter?.());
     document.getElementById('ux-act-theme')?.addEventListener('click', cycleTheme);
   })();
   // === UX: wayfind ===
