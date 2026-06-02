@@ -296,29 +296,16 @@
     pointer-events: none;
   }
 
-  /* Bottom sheet */
+  /* Bottom sheet (snap behavior + handle styling are in the UX block near </style>) */
   #sheet {
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    max-height: 65vh;
-    max-height: 65dvh;
     background: #fff;
     border-top: 1px solid #000;
-    transform: translateY(100%);
-    transition: transform 0.25s ease;
     z-index: 10;
-    padding: 14px 20px calc(env(safe-area-inset-bottom) + 14px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  #sheet.open { transform: translateY(0); }
-  #sheet-handle {
-    width: 36px;
-    height: 4px;
-    background: #000;
-    margin: 0 auto 10px;
+    padding: 0 20px;
   }
   #sheet-close {
     position: absolute;
@@ -584,6 +571,86 @@
     0%   { transform: scale(1);   opacity: 0.4; }
     100% { transform: scale(2.6); opacity: 0; }
   }
+
+  /* === UX: discovery (filters + sheet snap points) === */
+  /* --- multi-select category chips --- */
+  /* Show the running filter state with an accent ring so several chips can read as
+     "on" simultaneously without changing the existing inverted .active look. */
+  #chips .chip[aria-pressed="true"] {
+    background: #000;
+    color: #fff;
+  }
+  #chips .chip:focus-visible {
+    outline: 2px solid #000;
+    outline-offset: 2px;
+  }
+  /* Fuzzy-match highlight in the results list (XSS-safe: text is escaped first,
+     then <mark> is inserted around already-escaped spans). */
+  #sheet-body mark {
+    background: #000;
+    color: #fff;
+    padding: 0 1px;
+    border-radius: 2px;
+  }
+
+  /* --- bottom-sheet snap points (PEEK / HALF / FULL) --- */
+  /* The sheet is a tall fixed panel anchored to the bottom; its on-screen height is
+     controlled by translating it DOWN by --sheet-y (px). JS owns --sheet-y and the
+     snap math. Inline transform set by the drag controller wins over this base rule. */
+  #sheet {
+    height: 90dvh;
+    max-height: 90dvh;
+    transform: translateY(var(--sheet-y, 100%));
+    transition: transform 0.26s cubic-bezier(.22,.61,.36,1);
+    overflow: hidden;             /* the body scrolls, not the shell */
+    display: flex;
+    flex-direction: column;
+    touch-action: none;           /* handle drags shouldn't scroll the page */
+    will-change: transform;
+  }
+  /* When closed the sheet is fully off-screen regardless of any stale --sheet-y. */
+  #sheet:not(.open) { transform: translateY(110%); }
+  /* While the finger/mouse is down we track 1:1 — no animation. */
+  #sheet.ux-dragging { transition: none; }
+  /* The grab affordance: a bigger hit area around the visual pill. */
+  #sheet-handle {
+    flex: 0 0 auto;
+    width: 100%;
+    height: 22px;
+    margin: 0;
+    padding: 9px 0 9px;
+    background: transparent;
+    cursor: grab;
+    touch-action: none;
+    position: relative;
+  }
+  #sheet-handle::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 9px;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: #000;
+  }
+  #sheet-handle:active { cursor: grabbing; }
+  /* The body is the only scroll region; it expands to fill the shell. At PEEK the
+     controller disables its scrolling so the map underneath stays the focus. */
+  #sheet-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 4px 0 calc(env(safe-area-inset-bottom) + 14px);
+  }
+  #sheet.ux-snap-peek #sheet-body { overflow-y: hidden; }
+  @media (prefers-reduced-motion: reduce) {
+    #sheet { transition: transform 0.001s linear; }
+  }
+  /* === /UX === */
 </style>
 </head>
 <body>
@@ -1023,6 +1090,13 @@
     chipsBar.appendChild(all);
     const favChip = makeChip('★ Favorites', '__fav__', favOnly);
     chipsBar.appendChild(favChip);
+    /* UX:filters — optional "Near me" affordance; only rendered when the (cross-agent)
+       window.UX.nearMe hook exists. It's an action, not a sticky filter. */
+    if (window.UX && typeof window.UX.nearMe === 'function') {
+      chipsBar.appendChild(makeChip('◎ Near me', '__near__', false));
+    }
+    /* UX:filters — categories are MULTI-SELECT: each reflects its own membership in
+       activeFilters, so several can read as active at once. */
     categories.forEach(cat => chipsBar.appendChild(makeChip(cat, cat, activeFilters.has(cat))));
   }
   function makeChip(label, cat, active) {
@@ -1030,8 +1104,15 @@
     b.className = 'chip' + (active ? ' active' : '');
     b.textContent = label;
     b.dataset.cat = cat;
+    /* UX:filters — expose pressed state for a11y + multi-select styling (CSS targets
+       [aria-pressed="true"]). The "Near me" action chip is not a toggle. */
+    if (cat !== '__near__') b.setAttribute('aria-pressed', active ? 'true' : 'false');
+    b.setAttribute('aria-label', label.replace(/^[^A-Za-z0-9]+/, '').trim() || label);
     b.addEventListener('click', () => {
-      if (cat === '') {
+      if (cat === '__near__') {
+        window.UX?.nearMe?.();      /* UX:filters — delegate to the geo agent's hook */
+        return;
+      } else if (cat === '') {
         activeFilters.clear();
         favOnly = false;
       } else if (cat === '__fav__') {
@@ -1178,11 +1259,9 @@
   }
   function matchesSearch(a) {
     if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase();
-    return (a.name && a.name.toLowerCase().includes(q)) ||
-           (a.medium && a.medium.toLowerCase().includes(q)) ||
-           (a.address && a.address.toLowerCase().includes(q)) ||
-           (a.category && a.category.toLowerCase().includes(q));
+    /* UX:search — fuzzy subsequence match across name/medium/category/address.
+       fuzzyArtistScore() returns null when the query isn't a subsequence of any field. */
+    return fuzzyArtistScore(a, searchQuery) !== null;
   }
 
   function applyFilters() {
@@ -1234,13 +1313,14 @@
   // -------- Bottom sheet --------
   function openSheet(html) {
     sheetBody.innerHTML = html;
-    sheet.classList.add('open');
-    sheet.setAttribute('aria-hidden', 'false');
-    sheet.scrollTop = 0;
+    sheetBody.scrollTop = 0;
+    /* UX:sheet — present at the HALF snap (keeps current snap if already open) */
+    UXSheet.present();
   }
   function closeSheet() {
     sheet.classList.remove('open');
     sheet.setAttribute('aria-hidden', 'true');
+    UXSheet.dismiss();          /* UX:sheet — reset snap state + transform */
     selectedAddress = null;
     clearHighlight();
   }
@@ -1268,8 +1348,8 @@
         ? '<p class="empty">No artists match the current filter.</p>'
         : '<ul class="artist-list">' + arts.map(a => `
             <li><button data-artist-idx="${artists.indexOf(a)}">
-              <div class="a-name">${esc(a.name)}</div>
-              <div class="a-meta">${esc(a.category)}${a.medium ? ' · ' + esc(a.medium) : ''}${a.unit ? ' · #' + esc(a.unit) : ''}</div>
+              <div class="a-name">${fuzzyHighlight(a.name, searchQuery)}</div>
+              <div class="a-meta">${fuzzyHighlight(a.category, searchQuery)}${a.medium ? ' · ' + fuzzyHighlight(a.medium, searchQuery) : ''}${a.unit ? ' · #' + esc(a.unit) : ''}</div>
             </button></li>`).join('') + '</ul>'}`;
     openSheet(html);
     bindArtistButtons(addr);
@@ -1323,13 +1403,19 @@
       openSheet('<h2>No matches</h2><p class="empty">Try a different search term.</p>');
       return;
     }
+    /* UX:search — rank by fuzzy relevance (best field score, desc) when searching,
+       so the closest matches surface first. Stable for the no-query case. */
+    const ranked = searchQuery
+      ? matches.map(a => ({ a, s: fuzzyArtistScore(a, searchQuery) || 0 }))
+               .sort((x, y) => y.s - x.s).map(o => o.a)
+      : matches;
     const html = `
-      <h2>${matches.length} ${matches.length === 1 ? 'result' : 'results'}</h2>
+      <h2>${ranked.length} ${ranked.length === 1 ? 'result' : 'results'}</h2>
       <ul class="artist-list">
-        ${matches.slice(0, 200).map(a => `
+        ${ranked.slice(0, 200).map(a => `
           <li><button data-artist-idx="${artists.indexOf(a)}">
-            <div class="a-name">${esc(a.name)}</div>
-            <div class="a-meta">${esc(a.category)} · ${esc(prettyAddr(a.address))}${a.unit ? ' #' + esc(a.unit) : ''}</div>
+            <div class="a-name">${fuzzyHighlight(a.name, searchQuery)}</div>
+            <div class="a-meta">${fuzzyHighlight(a.category, searchQuery)} · ${fuzzyHighlight(prettyAddr(a.address), searchQuery)}${a.unit ? ' #' + esc(a.unit) : ''}</div>
           </button></li>`).join('')}
       </ul>`;
     openSheet(html);
@@ -1547,6 +1633,258 @@
   // Resize handler
   window.addEventListener('resize', () => setView(VIEW.x, VIEW.y, VIEW.w));
   window.addEventListener('orientationchange', () => setTimeout(() => setView(VIEW.x, VIEW.y, VIEW.w), 100));
+
+  // === UX: discovery (fuzzy search + multi-select filters + sheet snap points) ===
+  // Shared cross-agent namespace (the action bar lives in the visual agent's branch;
+  // we attach our hooks here and guard any #ux-act-* wiring with ?.).
+  window.UX = window.UX || {};
+  const UX_REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Fuzzy subsequence matcher (no external library) ----------------------
+  // Returns null when `query` is not a subsequence of `text`; otherwise an object
+  // { score, indices } where `indices` are the matched character positions in the
+  // ORIGINAL text. Scoring rewards contiguous runs, word-boundary starts, and an
+  // earlier first match — good enough to rank artist/medium/address hits.
+  function fuzzyScore(text, query) {
+    if (!query) return { score: 0, indices: [] };
+    if (!text) return null;
+    const t = text.toLowerCase();
+    const q = query.toLowerCase();
+    // Fast path / strong boost for a true substring match.
+    const sub = t.indexOf(q);
+    if (sub !== -1) {
+      const indices = [];
+      for (let k = 0; k < q.length; k++) indices.push(sub + k);
+      const boundary = sub === 0 || /[^a-z0-9]/.test(t[sub - 1]);
+      return { score: 1000 + (boundary ? 200 : 0) + q.length * 4 - sub, indices };
+    }
+    let ti = 0, score = 0, run = 0;
+    const indices = [];
+    for (let qi = 0; qi < q.length; qi++) {
+      const c = q[qi];
+      let found = -1;
+      while (ti < t.length) {
+        if (t[ti] === c) { found = ti; break; }
+        ti++;
+      }
+      if (found === -1) return null;            // not a subsequence → no match
+      indices.push(found);
+      const prev = found > 0 ? t[found - 1] : '';
+      if (found === 0 || /[^a-z0-9]/.test(prev)) score += 18;  // word-boundary bonus
+      if (qi > 0 && indices[qi - 1] === found - 1) { run++; score += 6 + run * 4; } // contiguous
+      else run = 0;
+      score += Math.max(0, 12 - found * 0.3);   // earlier is better
+      ti = found + 1;
+    }
+    return { score, indices };
+  }
+
+  // Best score across the searchable fields of an artist (used by matchesSearch + ranking).
+  function fuzzyArtistScore(a, query) {
+    const fields = [a.name, a.medium, a.category, a.address];
+    let best = null;
+    for (const f of fields) {
+      const r = fuzzyScore(f || '', query);
+      if (r && (best === null || r.score > best)) best = r.score;
+    }
+    return best; // null when nothing matched
+  }
+
+  // XSS-safe highlight: escape the WHOLE string first, then re-run the matcher over
+  // the original text to find indices and wrap those (escaped) characters in <mark>.
+  // Because we map original indices onto pre-escaped, per-character escaped pieces,
+  // no attacker-controlled markup can ever leak through.
+  function fuzzyHighlight(text, query) {
+    const s = String(text == null ? '' : text);
+    if (!query) return esc(s);
+    const r = fuzzyScore(s, query);
+    if (!r || !r.indices.length) return esc(s);
+    const mark = new Set(r.indices);
+    let out = '', open = false;
+    for (let i = 0; i < s.length; i++) {
+      const hit = mark.has(i);
+      if (hit && !open) { out += '<mark>'; open = true; }
+      else if (!hit && open) { out += '</mark>'; open = false; }
+      out += esc(s[i]);
+    }
+    if (open) out += '</mark>';
+    return out;
+  }
+  window.UX.fuzzyHighlight = fuzzyHighlight;
+
+  // ---- Bottom-sheet snap points: PEEK / HALF / FULL -------------------------
+  // The sheet is a 90dvh fixed panel translated DOWN by `--sheet-y` (px). We drive
+  // it via inline transform during drags and snap to one of three "visible heights"
+  // on release. openSheet()/closeSheet() keep their old signatures (see the small
+  // UX edits in those functions): open presents at HALF; close fully dismisses.
+  const UXSheet = (function () {
+    const SNAP_ORDER = ['peek', 'half', 'full'];
+    let sheetH = 0;              // measured panel height (≈ 90dvh)
+    let offsets = { peek: 0, half: 0, full: 0 }; // translateY (px) per snap; bigger = lower
+    let dismissedY = 0;          // translateY that hides the panel completely
+    let current = null;          // active snap name while open, else null
+
+    function visibleFor(name) {
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      if (name === 'peek') return 84;                 // handle + a sliver
+      if (name === 'half') return Math.round(vh * 0.5);
+      return Math.round(vh * 0.92);                   // full
+    }
+    function recompute() {
+      sheetH = sheet.getBoundingClientRect().height || (window.innerHeight * 0.9);
+      dismissedY = sheetH + 24;
+      SNAP_ORDER.forEach(n => {
+        offsets[n] = Math.max(0, Math.round(sheetH - visibleFor(n)));
+      });
+      if (current) applyY(offsets[current], false); // keep position correct after resize
+    }
+    function applyY(y, animate) {
+      if (!animate || UX_REDUCED) sheet.classList.add('ux-dragging');
+      sheet.style.setProperty('--sheet-y', y + 'px');
+      sheet.style.transform = 'translateY(' + y + 'px)';
+      if (!animate || UX_REDUCED) {
+        // force the no-transition paint, then drop the flag so the next move animates
+        void sheet.offsetHeight;
+        sheet.classList.remove('ux-dragging');
+      }
+    }
+    function setSnap(name, animate) {
+      if (!offsets[name] && offsets[name] !== 0) recompute();
+      current = name;
+      sheet.classList.toggle('ux-snap-peek', name === 'peek');
+      sheet.classList.toggle('ux-snap-full', name === 'full');
+      applyY(offsets[name], animate !== false);
+      sheet.setAttribute('data-snap', name);
+      const h = $('#sheet-handle');
+      if (h) {
+        h.setAttribute('aria-valuenow', String(SNAP_ORDER.indexOf(name)));
+        h.setAttribute('aria-valuetext', name.charAt(0).toUpperCase() + name.slice(1));
+      }
+    }
+    function nearest(y) {
+      let best = 'half', bestD = Infinity;
+      SNAP_ORDER.forEach(n => {
+        const d = Math.abs(offsets[n] - y);
+        if (d < bestD) { bestD = d; best = n; }
+      });
+      return best;
+    }
+    function present() {                 // called by openSheet()
+      recompute();
+      // Fresh open → HALF. Already open → keep the user's current snap.
+      const target = sheet.classList.contains('open') && current ? current : 'half';
+      sheet.classList.add('open');
+      sheet.setAttribute('aria-hidden', 'false');
+      // animate up from the dismissed position on a true (re)open
+      if (!current) { applyY(dismissedY, false); requestAnimationFrame(() => setSnap('half', true)); }
+      else setSnap(target, true);
+    }
+    function dismiss() {                  // called by closeSheet()
+      current = null;
+      sheet.classList.remove('ux-snap-peek', 'ux-snap-full');
+      sheet.removeAttribute('data-snap');
+      sheet.style.transform = '';        // hand control back to the CSS :not(.open) rule
+      sheet.style.removeProperty('--sheet-y');
+    }
+
+    // ---- drag handling (touch + mouse via Pointer Events) ----
+    let dragging = false, startPointerY = 0, startY = 0, lastY = 0, lastT = 0, velocity = 0;
+    function clientY(e) { return e.touches ? e.touches[0].clientY : e.clientY; }
+    function onDown(e) {
+      if (!sheet.classList.contains('open')) return;
+      recompute();
+      dragging = true;
+      startPointerY = clientY(e);
+      startY = offsets[current] != null ? offsets[current] : (parseFloat(sheet.style.getPropertyValue('--sheet-y')) || 0);
+      lastY = startY; lastT = (e.timeStamp || Date.now()); velocity = 0;
+      sheet.classList.add('ux-dragging');
+      try { if (e.pointerId != null && e.target.setPointerCapture) e.target.setPointerCapture(e.pointerId); } catch (_) {}
+    }
+    function onMove(e) {
+      if (!dragging) return;
+      const dy = clientY(e) - startPointerY;
+      let y = startY + dy;
+      if (y < 0) y = -Math.sqrt(-y) * 2;                 // rubber-band above FULL
+      if (y > dismissedY) y = dismissedY;
+      const now = (e.timeStamp || Date.now());
+      const dt = now - lastT;
+      if (dt > 0) velocity = (y - lastY) / dt;           // px per ms (down = +)
+      lastY = y; lastT = now;
+      sheet.style.setProperty('--sheet-y', y + 'px');
+      sheet.style.transform = 'translateY(' + y + 'px)';
+      if (e.cancelable) e.preventDefault();
+    }
+    function onUp() {
+      if (!dragging) return;
+      dragging = false;
+      sheet.classList.remove('ux-dragging');
+      const y = lastY;
+      const FLICK = 0.55;                                // px/ms downward = flick
+      const flingDown = !UX_REDUCED && velocity > FLICK;
+      const flingUp = !UX_REDUCED && velocity < -FLICK;
+      // Flick DOWN from peek (or dragged well below it) dismisses the sheet.
+      if ((flingDown && (current === 'peek' || y > offsets.peek)) ||
+          y > offsets.peek + Math.min(140, sheetH * 0.18)) {
+        closeSheet();
+        return;
+      }
+      let target;
+      if (flingDown) target = current === 'full' ? 'half' : 'peek';
+      else if (flingUp) target = current === 'peek' ? 'half' : 'full';
+      else target = nearest(y);
+      setSnap(target, true);
+    }
+
+    const handle = $('#sheet-handle');
+    if (handle) {
+      if (window.PointerEvent) {
+        handle.addEventListener('pointerdown', onDown);
+        window.addEventListener('pointermove', onMove, { passive: false });
+        window.addEventListener('pointerup', onUp);
+        window.addEventListener('pointercancel', onUp);
+      } else {
+        handle.addEventListener('touchstart', onDown, { passive: true });
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onUp);
+        handle.addEventListener('mousedown', onDown);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+      }
+      handle.setAttribute('role', 'slider');
+      handle.setAttribute('tabindex', '0');
+      handle.setAttribute('aria-label', 'Resize details panel');
+      handle.setAttribute('aria-orientation', 'vertical');
+      handle.setAttribute('aria-valuemin', '0');
+      handle.setAttribute('aria-valuemax', '2');
+      handle.setAttribute('aria-valuetext', 'Half');
+      // Keyboard a11y: up/down cycle snaps; Escape closes.
+      handle.removeAttribute('aria-hidden');
+      handle.addEventListener('keydown', ev => {
+        const i = SNAP_ORDER.indexOf(current || 'half');
+        if (ev.key === 'ArrowUp')        { setSnap(SNAP_ORDER[Math.min(i + 1, 2)], true); ev.preventDefault(); }
+        else if (ev.key === 'ArrowDown') { if (i === 0) closeSheet(); else setSnap(SNAP_ORDER[i - 1], true); ev.preventDefault(); }
+        else if (ev.key === 'Escape')    { closeSheet(); ev.preventDefault(); }
+      });
+    }
+    window.addEventListener('resize', recompute);
+    window.addEventListener('orientationchange', () => setTimeout(recompute, 120));
+
+    return { present, dismiss, setSnap, recompute, get current() { return current; } };
+  })();
+  window.UX.sheet = UXSheet;
+
+  // ---- Search focus hook (wired to the visual agent's #ux-act-search) -------
+  // Present the sheet (HALF) and focus the field so the user can immediately type.
+  window.UX.focusSearch = function focusSearch() {
+    if (!sheet.classList.contains('open')) {
+      // open onto the live results for the current query (empty query → no-op sheet)
+      showSearchResults(artists.filter(a => matchesFilter(a) && matchesSearch(a)));
+    }
+    try { search.focus({ preventScroll: true }); } catch (_) { search.focus(); }
+    search.select && search.select();
+  };
+  document.getElementById('ux-act-search')?.addEventListener('click', () => window.UX.focusSearch());
+  // === /UX ===
 
   // -------- Init --------
   function showError(msg) {
