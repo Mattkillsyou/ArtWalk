@@ -69,6 +69,8 @@
     gap: 8px;
     margin: 0 0 8px;
   }
+  #brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+  #brand-mark { flex: 0 0 auto; width: 26px; height: 26px; color: var(--ux-ink, #000); }
   #title {
     font: 15px/1 "Inter Tight", ui-sans-serif, system-ui, sans-serif;
     letter-spacing: 0.14em;
@@ -983,7 +985,20 @@
 <body>
 <header>
   <div id="title-row">
-    <p id="title">ArtWalk LA</p>
+    <div id="brand">
+      <svg id="brand-mark" viewBox="0 0 1024 1024" width="26" height="26" aria-hidden="true" focusable="false">
+        <defs><mask id="bm-arrow"><rect width="1024" height="1024" fill="#fff"/><polygon points="480,486 582,728 480,678 378,728" fill="#000"/></mask></defs>
+        <g fill="currentColor" mask="url(#bm-arrow)">
+          <path d="M648 452 C 786 452 812 506 812 556 C 812 606 786 660 648 660 L648 606 C 730 606 744 580 744 556 C 744 532 730 506 648 506 Z"/>
+          <path d="M306 392 L654 392 L640 792 Q636 822 606 822 L354 822 Q324 822 320 792 Z"/>
+          <rect x="294" y="362" width="366" height="46" rx="14"/>
+          <circle cx="330" cy="356" r="52"/><circle cx="398" cy="330" r="60"/><circle cx="470" cy="340" r="56"/>
+          <circle cx="542" cy="330" r="58"/><circle cx="612" cy="356" r="50"/>
+          <circle cx="432" cy="308" r="44"/><circle cx="510" cy="308" r="44"/>
+        </g>
+      </svg>
+      <p id="title">ArtWalk LA</p>
+    </div>
     <div id="header-buttons">
       <button id="locate-me" type="button" aria-label="Find me on the map" title="Find me">◎</button>
       <button id="info-btn" type="button" aria-label="About this app" title="About">i</button>

@@ -137,3 +137,30 @@ Raised font sizes across every surface (≈ +2 px, ~20–40%), keeping the minim
 scripts parse clean (`new Function`), CSS **188/188 balanced**, 0 route refs. Re-rendered
 the web layer into the existing iPhone 17 Pro Max sim bundle (native shell unchanged) and
 re-screenshot home/building/artist/filter/near-me/sunlight in `store/screenshots/ux2/`.
+
+## Owner feedback round 2 — new app icon + header mark
+
+Replaced the placeholder icon (four grey blocks + a blue dot) with an original
+**beer-stein logo**: a black stein silhouette on white with a **navigation arrow**
+knocked out of the mug body. It nods to the historic brewery building the studios
+occupy while the arrow signals the app's job (a walking map). Original/unbranded —
+our own geometry, not anyone's mark.
+
+- **Vector master:** `icons/app-icon.svg` (1024 viewBox). Also refreshed
+  `icons/favicon.svg` to the same mark (the old one was the 4-block placeholder).
+- **Generator rewrite:** `generate-placeholder-icons.mjs` now redraws the stein in
+  **Jimp at 3× supersample** (added `fillPolygon`/`fillEllipse`; arrow knocked out
+  in white) and downscales to every size — stays pure-JS (no system deps, CI-safe;
+  `postinstall` is `prepare.js`, so it never auto-runs). Regenerated
+  `icons/{apple-touch-icon,icon-192,icon-512,favicon-32,favicon-180}.png` +
+  `ios-icon-stash/icon-1024.png`; `npm run ios:icons` copied the 1024 into the iOS
+  asset catalog (`AppIcon.appiconset/AppIcon-512@2x.png`). All output is RGB, no
+  alpha (App Store requirement).
+- **In-app header mark:** added a 26px inline-SVG stein beside the `ArtWalk LA`
+  wordmark (new `#brand` flex group). Theme-aware — the silhouette uses
+  `fill: currentColor` driven by `--ux-ink` (black in light/sunlight, light in
+  dark), and the arrow is a `<mask>` hole so it shows the header background in any
+  theme. Verified on-device in light + dark; layout unchanged.
+- **Design scratch:** alternative concepts (route-pin, "A" monogram, footsteps, and
+  the stein treatments) live in the gitignored `_logo/`.
+- The new icon takes effect in the **next** iOS build; the submitted V1 is untouched.

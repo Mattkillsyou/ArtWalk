@@ -66,3 +66,6 @@ _archive/
 # Throwaway preview server / audit render artifacts (sandbox cwd workaround)
 _preview-server.js
 _audit/
+
+# Logo design scratch (concepts + renders); the master lives in icons/app-icon.svg
+_logo/
