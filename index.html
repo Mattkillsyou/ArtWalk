@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -584,6 +584,292 @@
     0%   { transform: scale(1);   opacity: 0.4; }
     100% { transform: scale(2.6); opacity: 0; }
   }
+
+  /* === UX: visual system (tokens + themes + tiles + action bar) === */
+  /* Design tokens. Used by the NEW UI below; existing rules are left intact
+     and only opt in where it is zero-risk (each map rule keeps its literal
+     fallback). Three themes drive these via [data-theme] on <html>. */
+  :root {
+    /* type scale (rem-ish, in px for this fixed-density app) */
+    --ux-fs-2xs: 10px;
+    --ux-fs-xs:  11px;
+    --ux-fs-sm:  13px;
+    --ux-fs-md:  15px;
+    --ux-fs-lg:  18px;
+    --ux-fs-xl:  22px;
+    --ux-fw-reg: 500;
+    --ux-fw-med: 600;
+    --ux-fw-bold: 700;
+    --ux-font: "Inter Tight", ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, sans-serif;
+    /* spacing scale */
+    --ux-sp-1: 4px;
+    --ux-sp-2: 8px;
+    --ux-sp-3: 12px;
+    --ux-sp-4: 16px;
+    --ux-sp-5: 24px;
+    --ux-radius: 0px;
+    --ux-tap: 44px;
+    /* color ROLES — light/auto defaults (mirror the app's b/w identity) */
+    --ux-bg: #ffffff;
+    --ux-surface: #ffffff;
+    --ux-surface-2: #fafafa;
+    --ux-ink: #000000;
+    --ux-ink-soft: #555555;
+    --ux-ink-faint: #8c8c8c;
+    --ux-line: #000000;
+    --ux-line-soft: #dddddd;
+    --ux-accent: #007aff;
+    --ux-on-accent: #ffffff;
+    --ux-shadow: 0 -1px 0 rgba(0,0,0,0.06);
+    /* MAP roles — keep the schematic legible in every theme */
+    --ux-map-bg: #fafafa;
+    --ux-bld-fill: #ffffff;
+    --ux-bld-fill-sel: #222222;
+    --ux-bld-stroke: #000000;
+    --ux-bld-stroke-w: 1.4;
+    --ux-street-fill: #ededed;
+    --ux-street-strip: #ededed;
+    --ux-label: #8c8c8c;
+    --ux-label-strong: #5a5a5a;
+  }
+
+  /* AUTO theme follows the OS; supply a dark variant for prefers-color-scheme. */
+  @media (prefers-color-scheme: dark) {
+    html[data-theme="auto"] {
+      --ux-bg: #0e0f12;
+      --ux-surface: #16181d;
+      --ux-surface-2: #1c1f26;
+      --ux-ink: #f4f5f7;
+      --ux-ink-soft: #aeb3bd;
+      --ux-ink-faint: #7e8694;
+      --ux-line: #3a3f49;
+      --ux-line-soft: #2a2e36;
+      --ux-accent: #4d9bff;
+      --ux-on-accent: #06121f;
+      --ux-shadow: 0 -1px 0 rgba(0,0,0,0.5);
+      --ux-map-bg: #14161b;
+      --ux-bld-fill: #20242c;
+      --ux-bld-fill-sel: #4d9bff;
+      --ux-bld-stroke: #aeb3bd;
+      --ux-bld-stroke-w: 1.4;
+      --ux-street-fill: #0c0d10;
+      --ux-street-strip: #2a2e36;
+      --ux-label: #9aa1ad;
+      --ux-label-strong: #d6dae1;
+    }
+  }
+
+  /* DARK theme — explicit, OS-independent. */
+  html[data-theme="dark"] {
+    --ux-bg: #0e0f12;
+    --ux-surface: #16181d;
+    --ux-surface-2: #1c1f26;
+    --ux-ink: #f4f5f7;
+    --ux-ink-soft: #aeb3bd;
+    --ux-ink-faint: #7e8694;
+    --ux-line: #3a3f49;
+    --ux-line-soft: #2a2e36;
+    --ux-accent: #4d9bff;
+    --ux-on-accent: #06121f;
+    --ux-shadow: 0 -1px 0 rgba(0,0,0,0.5);
+    --ux-map-bg: #14161b;
+    --ux-bld-fill: #20242c;
+    --ux-bld-fill-sel: #4d9bff;
+    --ux-bld-stroke: #aeb3bd;
+    --ux-bld-stroke-w: 1.4;
+    --ux-street-fill: #0c0d10;
+    --ux-street-strip: #2a2e36;
+    --ux-label: #9aa1ad;
+    --ux-label-strong: #d6dae1;
+  }
+
+  /* SUNLIGHT theme — MAXIMUM contrast for outdoor daylight: pure black on pure
+     white, heavier strokes, slightly larger labels, the SVG fully legible. */
+  html[data-theme="sunlight"] {
+    --ux-fs-2xs: 11px;
+    --ux-fs-xs:  12px;
+    --ux-fs-sm:  14px;
+    --ux-fs-md:  16px;
+    --ux-fs-lg:  19px;
+    --ux-fs-xl:  23px;
+    --ux-fw-reg: 600;
+    --ux-fw-med: 700;
+    --ux-fw-bold: 800;
+    --ux-bg: #ffffff;
+    --ux-surface: #ffffff;
+    --ux-surface-2: #ffffff;
+    --ux-ink: #000000;
+    --ux-ink-soft: #1a1a1a;
+    --ux-ink-faint: #2e2e2e;
+    --ux-line: #000000;
+    --ux-line-soft: #000000;
+    --ux-accent: #0040d0;
+    --ux-on-accent: #ffffff;
+    --ux-shadow: 0 -2px 0 rgba(0,0,0,0.18);
+    --ux-map-bg: #ffffff;
+    --ux-bld-fill: #ffffff;
+    --ux-bld-fill-sel: #000000;
+    --ux-bld-stroke: #000000;
+    --ux-bld-stroke-w: 2.2;
+    --ux-street-fill: #d7d7d7;
+    --ux-street-strip: #d7d7d7;
+    --ux-label: #000000;
+    --ux-label-strong: #000000;
+  }
+
+  /* Make the page chrome + map follow the theme tokens. These are additive and
+     each carries the original literal as a graceful fallback. */
+  html[data-theme] body { background: var(--ux-bg, #fff); color: var(--ux-ink, #000); }
+  html[data-theme] header,
+  html[data-theme] #chips { background: var(--ux-surface, #fff); border-color: var(--ux-line, #000); }
+  html[data-theme] #title { color: var(--ux-ink, #000); }
+  html[data-theme] #map-container { background: var(--ux-map-bg, #fafafa); }
+  html[data-theme] #status {
+    color: var(--ux-ink, #000);
+    background: var(--ux-surface, rgba(255,255,255,0.95));
+    border-color: var(--ux-line, #000);
+  }
+
+  /* Map shapes track the theme so the schematic stays readable everywhere. */
+  html[data-theme] .street-strip { fill: var(--ux-street-strip, #ededed); }
+  html[data-theme] .bld-rect {
+    fill: var(--ux-bld-fill, #fff);
+    stroke: var(--ux-bld-stroke, #000);
+    stroke-width: var(--ux-bld-stroke-w, 1.4);
+  }
+  html[data-theme] .bld-group:hover .bld-rect { fill: var(--ux-surface-2, #f6f6f6); }
+  html[data-theme] .bld-group.selected .bld-rect { fill: var(--ux-bld-fill-sel, #222); }
+  html[data-theme] .bld-label { fill: var(--ux-label, #8c8c8c); }
+  html[data-theme="sunlight"] .bld-label { font-weight: 800; }
+  html[data-theme="sunlight"] .bld-label.lbl-xs { font-size: 8px; }
+  html[data-theme="sunlight"] .bld-label.lbl-sm { font-size: 9px; }
+  html[data-theme="sunlight"] .bld-label.lbl-md { font-size: 11px; }
+  html[data-theme="sunlight"] .bld-label.lbl-lg { font-size: 13px; }
+  html[data-theme="sunlight"] .bld-label.lbl-xl { font-size: 15px; }
+  html[data-theme="sunlight"] .bld-street { fill: #000; font-weight: 700; }
+  html[data-theme="sunlight"] .street-label { fill: #000; }
+  /* In dark mode the building-name + sub labels are dark-on-dark by default;
+     lift them so multi-tenant buildings stay legible. */
+  html[data-theme="dark"] .bld-name,
+  html[data-theme="dark"] .bld-sub-label { fill: var(--ux-ink, #f4f5f7); }
+  @media (prefers-color-scheme: dark) {
+    html[data-theme="auto"] .bld-name,
+    html[data-theme="auto"] .bld-sub-label { fill: var(--ux-ink, #f4f5f7); }
+  }
+  html[data-theme="dark"] .badge-circle { fill: var(--ux-accent, #4d9bff); }
+  html[data-theme="dark"] .badge-text { fill: var(--ux-on-accent, #06121f); }
+  html[data-theme="dark"] .bld-divider { stroke: var(--ux-line, #3a3f49); }
+  html[data-theme="dark"] .street-label { fill: var(--ux-ink-soft, #aeb3bd); }
+  html[data-theme="dark"] .bld-group.selected .bld-label,
+  html[data-theme="dark"] .bld-group.selected .bld-name { fill: var(--ux-on-accent, #06121f); }
+
+  /* Make the sheet + about card + chips follow the theme too. */
+  html[data-theme] #sheet { background: var(--ux-surface, #fff); border-color: var(--ux-line, #000); color: var(--ux-ink, #000); }
+  html[data-theme] #sheet-handle { background: var(--ux-ink, #000); }
+  html[data-theme] #sheet-close { color: var(--ux-ink, #000); }
+  html[data-theme] #sheet-body .meta,
+  html[data-theme] #sheet-body .a-meta,
+  html[data-theme] #sheet-body .empty,
+  html[data-theme] #sheet-body .building-head { color: var(--ux-ink-soft, #555); }
+  html[data-theme] #sheet-body .artist-list li,
+  html[data-theme] #sheet-body .artist-list li:first-child { border-color: var(--ux-line, #000); }
+  html[data-theme] #sheet-body .artist-list button { color: var(--ux-ink, #000); }
+  html[data-theme] #sheet-body .links a { color: var(--ux-ink, #000); border-color: var(--ux-line, #000); }
+  html[data-theme] .chip { background: var(--ux-surface, #fff); color: var(--ux-ink, #000); border-color: var(--ux-line, #000); }
+  html[data-theme] .chip.active { background: var(--ux-ink, #000); color: var(--ux-bg, #fff); }
+  html[data-theme] #search { background: var(--ux-surface, #fff); color: var(--ux-ink, #000); border-color: var(--ux-line, #000); }
+  html[data-theme] #header-buttons button { background: var(--ux-surface, #fff); color: var(--ux-ink, #000); border-color: var(--ux-line, #000); }
+
+  /* -------- Bottom action bar (item 17) -------- */
+  #ux-actionbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 11; /* above #sheet's z-index:10 so it never gets covered */
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    gap: 2px;
+    padding: 6px 8px;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 6px);
+    background: var(--ux-surface, #fff);
+    border-top: 1px solid var(--ux-line, #000);
+    box-shadow: var(--ux-shadow, 0 -1px 0 rgba(0,0,0,0.06));
+  }
+  #ux-actionbar .ux-act {
+    flex: 1 1 0;
+    min-width: var(--ux-tap, 44px);
+    min-height: var(--ux-tap, 44px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 4px 2px;
+    background: transparent;
+    border: 0;
+    border-radius: var(--ux-radius, 0);
+    color: var(--ux-ink, #000);
+    font-family: var(--ux-font);
+    font-size: var(--ux-fs-2xs, 10px);
+    font-weight: var(--ux-fw-med, 600);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #ux-actionbar .ux-act svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  html[data-theme="sunlight"] #ux-actionbar .ux-act svg { stroke-width: 2.6; }
+  #ux-actionbar .ux-act .ux-act-lbl { line-height: 1; white-space: nowrap; }
+  #ux-actionbar .ux-act:active { background: var(--ux-ink, #000); color: var(--ux-bg, #fff); }
+  #ux-actionbar .ux-act:focus-visible { outline: 2px solid var(--ux-accent, #007aff); outline-offset: -2px; }
+  #ux-actionbar .ux-act.is-active { color: var(--ux-accent, #007aff); }
+  #ux-actionbar .ux-act.is-active svg { stroke: var(--ux-accent, #007aff); }
+  /* theme button shows the current mode glyph; label reflects mode */
+
+  /* Keep zoom controls + bottom sheet clear of the action bar.
+     The bar is ~64px tall + safe area; raise/inset accordingly. */
+  :root { --ux-actionbar-h: calc(64px + env(safe-area-inset-bottom)); }
+  #zoom-controls {
+    bottom: calc(var(--ux-actionbar-h) + 12px);
+  }
+  #status {
+    bottom: calc(var(--ux-actionbar-h) + 12px);
+  }
+  #sheet {
+    padding-bottom: calc(var(--ux-actionbar-h) + 14px);
+    /* leave room so the sheet's own content never hides behind the bar */
+  }
+  /* The toast already sits above; nudge it above the bar so it stays visible. */
+  #toast {
+    bottom: calc(var(--ux-actionbar-h) + 16px);
+  }
+
+  /* -------- Generated tiles: cohesive per-category color + glyph system -------- */
+  .thumb-ph .ux-tile-glyph { opacity: 0.92; }
+  .thumb-ph .ux-tile-initials { letter-spacing: 0.01em; }
+
+  /* -------- Reduced motion: kill non-essential animation/transition -------- */
+  @media (prefers-reduced-motion: reduce) {
+    #sheet { transition: none; }
+    #toast { transition: none; }
+    .gps-pulse { animation: none; }
+    #ux-actionbar .ux-act:active { transition: none; }
+    .fav-btn:active { transform: none; }
+  }
+  /* === /UX === */
 </style>
 </head>
 <body>
@@ -644,6 +930,32 @@
 
 <!-- Live status toast for geolocation feedback -->
 <div id="toast" role="status" aria-live="polite"></div>
+
+<!-- Bottom action bar (UX item 17). Buttons call window.UX hooks (or click an
+     existing control); the theme button is owned by the visual layer. All
+     icons are original inline SVG — no third-party assets. -->
+<nav id="ux-actionbar" aria-label="Primary actions">
+  <button id="ux-act-near" class="ux-act" type="button" aria-label="Studios near me">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-10.2A6.5 6.5 0 0 1 12 4.3a6.5 6.5 0 0 1 6.5 6.5C18.5 15.4 12 21 12 21Z"/><circle cx="12" cy="10.7" r="2.3"/></svg>
+    <span class="ux-act-lbl">Near me</span>
+  </button>
+  <button id="ux-act-locate" class="ux-act" type="button" aria-label="Find me on the map">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></svg>
+    <span class="ux-act-lbl">Find me</span>
+  </button>
+  <button id="ux-act-search" class="ux-act" type="button" aria-label="Search studios">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4 4"/></svg>
+    <span class="ux-act-lbl">Search</span>
+  </button>
+  <button id="ux-act-recenter" class="ux-act" type="button" aria-label="Recenter the map">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    <span class="ux-act-lbl">Recenter</span>
+  </button>
+  <button id="ux-act-theme" class="ux-act" type="button" aria-label="Change display theme">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16Z" fill="currentColor" stroke="none"/></svg>
+    <span class="ux-act-lbl">Auto</span>
+  </button>
+</nav>
 
 <!-- Inline data: populated by node prepare.js. Base64-encoded to keep JSON
      content from confusing the HTML parser. Falls back to fetch if empty. -->
@@ -1355,23 +1667,58 @@
     catch { return url; }
   }
   // Neutral, generated artist tile (we ship no third-party photos): a
-  // category-colored square with the artist's initials. Our own original work.
+  // category-colored square with an ORIGINAL per-category glyph + the artist's
+  // initials. Our own original work — the "no photos" look is deliberate, not a
+  // gap. Palette is a cohesive set: each hue is deep enough that white reads
+  // clearly on it, and the 11 categories are spread across the wheel.
+  /* UX:tiles */
   const CAT_COLORS = {
-    'Painting': '#b5651d', 'Sculpture': '#6c757d', 'Photography': '#3d5a80',
-    'Ceramics': '#a1683a', 'Fashion & Jewelry': '#8e5572', 'Gallery': '#495867',
-    'Illustration': '#2a9d8f', 'Installation': '#bc6c25', 'Mixed Media': '#5f6caf',
-    'Video & Digital': '#4a6fa5', 'Artisan': '#7d8471',
+    'Painting':          '#b4452f', // terracotta red
+    'Sculpture':         '#566173', // slate
+    'Photography':       '#2f4858', // deep teal-blue
+    'Ceramics':          '#a05a2c', // clay
+    'Fashion & Jewelry': '#8e3b66', // magenta-plum
+    'Gallery':           '#39424e', // charcoal
+    'Illustration':      '#1f8a70', // viridian
+    'Installation':      '#9c6b1f', // ochre
+    'Mixed Media':       '#4b4fa6', // indigo
+    'Video & Digital':   '#3a6ea5', // signal blue
+    'Artisan':           '#5f6b53', // olive
   };
+  const CAT_FALLBACK = '#525866';
+  // Original glyphs, each a small SVG fragment drawn in a 0..24 box centred on
+  // (12,12), rendered in white over the tile. Simple primitives only.
+  /* UX:tiles */
+  const CAT_GLYPHS = {
+    'Painting':          '<circle cx="12" cy="12" r="6.2" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="9.6" cy="10" r="1" fill="#fff"/><circle cx="14.4" cy="10" r="1" fill="#fff"/><circle cx="12" cy="14.4" r="1" fill="#fff"/>',
+    'Sculpture':         '<path d="M9 18h6M12 18V9M9.5 9h5l-1.2-4h-2.6Z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>',
+    'Photography':       '<rect x="5.5" y="8" width="13" height="9" rx="1.6" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="12" cy="12.5" r="2.6" fill="none" stroke="#fff" stroke-width="1.5"/><path d="M9 8l1-1.6h4L15 8" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>',
+    'Ceramics':          '<path d="M8.5 7h7l-1 2.5a4.5 4.5 0 1 1-5 0Z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>',
+    'Fashion & Jewelry': '<path d="M9 6h6l2.5 3.5L12 18 6.5 9.5Z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M6.5 9.5h11" stroke="#fff" stroke-width="1.5"/>',
+    'Gallery':           '<rect x="6" y="6" width="12" height="12" rx="1.2" fill="none" stroke="#fff" stroke-width="1.5"/><path d="M8.5 15l2.5-3 2 2 2-2.5 1.5 2" fill="none" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/>',
+    'Illustration':      '<path d="M6.5 17l8.7-8.7 2.5 2.5L9 19.5l-3.2.7Z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 6.7l2.5 2.5" stroke="#fff" stroke-width="1.5"/>',
+    'Installation':      '<rect x="6.5" y="6.5" width="5" height="5" fill="none" stroke="#fff" stroke-width="1.4"/><rect x="13" y="9" width="5" height="5" fill="none" stroke="#fff" stroke-width="1.4"/><rect x="8.5" y="13" width="5" height="5" fill="none" stroke="#fff" stroke-width="1.4"/>',
+    'Mixed Media':       '<circle cx="10" cy="10" r="3.6" fill="none" stroke="#fff" stroke-width="1.5"/><rect x="11.4" y="11.4" width="6.4" height="6.4" fill="none" stroke="#fff" stroke-width="1.5"/>',
+    'Video & Digital':   '<rect x="5.5" y="7.5" width="13" height="9" rx="1.4" fill="none" stroke="#fff" stroke-width="1.5"/><path d="M10.5 10.3v3.4l3-1.7Z" fill="#fff"/>',
+    'Artisan':           '<path d="M7 14.5l4-4M10 7.5l2.2 2.2 1.6-1.6a2.3 2.3 0 0 0-3.2-3.2Zm-3.5 9.5 2-2" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
+  };
+  // Neutral default glyph: a small framed square (a "canvas").
+  const CAT_GLYPH_FALLBACK = '<rect x="6.5" y="6.5" width="11" height="11" rx="1.2" fill="none" stroke="#fff" stroke-width="1.5"/>';
   function initials(name) {
     const p = String(name || '').trim().split(/\s+/).filter(Boolean);
     return ((p[0]?.[0] || '') + (p[1]?.[0] || '')).toUpperCase() || '?';
   }
   function placeholderTile(a) {
-    const c = CAT_COLORS[a.category] || '#6b7280';
-    return `<svg class="thumb-ph" viewBox="0 0 100 100" role="img" aria-label="${esc(a.category || 'Studio')}">`
+    const cat = a.category || '';
+    const c = CAT_COLORS[cat] || CAT_FALLBACK;
+    const glyph = CAT_GLYPHS[cat] || CAT_GLYPH_FALLBACK;
+    // Layout: glyph sits top-centre, initials anchor the lower half. Consistent
+    // type + sizing across all 11 categories.
+    return `<svg class="thumb-ph" viewBox="0 0 100 100" role="img" aria-label="${esc(cat || 'Studio')}">`
       + `<rect width="100" height="100" rx="14" fill="${c}"/>`
-      + `<text x="50" y="54" text-anchor="middle" dominant-baseline="middle" font-size="40" `
-      + `font-family="Inter Tight, system-ui, sans-serif" font-weight="600" fill="#fff">${esc(initials(a.name))}</text></svg>`;
+      + `<g class="ux-tile-glyph" transform="translate(38,16) scale(1.0)">${glyph}</g>`
+      + `<text class="ux-tile-initials" x="50" y="70" text-anchor="middle" dominant-baseline="middle" font-size="34" `
+      + `font-family="Inter Tight, system-ui, sans-serif" font-weight="700" fill="#fff">${esc(initials(a.name))}</text></svg>`;
   }
 
   // -------- Pan / zoom --------
@@ -1547,6 +1894,174 @@
   // Resize handler
   window.addEventListener('resize', () => setView(VIEW.x, VIEW.y, VIEW.w));
   window.addEventListener('orientationchange', () => setTimeout(() => setView(VIEW.x, VIEW.y, VIEW.w), 100));
+
+  // === UX: visual system (themes + action-bar hooks) ===
+  // Owns: 3-way theme (auto/sunlight/dark) on <html data-theme>, persisted under
+  // 'ux.theme'; plus the window.UX hooks the bottom action bar calls. Self-
+  // contained; only reads helpers defined above (POSITIONS, getCurrentPos, GEO,
+  // distanceMeters, openSheet, zoomTo, showArtistDetail, resolvePosKey, …).
+  window.UX = window.UX || {};
+  (function () {
+    const root = document.documentElement;
+    const THEME_KEY = 'ux.theme';
+    const MODES = ['auto', 'sunlight', 'dark'];
+    const META = {
+      auto:     { label: 'Auto', meta: '#000000', scheme: 'light dark',
+        glyph: '<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4a8 8 0 0 0 0 16Z" fill="currentColor" stroke="none"/>' },
+      sunlight: { label: 'Sun',  meta: '#ffffff', scheme: 'light',
+        glyph: '<circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.2 5.2l1.9 1.9M16.9 16.9l1.9 1.9M18.8 5.2l-1.9 1.9M7.1 16.9l-1.9 1.9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' },
+      dark:     { label: 'Dark', meta: '#0e0f12', scheme: 'dark',
+        glyph: '<path d="M20 14.2A8 8 0 1 1 9.8 4 6.4 6.4 0 0 0 20 14.2Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>' },
+    };
+
+    function applyTheme(mode) {
+      if (!MODES.includes(mode)) mode = 'auto';
+      root.setAttribute('data-theme', mode);
+      const m = META[mode];
+      // Keep the iOS status bar + form controls in step with the theme.
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeMeta) themeMeta.setAttribute('content', m.meta);
+      const schemeMeta = document.querySelector('meta[name="color-scheme"]');
+      if (schemeMeta) schemeMeta.setAttribute('content', m.scheme);
+      const btn = document.getElementById('ux-act-theme');
+      if (btn) {
+        const svg = btn.querySelector('svg');
+        if (svg) svg.innerHTML = m.glyph;
+        const lbl = btn.querySelector('.ux-act-lbl');
+        if (lbl) lbl.textContent = m.label;
+        const human = mode === 'auto' ? 'Theme: Auto (follows system)' : (mode === 'sunlight' ? 'Theme: Sunlight (high contrast)' : 'Theme: Dark');
+        btn.setAttribute('aria-label', human);
+        btn.setAttribute('title', human);
+      }
+    }
+
+    async function saveTheme(mode) {
+      try {
+        if (window.Capacitor?.Plugins?.Preferences) {
+          await window.Capacitor.Plugins.Preferences.set({ key: THEME_KEY, value: mode });
+        } else {
+          localStorage.setItem(THEME_KEY, mode);
+        }
+      } catch (e) { /* private mode / quota — best effort */ }
+    }
+    async function loadTheme() {
+      try {
+        if (window.Capacitor?.Plugins?.Preferences) {
+          const { value } = await window.Capacitor.Plugins.Preferences.get({ key: THEME_KEY });
+          return value || 'auto';
+        }
+        return localStorage.getItem(THEME_KEY) || 'auto';
+      } catch (e) { return 'auto'; }
+    }
+
+    function cycleTheme() {
+      const cur = root.getAttribute('data-theme') || 'auto';
+      const next = MODES[(MODES.indexOf(cur) + 1 + MODES.length) % MODES.length] || 'auto';
+      applyTheme(next);
+      saveTheme(next);
+      if (typeof showToast === 'function') showToast('Theme: ' + META[next].label);
+    }
+    window.UX.setTheme = applyTheme;
+    window.UX.cycleTheme = cycleTheme;
+
+    // Restore persisted theme on load (async; default 'auto' is already in markup).
+    loadTheme().then(applyTheme);
+
+    // ---- Map-centric hooks the action bar calls ----
+    // Recenter: reset the SVG viewBox to the full campus.
+    window.UX.recenter = function () {
+      if (typeof resetView === 'function') resetView();
+    };
+    // Focus the search field (and surface the keyboard on iOS).
+    window.UX.focusSearch = function () {
+      const s = document.getElementById('search');
+      if (!s) return;
+      s.focus();
+      try { s.select(); } catch (e) {}
+    };
+
+    // Inverse projection: SVG centroid → lat/lng (linear over GEO, per brief).
+    function svgToLatLng(cx, cy) {
+      return {
+        lat: GEO.nw.lat - (cy / 913) * (GEO.nw.lat - GEO.se.lat),
+        lng: GEO.nw.lng + (cx / 1019) * (GEO.se.lng - GEO.nw.lng),
+      };
+    }
+    function fmtDist(m) {
+      if (m < 950) return Math.round(m / 10) * 10 + ' m';
+      return (m / 1000).toFixed(1) + ' km';
+    }
+    // Studios near me: rank artists by walking distance from the user to their
+    // building, render a tappable list in the sheet. Respects category/favorite
+    // filters (matchesFilter) but ignores the text query.
+    window.UX.nearMe = async function () {
+      if (typeof getCurrentPos !== 'function') return;
+      if (typeof showToast === 'function') showToast('Finding studios near you…');
+      let pos;
+      try {
+        pos = await getCurrentPos();
+      } catch (e) {
+        const msg = (e && e.message) || '';
+        if (typeof showToast === 'function') {
+          showToast(/denied|permission/i.test(msg) ? 'Location permission denied' : 'Couldn’t get your location');
+        }
+        return;
+      }
+      // Build distance-ranked list of artists that have a placed building.
+      const ranked = [];
+      const seenNoPos = false;
+      (Array.isArray(artists) ? artists : []).forEach((a) => {
+        if (typeof matchesFilter === 'function' && !matchesFilter(a)) return;
+        const key = (typeof resolvePosKey === 'function' && resolvePosKey(a.address)) || a.address;
+        const p = POSITIONS[key];
+        if (!p) return;
+        const cx = p.x + p.w / 2, cy = p.y + p.h / 2;
+        const ll = svgToLatLng(cx, cy);
+        const d = distanceMeters(pos.lat, pos.lng, ll.lat, ll.lng);
+        ranked.push({ a, key, d });
+      });
+      ranked.sort((x, y) => x.d - y.d);
+      const top = ranked.slice(0, 30);
+      if (top.length === 0) {
+        if (typeof openSheet === 'function') {
+          openSheet('<h2>Nothing nearby</h2><p class="empty">No studios match the current filter.</p>');
+        }
+        return;
+      }
+      const nearest = top[0].d;
+      const head = nearest > GEO.radiusMeters
+        ? `<div class="building-head">You’re ${fmtDist(nearest)} away · nearest studios</div>`
+        : `<div class="building-head">Studios near you</div>`;
+      const rows = top.map(({ a, d }) => {
+        const idx = artists.indexOf(a);
+        const meta = `${esc(a.category || '')}${a.unit ? ' · #' + esc(a.unit) : ''} · ${fmtDist(d)}`;
+        return `<li><button data-artist-idx="${idx}">
+            <div class="a-name">${esc(a.name)}</div>
+            <div class="a-meta">${meta}</div>
+          </button></li>`;
+      }).join('');
+      openSheet(`${head}<h2>${top.length} near you</h2><ul class="artist-list">${rows}</ul>`);
+      const body = document.getElementById('sheet-body');
+      if (body) body.querySelectorAll('button[data-artist-idx]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const a = artists[parseInt(btn.dataset.artistIdx, 10)];
+          if (!a) return;
+          const key = (typeof resolvePosKey === 'function' && resolvePosKey(a.address)) || a.address;
+          if (typeof zoomTo === 'function') zoomTo(key);
+          if (typeof highlightBuilding === 'function') highlightBuilding(key);
+          if (typeof showArtistDetail === 'function') showArtistDetail(a, key);
+        });
+      });
+    };
+
+    // ---- Wire the bottom action bar (guarded; the bar may be merged in later) ----
+    document.getElementById('ux-act-near')?.addEventListener('click', () => window.UX.nearMe?.());
+    document.getElementById('ux-act-locate')?.addEventListener('click', () => document.getElementById('locate-me')?.click());
+    document.getElementById('ux-act-search')?.addEventListener('click', () => window.UX.focusSearch?.());
+    document.getElementById('ux-act-recenter')?.addEventListener('click', () => window.UX.recenter?.());
+    document.getElementById('ux-act-theme')?.addEventListener('click', cycleTheme);
+  })();
+  // === /UX ===
 
   // -------- Init --------
   function showError(msg) {
