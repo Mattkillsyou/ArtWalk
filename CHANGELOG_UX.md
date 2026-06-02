@@ -188,3 +188,8 @@ navigation arrow. Reproportioned so it still fills the tile and stays centred
 without the foam (taller body, handle re-centred, optical offset retuned).
 `generate-placeholder-icons.mjs` + `icons/app-icon.svg` + `icons/favicon.svg`
 updated; all sizes + the iOS asset catalog regenerated.
+
+Then **centered on the ink center-of-mass** rather than the bounding box: the
+heavy mug body read as left-shifted (the light handle padded the right). Measured
+the black-pixel centroid and set the offset to `OX=-5, OY=-26` so the mark looks
+optically centred in the tile.

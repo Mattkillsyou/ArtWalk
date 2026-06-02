@@ -32,7 +32,7 @@ const targets = [
 ];
 
 const MASTER = 2048, S = MASTER / 1024;   // supersample; design space is 1024
-const OX = -64, OY = -42;                 // optical-centering nudge (design space)
+const OX = -5, OY = -26;                  // centered on the ink center-of-mass (design space)
 
 const hex = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
 const cl = (v, a, b) => Math.max(a, Math.min(b, v));
