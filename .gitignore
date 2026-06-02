@@ -54,6 +54,7 @@ capacitor.config.json.bak
 .env.testflight
 *.pem
 *.p12
+*.p8
 *.mobileprovision
 
 # Large transfer artifacts (do not commit)

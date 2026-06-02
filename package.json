@@ -11,8 +11,6 @@
     "ios:sync": "npm run build && npx cap sync ios",
     "ios:open": "npm run build && npx cap sync ios && npx cap open ios",
     "ios:run": "npm run build && npx cap run ios",
-    "images:download": "node download-artist-images.mjs",
-    "images:compress": "node compress-artist-images.mjs",
     "icons:placeholder": "node generate-placeholder-icons.mjs"
   },
   "dependencies": {
@@ -24,8 +22,7 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.0.0",
-    "jimp": "^1.6.1",
-    "tesseract.js": "^7.0.0"
+    "jimp": "^1.6.1"
   },
   "repository": {
     "type": "git",
