@@ -741,9 +741,11 @@
      lift them so multi-tenant buildings stay legible. */
   html[data-theme="dark"] .bld-name,
   html[data-theme="dark"] .bld-sub-label { fill: var(--ux-ink, #f4f5f7); }
+  html[data-theme="dark"] .bld-street { fill: var(--ux-ink-soft, #aeb3bd); }
   @media (prefers-color-scheme: dark) {
     html[data-theme="auto"] .bld-name,
     html[data-theme="auto"] .bld-sub-label { fill: var(--ux-ink, #f4f5f7); }
+    html[data-theme="auto"] .bld-street { fill: var(--ux-ink-soft, #aeb3bd); }
   }
   html[data-theme="dark"] .badge-circle { fill: var(--ux-accent, #4d9bff); }
   html[data-theme="dark"] .badge-text { fill: var(--ux-on-accent, #06121f); }
@@ -991,7 +993,7 @@
       <button id="info-btn" type="button" aria-label="About this app" title="About">i</button>
     </div>
   </div>
-  <input type="search" id="search" placeholder="Search artists, mediums, addresses" autocomplete="off" autocapitalize="none" spellcheck="false">
+  <input type="search" id="search" aria-label="Search artists, mediums, and addresses" placeholder="Search artists, mediums, addresses" autocomplete="off" autocapitalize="none" spellcheck="false">
 </header>
 
 <nav id="chips" aria-label="Filter by category"></nav>
@@ -1031,8 +1033,8 @@
       <div class="about-row"><span>Made with</span><span>♡ in Los Angeles</span></div>
     </div>
     <div class="about-section">
-      <a class="about-link" href="https://mattkillsyou.github.io/ArtWalk/support/" target="_blank" rel="noopener">Support &amp; feedback</a>
-      <a class="about-link" href="https://mattkillsyou.github.io/ArtWalk/privacy/" target="_blank" rel="noopener">Privacy policy</a>
+      <a class="about-link" href="https://mattkillsyou.github.io/ArtWalk/support.html" target="_blank" rel="noopener">Support &amp; feedback</a>
+      <a class="about-link" href="https://mattkillsyou.github.io/ArtWalk/privacy.html" target="_blank" rel="noopener">Privacy policy</a>
     </div>
     <p class="about-fine">This is an independent, unofficial guide. It is not affiliated with, endorsed by, sponsored by, or authorized by the Brewery Art Walk, the Brewery Arts Complex, or any artist listed. All studio and artist information is drawn from publicly available sources.<br>No accounts. No ads. No tracking.</p>
   </div>
@@ -1294,8 +1296,6 @@
     "618 Moulton Avenue #E": { x: 469, y: 421, w: 45, h: 49, short: "E", parts: [{"type":"rect","x":469,"y":421,"w":45,"h":49}] },
     "618 Moulton Avenue #F": { x: 514, y: 421, w: 39, h: 49, short: "F", parts: [{"type":"rect","x":514,"y":421,"w":39,"h":49}] },
     "630-638 Moulton Avenue": { x: 438, y: 518, w: 70, h: 75, short: "630", parts: [{"type":"rect","x":438,"y":518,"w":70,"h":75}] },
-    "642 Moulton Avenue (West)": { x: 437, y: 616, w: 38, h: 275, short: "642", parts: [{"type":"rect","x":437,"y":616,"w":38,"h":275}] },
-    "642 Moulton Avenue (East)": { x: 475, y: 616, w: 36, h: 275, short: "642", parts: [{"type":"rect","x":475,"y":616,"w":36,"h":275}] },
     "1920 N. Main Street": { x: 280, y: 520, w: 38, h: 84, short: "1920", parts: [{"type":"rect","x":280,"y":520,"w":38,"h":84}] },
     "1918 N. Main Street": { x: 172, y: 520, w: 108, h: 84, short: "1918", parts: [{"type":"rect","x":172,"y":520,"w":108,"h":84}] },
     "650 Moulton Avenue": { x: 98, y: 520, w: 74, h: 84, short: "650", parts: [{"type":"polygon","points":"172,520 172,604 98,604 128,520 172,520"}] },
@@ -1328,7 +1328,7 @@
     "612 Moulton Avenue": { x: 632, y: 194, w: 64, h: 133, short: "612", parts: [{"type":"polygon","points":"632,194 632,327 696,327 696,194"}] },
     "606 Moulton Avenue": { x: 473, y: 113, w: 53, h: 121, short: "606", parts: [{"type":"rect","x":473,"y":113,"w":53,"h":121}] },
     "608 Moulton Avenue": { x: 526, y: 112, w: 50, h: 121, short: "608", parts: [{"type":"rect","x":526,"y":112,"w":50,"h":121}] },
-    "642 Moulton Avenue": { x: 576, y: 112, w: 52, h: 121, short: "642", parts: [{"type":"rect","x":576,"y":112,"w":52,"h":121}] },
+    "642 Moulton Avenue": { x: 437, y: 616, w: 74, h: 275, short: "642", parts: [{"type":"rect","x":437,"y":616,"w":38,"h":275},{"type":"rect","x":475,"y":616,"w":36,"h":275}] },
     "686 South Avenue 21": { x: 790, y: 788, w: 40, h: 42, short: "686", parts: [{"type":"rect","x":790,"y":788,"w":40,"h":42}] },
     "674 South Avenue 21": { x: 830, y: 788, w: 144, h: 42, short: "674", parts: [{"type":"rect","x":830,"y":788,"w":144,"h":42}] },
     "676 South Avenue 21": { x: 833, y: 830, w: 141, h: 34, short: "676", parts: [{"type":"rect","x":833,"y":830,"w":141,"h":34}] },

@@ -56,7 +56,10 @@ Ordered. Items marked (GUI)/(WEB)/(ACCOUNT) are off-CLI.
    - **Export compliance:** `Info.plist` now declares
      `ITSAppUsesNonExemptEncryption=false` (no custom crypto, standard HTTPS only), so
      App Store Connect shouldn't prompt; if it does, answer **No / exempt**.
-4. **(GUI/CLI)** Archive for device: Product → Archive (or
+4. **(GUI/CLI)** Archive for device. **First run `npm run ios:sync`** (rebuild web +
+   `cap sync`) so the iOS `public/` bundle matches the current facts-only `www/` —
+   `prepare.js` alone updates only `www/`, not the native `public/` bundle. Then
+   Product → Archive (or
    `xcodebuild -workspace ios/App/App.xcworkspace -scheme App archive` once signing is
    set). Then Distribute → App Store Connect → Upload. (CLI IPA upload via the App
    Store Connect API is possible — creds are in the gitignored `.env.testflight` — but
