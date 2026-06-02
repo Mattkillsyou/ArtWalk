@@ -70,8 +70,8 @@
     margin: 0 0 8px;
   }
   #title {
-    font: 11px/1 "Inter Tight", ui-sans-serif, system-ui, sans-serif;
-    letter-spacing: 0.18em;
+    font: 15px/1 "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: 0.14em;
     color: #000;
     margin: 0;
     text-transform: uppercase;
@@ -137,7 +137,7 @@
     border: 1px solid #000;
     background: #fff;
     color: #000;
-    font: 13px/34px inherit;
+    font: 15px/34px inherit;
     letter-spacing: 0.02em;
     cursor: pointer;
     white-space: nowrap;
@@ -162,7 +162,7 @@
     position: absolute;
     bottom: 12px;
     left: 12px;
-    font: 11px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    font: 13px/1 ui-monospace, "SF Mono", Menlo, monospace;
     color: #000;
     background: rgba(255,255,255,0.95);
     padding: 6px 8px;
@@ -223,16 +223,16 @@
     font-weight: 600;
     letter-spacing: 0.04em;
   }
-  .bld-label.lbl-xs { font-size: 7px; letter-spacing: 0.02em; }
-  .bld-label.lbl-sm { font-size: 8px; letter-spacing: 0.03em; }
-  .bld-label.lbl-md { font-size: 10px; }
-  .bld-label.lbl-lg { font-size: 12px; }
-  .bld-label.lbl-xl { font-size: 14px; }
+  .bld-label.lbl-xs { font-size: 10px; letter-spacing: 0.02em; }
+  .bld-label.lbl-sm { font-size: 11px; letter-spacing: 0.03em; }
+  .bld-label.lbl-md { font-size: 13px; }
+  .bld-label.lbl-lg { font-size: 15px; }
+  .bld-label.lbl-xl { font-size: 18px; }
   .bld-street {
     fill: #b2b2b2;
     font-weight: 500;
-    font-size: 6px;
-    letter-spacing: 0.22em;
+    font-size: 8px;
+    letter-spacing: 0.18em;
   }
   .bld-group.selected .bld-label { fill: #fff; }
   .bld-group.selected .bld-street { fill: #ddd; }
@@ -328,14 +328,14 @@
     -webkit-user-select: text;
   }
   #sheet-body .meta {
-    font-size: 13px;
+    font-size: 15px;
     color: #555;
     margin-bottom: 4px;
     user-select: text;
     -webkit-user-select: text;
   }
   #sheet-body .building-head {
-    font: 11px/1.2 ui-monospace, "SF Mono", Menlo, monospace;
+    font: 13px/1.2 ui-monospace, "SF Mono", Menlo, monospace;
     color: #555;
     margin-bottom: 6px;
     letter-spacing: 0.05em;
@@ -344,7 +344,7 @@
     -webkit-user-select: text;
   }
   #sheet-body .bio {
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.5;
     margin: 14px 0;
     white-space: pre-wrap;
@@ -365,7 +365,7 @@
     border: 1px solid #000;
     color: #000;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 16px;
   }
   #sheet-body .links a:active {
     background: #000;
@@ -390,19 +390,19 @@
     padding: 12px 4px;
     background: none;
     border: 0;
-    font: 14px/1.3 inherit;
+    font: 16px/1.3 inherit;
     color: #000;
     cursor: pointer;
     min-height: 56px;
   }
   #sheet-body .artist-list button:active { background: #f0f0f0; }
   #sheet-body .a-name { font-weight: 600; }
-  #sheet-body .a-meta { font-size: 12px; color: #555; }
+  #sheet-body .a-meta { font-size: 14px; color: #555; }
   #sheet-body .empty {
     text-align: center;
     color: #555;
     padding: 32px 0;
-    font-size: 14px;
+    font-size: 16px;
   }
   #sheet-body .back-btn {
     display: inline-block;
@@ -436,8 +436,8 @@
   }
 
   @media (max-width: 380px) {
-    .chip { font-size: 12px; padding: 0 12px; }
-    #title { font-size: 10px; }
+    .chip { font-size: 14px; padding: 0 12px; }
+    #title { font-size: 13px; }
   }
 
   /* ----- About modal (Apple guideline 1.5 + 5.1.1 — visible contact + privacy link) ----- */
@@ -578,7 +578,7 @@
      fallback). Three themes drive these via [data-theme] on <html>. */
   :root {
     /* type scale (rem-ish, in px for this fixed-density app) */
-    --ux-fs-2xs: 10px;
+    --ux-fs-2xs: 12px;
     --ux-fs-xs:  11px;
     --ux-fs-sm:  13px;
     --ux-fs-md:  15px;
@@ -728,11 +728,11 @@
   html[data-theme] .bld-group.selected .bld-rect { fill: var(--ux-bld-fill-sel, #222); }
   html[data-theme] .bld-label { fill: var(--ux-label, #8c8c8c); }
   html[data-theme="sunlight"] .bld-label { font-weight: 800; }
-  html[data-theme="sunlight"] .bld-label.lbl-xs { font-size: 8px; }
-  html[data-theme="sunlight"] .bld-label.lbl-sm { font-size: 9px; }
-  html[data-theme="sunlight"] .bld-label.lbl-md { font-size: 11px; }
-  html[data-theme="sunlight"] .bld-label.lbl-lg { font-size: 13px; }
-  html[data-theme="sunlight"] .bld-label.lbl-xl { font-size: 15px; }
+  html[data-theme="sunlight"] .bld-label.lbl-xs { font-size: 11px; }
+  html[data-theme="sunlight"] .bld-label.lbl-sm { font-size: 12px; }
+  html[data-theme="sunlight"] .bld-label.lbl-md { font-size: 14px; }
+  html[data-theme="sunlight"] .bld-label.lbl-lg { font-size: 16px; }
+  html[data-theme="sunlight"] .bld-label.lbl-xl { font-size: 19px; }
   html[data-theme="sunlight"] .bld-street { fill: #000; font-weight: 700; }
   html[data-theme="sunlight"] .street-label { fill: #000; }
   /* In dark mode the building-name + sub labels are dark-on-dark by default;
@@ -858,32 +858,6 @@
   }
   /* === /UX === */
   /* === UX: wayfind === */
-  /* Route line drawn on the SVG from the GPS dot to a studio centroid. */
-  #ux-route .ux-route-line {
-    fill: none;
-    stroke: #007aff;
-    stroke-width: 4;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 10 8;
-    opacity: 0.95;
-    animation: uxRouteDash 0.9s linear infinite;
-  }
-  #ux-route .ux-route-halo {
-    fill: none;
-    stroke: #fff;
-    stroke-width: 8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    opacity: 0.9;
-  }
-  #ux-route .ux-route-target {
-    fill: #007aff;
-    stroke: #fff;
-    stroke-width: 2;
-  }
-  @keyframes uxRouteDash { to { stroke-dashoffset: -36; } }
-
   /* "Studios near you" list — distance badge on each row. */
   #sheet-body .ux-near-list { list-style: none; padding: 0; margin: 0; }
   #sheet-body .ux-near-list li { border-bottom: 1px solid #000; }
@@ -900,15 +874,15 @@
     color: #000;
     cursor: pointer;
     min-height: 56px;
-    font: 14px/1.3 inherit;
+    font: 16px/1.3 inherit;
   }
   #sheet-body .ux-near-list button:active { background: #f0f0f0; }
   #sheet-body .ux-near-list .ux-near-main { flex: 1 1 auto; min-width: 0; }
   #sheet-body .ux-near-list .a-name { font-weight: 600; }
-  #sheet-body .ux-near-list .a-meta { font-size: 12px; color: #555; }
+  #sheet-body .ux-near-list .a-meta { font-size: 14px; color: #555; }
   #sheet-body .ux-dist-badge {
     flex: 0 0 auto;
-    font: 700 12px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    font: 700 14px/1 ui-monospace, "SF Mono", Menlo, monospace;
     letter-spacing: 0.02em;
     color: #000;
     background: #fff;
@@ -917,27 +891,6 @@
     white-space: nowrap;
   }
 
-  /* "Take me there" button inside the artist detail view. */
-  #sheet-body .ux-route-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #0058d0;
-    border: 1px solid #0058d0;
-    padding: 10px 16px;
-    font: 600 12px/1 "Inter Tight", system-ui, sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.10em;
-    color: #fff;
-    cursor: pointer;
-    margin: 12px 8px 0 0;
-    min-height: 44px;
-  }
-  #sheet-body .ux-route-btn:active { transform: scale(0.97); }
-
-  @media (prefers-reduced-motion: reduce) {
-    #ux-route .ux-route-line { animation: none; }
-  }
   /* === UX: gestures + declutter === */
   /* Collision-/zoom-hidden building-number labels. Separate from the legacy
      .bld-name.hidden mechanism so the lead can reconcile cleanly. */
@@ -1781,7 +1734,6 @@
         <span class="fav-glyph">${fav ? '★' : '☆'}</span>
         <span class="fav-label">${fav ? 'Favorited' : 'Save to favorites'}</span>
       </button>
-      <button class="ux-route-btn" id="ux-route-btn" type="button" aria-label="Take me there — draw a walking route from your location">➤ Take me there</button>${/* UX:wayfind */ ''}
       ${placeholderTile(a)}
       ${a.bio ? `<div class="bio">${esc(a.bio)}</div>` : ''}
       ${links.length ? '<div class="links">' + links.join('') + '</div>' : ''}`;
@@ -1798,8 +1750,6 @@
       showToast(nowFav ? 'Added to favorites' : 'Removed from favorites', 1600);
     });
     /* UX:wayfind */
-    const uxRouteBtn = sheetBody.querySelector('#ux-route-btn');
-    if (uxRouteBtn) uxRouteBtn.addEventListener('click', () => window.UX?.routeTo?.(a.address));
   }
 
   function showSearchResults(matches) {
@@ -2252,15 +2202,11 @@
   })();
   // === UX: wayfind ===
   // Real-world wayfinding built on the existing geolocation block: rank studios
-  // by GPS distance ("Studios near me") and draw a route line from the user's
-  // GPS dot to a studio centroid ("Take me there"). Everything is computed from
-  // the SVG POSITIONS shapes via the linear inverse of latLngToSvg — no new
-  // network calls, no third-party maps. Entry points are exposed on window.UX so
-  // the (separately built) bottom action bar and other features can call in.
+  // by GPS distance ("Studios near me") with live distance badges. Everything is
+  // computed from the SVG POSITIONS shapes via the linear inverse of latLngToSvg
+  // — no new network calls, no third-party maps. Entry points are exposed on
+  // window.UX so the (separately built) bottom action bar can call in.
   window.UX = window.UX || {};
-  // prefers-reduced-motion is honoured in CSS (the === UX: wayfind === block
-  // drops the route's marching-ants animation under that media query).
-  const UX_WALK_M_PER_MIN = 80;          // ~3 mph average walking pace
   const UX_FEET_THRESHOLD_MI = 0.1;      // below this, show feet instead of miles
 
   // Centroid of a studio's map shape, in SVG units. Resolves aliases/sub-units
@@ -2290,16 +2236,6 @@
       return Math.max(10, ft) + ' ft';
     }
     return (miles < 10 ? miles.toFixed(1) : Math.round(miles)) + ' mi';
-  }
-  // 8-point compass bearing from user → target, as a short "head NE" hint.
-  function uxBearingHint(fromLat, fromLng, toLat, toLng) {
-    const toRad = d => d * Math.PI / 180;
-    const y = Math.sin(toRad(toLng - fromLng)) * Math.cos(toRad(toLat));
-    const x = Math.cos(toRad(fromLat)) * Math.sin(toRad(toLat)) -
-              Math.sin(toRad(fromLat)) * Math.cos(toRad(toLat)) * Math.cos(toRad(toLng - fromLng));
-    let brg = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
-    const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-    return dirs[Math.round(brg / 45) % 8];
   }
   // Resolve a usable GPS fix: reuse a cached one (<60 s) else ask the OS, then
   // gate on the campus radius exactly like findMe(). Returns { pos, svg } or null
@@ -2382,60 +2318,8 @@
     return uxFmtDistance(distanceMeters(fix.lat, fix.lng, ll.lat, ll.lng));
   }
 
-  // ---- Item 2: "Take me there" ----
-  function uxClearRoute() {
-    const g = svg.querySelector('#ux-route');
-    if (g) g.remove();
-  }
-  async function uxRouteTo(addr) {
-    const target = uxCentroidSvg(addr);
-    if (!target) { showToast('Can’t locate that studio on the map'); return; }
-    const fix = await uxUserFix();
-    if (!fix) return;
-    const { pos, svg: user } = fix;
-
-    // GPS dot (reuse the shared painter) + active state on the locate button.
-    paintGpsDot(user.x, user.y);
-    if (locateBtn) locateBtn.classList.add('active');
-
-    uxClearRoute();
-    const g = el('g', { id: 'ux-route' });
-    g.setAttribute('aria-hidden', 'true');
-    const d = `M ${user.x} ${user.y} L ${target.cx} ${target.cy}`;
-    g.appendChild(el('path', { class: 'ux-route-halo', d }));
-    g.appendChild(el('path', { class: 'ux-route-line', d, 'marker-end': 'url(#ux-arrow)' }));
-    g.appendChild(el('circle', { class: 'ux-route-target', cx: target.cx, cy: target.cy, r: 6 }));
-    // Arrowhead marker (define once, scoped to the route group's defs).
-    const defs = el('defs', {});
-    const marker = el('marker', {
-      id: 'ux-arrow', viewBox: '0 0 10 10', refX: 8, refY: 5,
-      markerWidth: 5, markerHeight: 5, orient: 'auto-start-reverse',
-    });
-    marker.appendChild(el('path', { d: 'M0,0 L10,5 L0,10 z', fill: '#007aff' }));
-    defs.appendChild(marker);
-    g.appendChild(defs);
-    svg.appendChild(g);
-
-    // Frame the route: fit both endpoints with a little padding. setView is a
-    // direct viewBox set (no momentum), so this is motion-safe by construction.
-    const minX = Math.min(user.x, target.cx), maxX = Math.max(user.x, target.cx);
-    const minY = Math.min(user.y, target.cy), maxY = Math.max(user.y, target.cy);
-    const pad = 90;
-    const w = Math.max(MIN_W, (maxX - minX) + pad * 2);
-    setView(minX - pad, minY - pad, w);
-
-    // Distance + walking ETA + a compass hint.
-    const ll = uxCentroidLatLng(addr);
-    const meters = ll ? distanceMeters(pos.lat, pos.lng, ll.lat, ll.lng) : 0;
-    const mins = Math.max(1, Math.round(meters / UX_WALK_M_PER_MIN));
-    const hint = ll ? uxBearingHint(pos.lat, pos.lng, ll.lat, ll.lng) : '';
-    showToast(`${uxFmtDistance(meters)} · ~${mins} min walk${hint ? ' · head ' + hint : ''}`, 4200);
-  }
-
   // Expose the wayfinding surface for the action bar + sibling features.
   window.UX.nearMe = uxNearMe;
-  window.UX.routeTo = uxRouteTo;
-  window.UX.clearRoute = uxClearRoute;
   window.UX.distanceLabel = uxDistanceLabel;
 
   // Action-bar hook (the bar is built by the visual agent; guard with ?. so this

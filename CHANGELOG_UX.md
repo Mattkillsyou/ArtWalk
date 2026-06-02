@@ -94,3 +94,46 @@ and the `window.UX` hooks present.
   run; not hand-tested on a physical device.
 - This work lives on **branch `ux-upgrades`** (not merged to `main`); the submitted V1
   App Store build is unaffected. Per-agent branches `ux-feat-*` retained for reference.
+
+## Owner feedback round 1 — remove route, enlarge type
+
+Two changes from on-device feedback ("the line/arrow is useless unless it navigates
+around buildings into a door" and "the font throughout is extremely small and hard to use").
+
+### 1. Removed the "Take me there" route (UX_UPGRADES item 2)
+A straight GPS-dot→studio vector cuts through buildings and reads as a real path it
+isn't — misleading without true pathfinding/door data we don't have. Removed **all** of
+it, end to end:
+- **CSS:** `.ux-route-line/.ux-route-halo/.ux-route-target`, `@keyframes uxRouteDash`,
+  the `#sheet-body .ux-route-btn` button styles, and the route-only
+  `prefers-reduced-motion` block. (Main `<style>` brace count 196→**188, balanced**.)
+- **Markup/wiring:** the `➤ Take me there` button in the artist detail + its click
+  listener.
+- **JS:** `uxRouteTo`, `uxClearRoute`, `uxBearingHint`, the obsolete reduced-motion
+  comment, and the now-unused `UX_WALK_M_PER_MIN` const; trimmed the `=== UX: wayfind ===`
+  header comment to describe near-me only.
+- **Hooks:** dropped `window.UX.routeTo` / `window.UX.clearRoute`.
+- **Kept:** "Studios near me" (item 1), distance badges, `window.UX.nearMe` /
+  `distanceLabel`, and `uxCentroidSvg`→`uxCentroidLatLng` (near-me depends on them).
+- Verified: `grep` for `routeTo|clearRoute|uxBearingHint|UX_WALK_M_PER_MIN|ux-route|Take me there|ux-route-btn` → **0 occurrences**. This also clears the wayfind half of the
+  earlier "dead code" follow-up.
+
+### 2. Global type scale bump (outdoor legibility)
+Raised font sizes across every surface (≈ +2 px, ~20–40%), keeping the minimalist look:
+- **Map labels** `.bld-label.lbl-{xs,sm,md,lg,xl}` 7/8/10/12/14 → **10/11/13/15/18**;
+  sunlight overrides 8/9/11/13/15 → **11/12/14/16/19**; `.bld-street` 6 → **8** (tighter
+  tracking to compensate).
+- **Header** `#title` 11 → **15** (small-screen 10 → **13**); **chips** 13 → **15**
+  (small-screen 12 → **14**); reduced title letter-spacing 0.18→0.14em.
+- **Map status** `#status` 11 → **13**. **Action-bar labels** token `--ux-fs-2xs` 10 → **12**.
+- **Sheet/detail/near-list:** `.meta` 13→**15**, `.building-head` 11→**13**, `.bio`
+  14→**16**, `.links a` 14→**16**, `.artist-list button` 14→**16**, `.a-meta` 12→**14**,
+  `.empty` 14→**16**; near-list `button` 14→**16**, its `.a-meta` 12→**14**,
+  `.ux-dist-badge` 12→**14**.
+- **Unchanged:** `#search` stays **16 px** (iOS focus-zoom threshold) and `h2` stays 22.
+
+### Validation
+`node prepare.js` re-inlined (108 artists + 52 buildings, mirrored to `www/`); both inline
+scripts parse clean (`new Function`), CSS **188/188 balanced**, 0 route refs. Re-rendered
+the web layer into the existing iPhone 17 Pro Max sim bundle (native shell unchanged) and
+re-screenshot home/building/artist/filter/near-me/sunlight in `store/screenshots/ux2/`.
