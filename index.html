@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -70,8 +70,8 @@
     margin: 0 0 8px;
   }
   #title {
-    font: 11px/1 "Inter Tight", ui-sans-serif, system-ui, sans-serif;
-    letter-spacing: 0.18em;
+    font: 15px/1 "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: 0.14em;
     color: #000;
     margin: 0;
     text-transform: uppercase;
@@ -137,7 +137,7 @@
     border: 1px solid #000;
     background: #fff;
     color: #000;
-    font: 13px/34px inherit;
+    font: 15px/34px inherit;
     letter-spacing: 0.02em;
     cursor: pointer;
     white-space: nowrap;
@@ -162,7 +162,7 @@
     position: absolute;
     bottom: 12px;
     left: 12px;
-    font: 11px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    font: 13px/1 ui-monospace, "SF Mono", Menlo, monospace;
     color: #000;
     background: rgba(255,255,255,0.95);
     padding: 6px 8px;
@@ -223,16 +223,16 @@
     font-weight: 600;
     letter-spacing: 0.04em;
   }
-  .bld-label.lbl-xs { font-size: 7px; letter-spacing: 0.02em; }
-  .bld-label.lbl-sm { font-size: 8px; letter-spacing: 0.03em; }
-  .bld-label.lbl-md { font-size: 10px; }
-  .bld-label.lbl-lg { font-size: 12px; }
-  .bld-label.lbl-xl { font-size: 14px; }
+  .bld-label.lbl-xs { font-size: 10px; letter-spacing: 0.02em; }
+  .bld-label.lbl-sm { font-size: 11px; letter-spacing: 0.03em; }
+  .bld-label.lbl-md { font-size: 13px; }
+  .bld-label.lbl-lg { font-size: 15px; }
+  .bld-label.lbl-xl { font-size: 18px; }
   .bld-street {
     fill: #b2b2b2;
     font-weight: 500;
-    font-size: 6px;
-    letter-spacing: 0.22em;
+    font-size: 8px;
+    letter-spacing: 0.18em;
   }
   .bld-group.selected .bld-label { fill: #fff; }
   .bld-group.selected .bld-street { fill: #ddd; }
@@ -296,29 +296,16 @@
     pointer-events: none;
   }
 
-  /* Bottom sheet */
+  /* Bottom sheet (snap behavior + handle styling are in the UX block below) */
   #sheet {
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    max-height: 65vh;
-    max-height: 65dvh;
     background: #fff;
     border-top: 1px solid #000;
-    transform: translateY(100%);
-    transition: transform 0.25s ease;
     z-index: 10;
-    padding: 14px 20px calc(env(safe-area-inset-bottom) + 14px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  #sheet.open { transform: translateY(0); }
-  #sheet-handle {
-    width: 36px;
-    height: 4px;
-    background: #000;
-    margin: 0 auto 10px;
+    padding: 0 20px;
   }
   #sheet-close {
     position: absolute;
@@ -341,14 +328,14 @@
     -webkit-user-select: text;
   }
   #sheet-body .meta {
-    font-size: 13px;
+    font-size: 15px;
     color: #555;
     margin-bottom: 4px;
     user-select: text;
     -webkit-user-select: text;
   }
   #sheet-body .building-head {
-    font: 11px/1.2 ui-monospace, "SF Mono", Menlo, monospace;
+    font: 13px/1.2 ui-monospace, "SF Mono", Menlo, monospace;
     color: #555;
     margin-bottom: 6px;
     letter-spacing: 0.05em;
@@ -357,7 +344,7 @@
     -webkit-user-select: text;
   }
   #sheet-body .bio {
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.5;
     margin: 14px 0;
     white-space: pre-wrap;
@@ -378,7 +365,7 @@
     border: 1px solid #000;
     color: #000;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 16px;
   }
   #sheet-body .links a:active {
     background: #000;
@@ -403,19 +390,19 @@
     padding: 12px 4px;
     background: none;
     border: 0;
-    font: 14px/1.3 inherit;
+    font: 16px/1.3 inherit;
     color: #000;
     cursor: pointer;
     min-height: 56px;
   }
   #sheet-body .artist-list button:active { background: #f0f0f0; }
   #sheet-body .a-name { font-weight: 600; }
-  #sheet-body .a-meta { font-size: 12px; color: #555; }
+  #sheet-body .a-meta { font-size: 14px; color: #555; }
   #sheet-body .empty {
     text-align: center;
     color: #555;
     padding: 32px 0;
-    font-size: 14px;
+    font-size: 16px;
   }
   #sheet-body .back-btn {
     display: inline-block;
@@ -449,8 +436,8 @@
   }
 
   @media (max-width: 380px) {
-    .chip { font-size: 12px; padding: 0 12px; }
-    #title { font-size: 10px; }
+    .chip { font-size: 14px; padding: 0 12px; }
+    #title { font-size: 13px; }
   }
 
   /* ----- About modal (Apple guideline 1.5 + 5.1.1 — visible contact + privacy link) ----- */
@@ -584,6 +571,413 @@
     0%   { transform: scale(1);   opacity: 0.4; }
     100% { transform: scale(2.6); opacity: 0; }
   }
+
+  /* === UX: visual system (tokens + themes + tiles + action bar) === */
+  /* Design tokens. Used by the NEW UI below; existing rules are left intact
+     and only opt in where it is zero-risk (each map rule keeps its literal
+     fallback). Three themes drive these via [data-theme] on <html>. */
+  :root {
+    /* type scale (rem-ish, in px for this fixed-density app) */
+    --ux-fs-2xs: 12px;
+    --ux-fs-xs:  11px;
+    --ux-fs-sm:  13px;
+    --ux-fs-md:  15px;
+    --ux-fs-lg:  18px;
+    --ux-fs-xl:  22px;
+    --ux-fw-reg: 500;
+    --ux-fw-med: 600;
+    --ux-fw-bold: 700;
+    --ux-font: "Inter Tight", ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, sans-serif;
+    /* spacing scale */
+    --ux-sp-1: 4px;
+    --ux-sp-2: 8px;
+    --ux-sp-3: 12px;
+    --ux-sp-4: 16px;
+    --ux-sp-5: 24px;
+    --ux-radius: 0px;
+    --ux-tap: 44px;
+    /* color ROLES — light/auto defaults (mirror the app's b/w identity) */
+    --ux-bg: #ffffff;
+    --ux-surface: #ffffff;
+    --ux-surface-2: #fafafa;
+    --ux-ink: #000000;
+    --ux-ink-soft: #555555;
+    --ux-ink-faint: #8c8c8c;
+    --ux-line: #000000;
+    --ux-line-soft: #dddddd;
+    --ux-accent: #007aff;
+    --ux-on-accent: #ffffff;
+    --ux-shadow: 0 -1px 0 rgba(0,0,0,0.06);
+    /* MAP roles — keep the schematic legible in every theme */
+    --ux-map-bg: #fafafa;
+    --ux-bld-fill: #ffffff;
+    --ux-bld-fill-sel: #222222;
+    --ux-bld-stroke: #000000;
+    --ux-bld-stroke-w: 1.4;
+    --ux-street-fill: #ededed;
+    --ux-street-strip: #ededed;
+    --ux-label: #6a6a6a;
+    --ux-label-strong: #5a5a5a;
+  }
+
+  /* AUTO theme follows the OS; supply a dark variant for prefers-color-scheme. */
+  @media (prefers-color-scheme: dark) {
+    html[data-theme="auto"] {
+      --ux-bg: #0e0f12;
+      --ux-surface: #16181d;
+      --ux-surface-2: #1c1f26;
+      --ux-ink: #f4f5f7;
+      --ux-ink-soft: #aeb3bd;
+      --ux-ink-faint: #7e8694;
+      --ux-line: #3a3f49;
+      --ux-line-soft: #2a2e36;
+      --ux-accent: #4d9bff;
+      --ux-on-accent: #06121f;
+      --ux-shadow: 0 -1px 0 rgba(0,0,0,0.5);
+      --ux-map-bg: #14161b;
+      --ux-bld-fill: #20242c;
+      --ux-bld-fill-sel: #4d9bff;
+      --ux-bld-stroke: #aeb3bd;
+      --ux-bld-stroke-w: 1.4;
+      --ux-street-fill: #0c0d10;
+      --ux-street-strip: #2a2e36;
+      --ux-label: #9aa1ad;
+      --ux-label-strong: #d6dae1;
+    }
+  }
+
+  /* DARK theme — explicit, OS-independent. */
+  html[data-theme="dark"] {
+    --ux-bg: #0e0f12;
+    --ux-surface: #16181d;
+    --ux-surface-2: #1c1f26;
+    --ux-ink: #f4f5f7;
+    --ux-ink-soft: #aeb3bd;
+    --ux-ink-faint: #7e8694;
+    --ux-line: #3a3f49;
+    --ux-line-soft: #2a2e36;
+    --ux-accent: #4d9bff;
+    --ux-on-accent: #06121f;
+    --ux-shadow: 0 -1px 0 rgba(0,0,0,0.5);
+    --ux-map-bg: #14161b;
+    --ux-bld-fill: #20242c;
+    --ux-bld-fill-sel: #4d9bff;
+    --ux-bld-stroke: #aeb3bd;
+    --ux-bld-stroke-w: 1.4;
+    --ux-street-fill: #0c0d10;
+    --ux-street-strip: #2a2e36;
+    --ux-label: #9aa1ad;
+    --ux-label-strong: #d6dae1;
+  }
+
+  /* SUNLIGHT theme — MAXIMUM contrast for outdoor daylight: pure black on pure
+     white, heavier strokes, slightly larger labels, the SVG fully legible. */
+  html[data-theme="sunlight"] {
+    --ux-fs-2xs: 11px;
+    --ux-fs-xs:  12px;
+    --ux-fs-sm:  14px;
+    --ux-fs-md:  16px;
+    --ux-fs-lg:  19px;
+    --ux-fs-xl:  23px;
+    --ux-fw-reg: 600;
+    --ux-fw-med: 700;
+    --ux-fw-bold: 800;
+    --ux-bg: #ffffff;
+    --ux-surface: #ffffff;
+    --ux-surface-2: #ffffff;
+    --ux-ink: #000000;
+    --ux-ink-soft: #1a1a1a;
+    --ux-ink-faint: #2e2e2e;
+    --ux-line: #000000;
+    --ux-line-soft: #000000;
+    --ux-accent: #0040d0;
+    --ux-on-accent: #ffffff;
+    --ux-shadow: 0 -2px 0 rgba(0,0,0,0.18);
+    --ux-map-bg: #ffffff;
+    --ux-bld-fill: #ffffff;
+    --ux-bld-fill-sel: #000000;
+    --ux-bld-stroke: #000000;
+    --ux-bld-stroke-w: 2.2;
+    --ux-street-fill: #d7d7d7;
+    --ux-street-strip: #d7d7d7;
+    --ux-label: #000000;
+    --ux-label-strong: #000000;
+  }
+
+  /* Make the page chrome + map follow the theme tokens. These are additive and
+     each carries the original literal as a graceful fallback. */
+  html[data-theme] body { background: var(--ux-bg, #fff); color: var(--ux-ink, #000); }
+  html[data-theme] header,
+  html[data-theme] #chips { background: var(--ux-surface, #fff); border-color: var(--ux-line, #000); }
+  html[data-theme] #title { color: var(--ux-ink, #000); }
+  html[data-theme] #map-container { background: var(--ux-map-bg, #fafafa); }
+  html[data-theme] #status {
+    color: var(--ux-ink, #000);
+    background: var(--ux-surface, rgba(255,255,255,0.95));
+    border-color: var(--ux-line, #000);
+  }
+
+  /* Map shapes track the theme so the schematic stays readable everywhere. */
+  html[data-theme] .street-strip { fill: var(--ux-street-strip, #ededed); }
+  html[data-theme] .bld-rect {
+    fill: var(--ux-bld-fill, #fff);
+    stroke: var(--ux-bld-stroke, #000);
+    stroke-width: var(--ux-bld-stroke-w, 1.4);
+  }
+  html[data-theme] .bld-group:hover .bld-rect { fill: var(--ux-surface-2, #f6f6f6); }
+  html[data-theme] .bld-group.selected .bld-rect { fill: var(--ux-bld-fill-sel, #222); }
+  html[data-theme] .bld-label { fill: var(--ux-label, #8c8c8c); }
+  html[data-theme="sunlight"] .bld-label { font-weight: 800; }
+  html[data-theme="sunlight"] .bld-label.lbl-xs { font-size: 11px; }
+  html[data-theme="sunlight"] .bld-label.lbl-sm { font-size: 12px; }
+  html[data-theme="sunlight"] .bld-label.lbl-md { font-size: 14px; }
+  html[data-theme="sunlight"] .bld-label.lbl-lg { font-size: 16px; }
+  html[data-theme="sunlight"] .bld-label.lbl-xl { font-size: 19px; }
+  html[data-theme="sunlight"] .bld-street { fill: #000; font-weight: 700; }
+  html[data-theme="sunlight"] .street-label { fill: #000; }
+  /* In dark mode the building-name + sub labels are dark-on-dark by default;
+     lift them so multi-tenant buildings stay legible. */
+  html[data-theme="dark"] .bld-name,
+  html[data-theme="dark"] .bld-sub-label { fill: var(--ux-ink, #f4f5f7); }
+  @media (prefers-color-scheme: dark) {
+    html[data-theme="auto"] .bld-name,
+    html[data-theme="auto"] .bld-sub-label { fill: var(--ux-ink, #f4f5f7); }
+  }
+  html[data-theme="dark"] .badge-circle { fill: var(--ux-accent, #4d9bff); }
+  html[data-theme="dark"] .badge-text { fill: var(--ux-on-accent, #06121f); }
+  html[data-theme="dark"] .bld-divider { stroke: var(--ux-line, #3a3f49); }
+  html[data-theme="dark"] .street-label { fill: var(--ux-ink-soft, #aeb3bd); }
+  html[data-theme="dark"] .bld-group.selected .bld-label,
+  html[data-theme="dark"] .bld-group.selected .bld-name { fill: var(--ux-on-accent, #06121f); }
+
+  /* Make the sheet + about card + chips follow the theme too. */
+  html[data-theme] #sheet { background: var(--ux-surface, #fff); border-color: var(--ux-line, #000); color: var(--ux-ink, #000); }
+  html[data-theme] #sheet-handle { background: var(--ux-ink, #000); }
+  html[data-theme] #sheet-close { color: var(--ux-ink, #000); }
+  html[data-theme] #sheet-body .meta,
+  html[data-theme] #sheet-body .a-meta,
+  html[data-theme] #sheet-body .empty,
+  html[data-theme] #sheet-body .building-head { color: var(--ux-ink-soft, #555); }
+  html[data-theme] #sheet-body .artist-list li,
+  html[data-theme] #sheet-body .artist-list li:first-child { border-color: var(--ux-line, #000); }
+  html[data-theme] #sheet-body .artist-list button { color: var(--ux-ink, #000); }
+  html[data-theme] #sheet-body .links a { color: var(--ux-ink, #000); border-color: var(--ux-line, #000); }
+  html[data-theme] .chip { background: var(--ux-surface, #fff); color: var(--ux-ink, #000); border-color: var(--ux-line, #000); }
+  html[data-theme] .chip.active { background: var(--ux-ink, #000); color: var(--ux-bg, #fff); }
+  html[data-theme] #search { background: var(--ux-surface, #fff); color: var(--ux-ink, #000); border-color: var(--ux-line, #000); }
+  html[data-theme] #header-buttons button { background: var(--ux-surface, #fff); color: var(--ux-ink, #000); border-color: var(--ux-line, #000); }
+
+  /* -------- Bottom action bar (item 17) -------- */
+  #ux-actionbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 11; /* above #sheet's z-index:10 so it never gets covered */
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    gap: 2px;
+    padding: 6px 8px;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 6px);
+    background: var(--ux-surface, #fff);
+    border-top: 1px solid var(--ux-line, #000);
+    box-shadow: var(--ux-shadow, 0 -1px 0 rgba(0,0,0,0.06));
+  }
+  #ux-actionbar .ux-act {
+    flex: 1 1 0;
+    min-width: var(--ux-tap, 44px);
+    min-height: var(--ux-tap, 44px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 4px 2px;
+    background: transparent;
+    border: 0;
+    border-radius: var(--ux-radius, 0);
+    color: var(--ux-ink, #000);
+    font-family: var(--ux-font);
+    font-size: var(--ux-fs-2xs, 10px);
+    font-weight: var(--ux-fw-med, 600);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #ux-actionbar .ux-act svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  html[data-theme="sunlight"] #ux-actionbar .ux-act svg { stroke-width: 2.6; }
+  #ux-actionbar .ux-act .ux-act-lbl { line-height: 1; white-space: nowrap; }
+  #ux-actionbar .ux-act:active { background: var(--ux-ink, #000); color: var(--ux-bg, #fff); }
+  #ux-actionbar .ux-act:focus-visible { outline: 2px solid var(--ux-accent, #007aff); outline-offset: -2px; }
+  #ux-actionbar .ux-act.is-active { color: var(--ux-accent, #007aff); }
+  #ux-actionbar .ux-act.is-active svg { stroke: var(--ux-accent, #007aff); }
+  /* theme button shows the current mode glyph; label reflects mode */
+
+  /* Keep zoom controls + bottom sheet clear of the action bar.
+     The bar is ~64px tall + safe area; raise/inset accordingly. */
+  :root { --ux-actionbar-h: calc(64px + env(safe-area-inset-bottom)); }
+  #zoom-controls {
+    bottom: calc(var(--ux-actionbar-h) + 12px);
+  }
+  #status {
+    bottom: calc(var(--ux-actionbar-h) + 12px);
+  }
+  #sheet {
+    padding-bottom: calc(var(--ux-actionbar-h) + 14px);
+    /* leave room so the sheet's own content never hides behind the bar */
+  }
+  /* The toast already sits above; nudge it above the bar so it stays visible. */
+  #toast {
+    bottom: calc(var(--ux-actionbar-h) + 16px);
+  }
+
+  /* -------- Generated tiles: cohesive per-category color + glyph system -------- */
+  .thumb-ph .ux-tile-glyph { opacity: 0.92; }
+  .thumb-ph .ux-tile-initials { letter-spacing: 0.01em; }
+
+  /* -------- Reduced motion: kill non-essential animation/transition -------- */
+  @media (prefers-reduced-motion: reduce) {
+    #sheet { transition: none; }
+    #toast { transition: none; }
+    .gps-pulse { animation: none; }
+    #ux-actionbar .ux-act:active { transition: none; }
+    .fav-btn:active { transform: none; }
+  }
+  /* === /UX === */
+  /* === UX: wayfind === */
+  /* "Studios near you" list — distance badge on each row. */
+  #sheet-body .ux-near-list { list-style: none; padding: 0; margin: 0; }
+  #sheet-body .ux-near-list li { border-bottom: 1px solid #000; }
+  #sheet-body .ux-near-list li:first-child { border-top: 1px solid #000; }
+  #sheet-body .ux-near-list button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    padding: 12px 4px;
+    background: none;
+    border: 0;
+    color: #000;
+    cursor: pointer;
+    min-height: 56px;
+    font: 16px/1.3 inherit;
+  }
+  #sheet-body .ux-near-list button:active { background: #f0f0f0; }
+  #sheet-body .ux-near-list .ux-near-main { flex: 1 1 auto; min-width: 0; }
+  #sheet-body .ux-near-list .a-name { font-weight: 600; }
+  #sheet-body .ux-near-list .a-meta { font-size: 14px; color: #555; }
+  #sheet-body .ux-dist-badge {
+    flex: 0 0 auto;
+    font: 700 14px/1 ui-monospace, "SF Mono", Menlo, monospace;
+    letter-spacing: 0.02em;
+    color: #000;
+    background: #fff;
+    border: 1px solid #000;
+    padding: 6px 8px;
+    white-space: nowrap;
+  }
+
+  /* === UX: gestures + declutter === */
+  /* Collision-/zoom-hidden building-number labels. Separate from the legacy
+     .bld-name.hidden mechanism so the lead can reconcile cleanly. */
+  text.bld-label.ux-collapsed { display: none; }
+  /* The " · N" studio-count suffix shown on prominent buildings at campus zoom.
+     Slightly lighter than the number so the address still reads first. */
+  tspan.ux-count { fill: #8a8a8a; font-weight: 500; }
+  html[data-theme="sunlight"] tspan.ux-count { fill: #000; }
+  /* === UX: discovery (filters + sheet snap points) === */
+  /* --- multi-select category chips --- */
+  /* Show the running filter state with an accent ring so several chips can read as
+     "on" simultaneously without changing the existing inverted .active look. */
+  #chips .chip[aria-pressed="true"] {
+    background: #000;
+    color: #fff;
+  }
+  #chips .chip:focus-visible {
+    outline: 2px solid #000;
+    outline-offset: 2px;
+  }
+  /* Fuzzy-match highlight in the results list (XSS-safe: text is escaped first,
+     then <mark> is inserted around already-escaped spans). */
+  #sheet-body mark {
+    background: #000;
+    color: #fff;
+    padding: 0 1px;
+    border-radius: 2px;
+  }
+
+  /* --- bottom-sheet snap points (PEEK / HALF / FULL) --- */
+  /* The sheet is a tall fixed panel anchored to the bottom; its on-screen height is
+     controlled by translating it DOWN by --sheet-y (px). JS owns --sheet-y and the
+     snap math. Inline transform set by the drag controller wins over this base rule. */
+  #sheet {
+    height: 90dvh;
+    max-height: 90dvh;
+    transform: translateY(var(--sheet-y, 100%));
+    transition: transform 0.26s cubic-bezier(.22,.61,.36,1);
+    overflow: hidden;             /* the body scrolls, not the shell */
+    display: flex;
+    flex-direction: column;
+    touch-action: none;           /* handle drags shouldn't scroll the page */
+    will-change: transform;
+  }
+  /* When closed the sheet is fully off-screen regardless of any stale --sheet-y. */
+  #sheet:not(.open) { transform: translateY(110%); }
+  /* While the finger/mouse is down we track 1:1 — no animation. */
+  #sheet.ux-dragging { transition: none; }
+  /* The grab affordance: a bigger hit area around the visual pill. */
+  #sheet-handle {
+    flex: 0 0 auto;
+    width: 100%;
+    height: 22px;
+    margin: 0;
+    padding: 9px 0 9px;
+    background: transparent;
+    cursor: grab;
+    touch-action: none;
+    position: relative;
+  }
+  #sheet-handle::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 9px;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: #000;
+  }
+  #sheet-handle:active { cursor: grabbing; }
+  /* The body is the only scroll region; it expands to fill the shell. At PEEK the
+     controller disables its scrolling so the map underneath stays the focus. */
+  #sheet-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 4px 0 calc(env(safe-area-inset-bottom) + 14px);
+  }
+  #sheet.ux-snap-peek #sheet-body { overflow-y: hidden; }
+  @media (prefers-reduced-motion: reduce) {
+    #sheet { transition: transform 0.001s linear; }
+  }
+  /* === /UX === */
 </style>
 </head>
 <body>
@@ -644,6 +1038,32 @@
 
 <!-- Live status toast for geolocation feedback -->
 <div id="toast" role="status" aria-live="polite"></div>
+
+<!-- Bottom action bar (UX item 17). Buttons call window.UX hooks (or click an
+     existing control); the theme button is owned by the visual layer. All
+     icons are original inline SVG — no third-party assets. -->
+<nav id="ux-actionbar" aria-label="Primary actions">
+  <button id="ux-act-near" class="ux-act" type="button" aria-label="Studios near me">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-10.2A6.5 6.5 0 0 1 12 4.3a6.5 6.5 0 0 1 6.5 6.5C18.5 15.4 12 21 12 21Z"/><circle cx="12" cy="10.7" r="2.3"/></svg>
+    <span class="ux-act-lbl">Near me</span>
+  </button>
+  <button id="ux-act-locate" class="ux-act" type="button" aria-label="Find me on the map">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></svg>
+    <span class="ux-act-lbl">Find me</span>
+  </button>
+  <button id="ux-act-search" class="ux-act" type="button" aria-label="Search studios">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4 4"/></svg>
+    <span class="ux-act-lbl">Search</span>
+  </button>
+  <button id="ux-act-recenter" class="ux-act" type="button" aria-label="Recenter the map">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    <span class="ux-act-lbl">Recenter</span>
+  </button>
+  <button id="ux-act-theme" class="ux-act" type="button" aria-label="Change display theme">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16Z" fill="currentColor" stroke="none"/></svg>
+    <span class="ux-act-lbl">Auto</span>
+  </button>
+</nav>
 
 <!-- Inline data: populated by node prepare.js. Base64-encoded to keep JSON
      content from confusing the HTML parser. Falls back to fetch if empty. -->
@@ -1023,6 +1443,13 @@
     chipsBar.appendChild(all);
     const favChip = makeChip('★ Favorites', '__fav__', favOnly);
     chipsBar.appendChild(favChip);
+    /* UX:filters — optional "Near me" affordance; only rendered when the (cross-agent)
+       window.UX.nearMe hook exists. It's an action, not a sticky filter. */
+    if (window.UX && typeof window.UX.nearMe === 'function') {
+      chipsBar.appendChild(makeChip('◎ Near me', '__near__', false));
+    }
+    /* UX:filters — categories are MULTI-SELECT: each reflects its own membership in
+       activeFilters, so several can read as active at once. */
     categories.forEach(cat => chipsBar.appendChild(makeChip(cat, cat, activeFilters.has(cat))));
   }
   function makeChip(label, cat, active) {
@@ -1030,8 +1457,15 @@
     b.className = 'chip' + (active ? ' active' : '');
     b.textContent = label;
     b.dataset.cat = cat;
+    /* UX:filters — expose pressed state for a11y + multi-select styling (CSS targets
+       [aria-pressed="true"]). The "Near me" action chip is not a toggle. */
+    if (cat !== '__near__') b.setAttribute('aria-pressed', active ? 'true' : 'false');
+    b.setAttribute('aria-label', label.replace(/^[^A-Za-z0-9]+/, '').trim() || label);
     b.addEventListener('click', () => {
-      if (cat === '') {
+      if (cat === '__near__') {
+        window.UX?.nearMe?.();      /* UX:filters — delegate to the geo agent's hook */
+        return;
+      } else if (cat === '') {
         activeFilters.clear();
         favOnly = false;
       } else if (cat === '__fav__') {
@@ -1178,11 +1612,9 @@
   }
   function matchesSearch(a) {
     if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase();
-    return (a.name && a.name.toLowerCase().includes(q)) ||
-           (a.medium && a.medium.toLowerCase().includes(q)) ||
-           (a.address && a.address.toLowerCase().includes(q)) ||
-           (a.category && a.category.toLowerCase().includes(q));
+    /* UX:search — fuzzy subsequence match across name/medium/category/address.
+       fuzzyArtistScore() returns null when the query isn't a subsequence of any field. */
+    return fuzzyArtistScore(a, searchQuery) !== null;
   }
 
   function applyFilters() {
@@ -1234,13 +1666,14 @@
   // -------- Bottom sheet --------
   function openSheet(html) {
     sheetBody.innerHTML = html;
-    sheet.classList.add('open');
-    sheet.setAttribute('aria-hidden', 'false');
-    sheet.scrollTop = 0;
+    sheetBody.scrollTop = 0;
+    /* UX:sheet — present at the HALF snap (keeps current snap if already open) */
+    UXSheet.present();
   }
   function closeSheet() {
     sheet.classList.remove('open');
     sheet.setAttribute('aria-hidden', 'true');
+    UXSheet.dismiss();          /* UX:sheet — reset snap state + transform */
     selectedAddress = null;
     clearHighlight();
   }
@@ -1268,8 +1701,8 @@
         ? '<p class="empty">No artists match the current filter.</p>'
         : '<ul class="artist-list">' + arts.map(a => `
             <li><button data-artist-idx="${artists.indexOf(a)}">
-              <div class="a-name">${esc(a.name)}</div>
-              <div class="a-meta">${esc(a.category)}${a.medium ? ' · ' + esc(a.medium) : ''}${a.unit ? ' · #' + esc(a.unit) : ''}</div>
+              <div class="a-name">${fuzzyHighlight(a.name, searchQuery)}</div>
+              <div class="a-meta">${fuzzyHighlight(a.category, searchQuery)}${a.medium ? ' · ' + fuzzyHighlight(a.medium, searchQuery) : ''}${a.unit ? ' · #' + esc(a.unit) : ''}</div>
             </button></li>`).join('') + '</ul>'}`;
     openSheet(html);
     bindArtistButtons(addr);
@@ -1316,6 +1749,7 @@
       favBtn.querySelector('.fav-label').textContent = nowFav ? 'Favorited' : 'Save to favorites';
       showToast(nowFav ? 'Added to favorites' : 'Removed from favorites', 1600);
     });
+    /* UX:wayfind */
   }
 
   function showSearchResults(matches) {
@@ -1323,13 +1757,19 @@
       openSheet('<h2>No matches</h2><p class="empty">Try a different search term.</p>');
       return;
     }
+    /* UX:search — rank by fuzzy relevance (best field score, desc) when searching,
+       so the closest matches surface first. Stable for the no-query case. */
+    const ranked = searchQuery
+      ? matches.map(a => ({ a, s: fuzzyArtistScore(a, searchQuery) || 0 }))
+               .sort((x, y) => y.s - x.s).map(o => o.a)
+      : matches;
     const html = `
-      <h2>${matches.length} ${matches.length === 1 ? 'result' : 'results'}</h2>
+      <h2>${ranked.length} ${ranked.length === 1 ? 'result' : 'results'}</h2>
       <ul class="artist-list">
-        ${matches.slice(0, 200).map(a => `
+        ${ranked.slice(0, 200).map(a => `
           <li><button data-artist-idx="${artists.indexOf(a)}">
-            <div class="a-name">${esc(a.name)}</div>
-            <div class="a-meta">${esc(a.category)} · ${esc(prettyAddr(a.address))}${a.unit ? ' #' + esc(a.unit) : ''}</div>
+            <div class="a-name">${fuzzyHighlight(a.name, searchQuery)}</div>
+            <div class="a-meta">${fuzzyHighlight(a.category, searchQuery)} · ${fuzzyHighlight(prettyAddr(a.address), searchQuery)}${a.unit ? ' #' + esc(a.unit) : ''}</div>
           </button></li>`).join('')}
       </ul>`;
     openSheet(html);
@@ -1355,23 +1795,58 @@
     catch { return url; }
   }
   // Neutral, generated artist tile (we ship no third-party photos): a
-  // category-colored square with the artist's initials. Our own original work.
+  // category-colored square with an ORIGINAL per-category glyph + the artist's
+  // initials. Our own original work — the "no photos" look is deliberate, not a
+  // gap. Palette is a cohesive set: each hue is deep enough that white reads
+  // clearly on it, and the 11 categories are spread across the wheel.
+  /* UX:tiles */
   const CAT_COLORS = {
-    'Painting': '#b5651d', 'Sculpture': '#6c757d', 'Photography': '#3d5a80',
-    'Ceramics': '#a1683a', 'Fashion & Jewelry': '#8e5572', 'Gallery': '#495867',
-    'Illustration': '#2a9d8f', 'Installation': '#bc6c25', 'Mixed Media': '#5f6caf',
-    'Video & Digital': '#4a6fa5', 'Artisan': '#7d8471',
+    'Painting':          '#b4452f', // terracotta red
+    'Sculpture':         '#566173', // slate
+    'Photography':       '#2f4858', // deep teal-blue
+    'Ceramics':          '#a05a2c', // clay
+    'Fashion & Jewelry': '#8e3b66', // magenta-plum
+    'Gallery':           '#39424e', // charcoal
+    'Illustration':      '#1f8a70', // viridian
+    'Installation':      '#9c6b1f', // ochre
+    'Mixed Media':       '#4b4fa6', // indigo
+    'Video & Digital':   '#3a6ea5', // signal blue
+    'Artisan':           '#5f6b53', // olive
   };
+  const CAT_FALLBACK = '#525866';
+  // Original glyphs, each a small SVG fragment drawn in a 0..24 box centred on
+  // (12,12), rendered in white over the tile. Simple primitives only.
+  /* UX:tiles */
+  const CAT_GLYPHS = {
+    'Painting':          '<circle cx="12" cy="12" r="6.2" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="9.6" cy="10" r="1" fill="#fff"/><circle cx="14.4" cy="10" r="1" fill="#fff"/><circle cx="12" cy="14.4" r="1" fill="#fff"/>',
+    'Sculpture':         '<path d="M9 18h6M12 18V9M9.5 9h5l-1.2-4h-2.6Z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>',
+    'Photography':       '<rect x="5.5" y="8" width="13" height="9" rx="1.6" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="12" cy="12.5" r="2.6" fill="none" stroke="#fff" stroke-width="1.5"/><path d="M9 8l1-1.6h4L15 8" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>',
+    'Ceramics':          '<path d="M8.5 7h7l-1 2.5a4.5 4.5 0 1 1-5 0Z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>',
+    'Fashion & Jewelry': '<path d="M9 6h6l2.5 3.5L12 18 6.5 9.5Z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M6.5 9.5h11" stroke="#fff" stroke-width="1.5"/>',
+    'Gallery':           '<rect x="6" y="6" width="12" height="12" rx="1.2" fill="none" stroke="#fff" stroke-width="1.5"/><path d="M8.5 15l2.5-3 2 2 2-2.5 1.5 2" fill="none" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/>',
+    'Illustration':      '<path d="M6.5 17l8.7-8.7 2.5 2.5L9 19.5l-3.2.7Z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 6.7l2.5 2.5" stroke="#fff" stroke-width="1.5"/>',
+    'Installation':      '<rect x="6.5" y="6.5" width="5" height="5" fill="none" stroke="#fff" stroke-width="1.4"/><rect x="13" y="9" width="5" height="5" fill="none" stroke="#fff" stroke-width="1.4"/><rect x="8.5" y="13" width="5" height="5" fill="none" stroke="#fff" stroke-width="1.4"/>',
+    'Mixed Media':       '<circle cx="10" cy="10" r="3.6" fill="none" stroke="#fff" stroke-width="1.5"/><rect x="11.4" y="11.4" width="6.4" height="6.4" fill="none" stroke="#fff" stroke-width="1.5"/>',
+    'Video & Digital':   '<rect x="5.5" y="7.5" width="13" height="9" rx="1.4" fill="none" stroke="#fff" stroke-width="1.5"/><path d="M10.5 10.3v3.4l3-1.7Z" fill="#fff"/>',
+    'Artisan':           '<path d="M7 14.5l4-4M10 7.5l2.2 2.2 1.6-1.6a2.3 2.3 0 0 0-3.2-3.2Zm-3.5 9.5 2-2" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',
+  };
+  // Neutral default glyph: a small framed square (a "canvas").
+  const CAT_GLYPH_FALLBACK = '<rect x="6.5" y="6.5" width="11" height="11" rx="1.2" fill="none" stroke="#fff" stroke-width="1.5"/>';
   function initials(name) {
     const p = String(name || '').trim().split(/\s+/).filter(Boolean);
     return ((p[0]?.[0] || '') + (p[1]?.[0] || '')).toUpperCase() || '?';
   }
   function placeholderTile(a) {
-    const c = CAT_COLORS[a.category] || '#6b7280';
-    return `<svg class="thumb-ph" viewBox="0 0 100 100" role="img" aria-label="${esc(a.category || 'Studio')}">`
+    const cat = a.category || '';
+    const c = CAT_COLORS[cat] || CAT_FALLBACK;
+    const glyph = CAT_GLYPHS[cat] || CAT_GLYPH_FALLBACK;
+    // Layout: glyph sits top-centre, initials anchor the lower half. Consistent
+    // type + sizing across all 11 categories.
+    return `<svg class="thumb-ph" viewBox="0 0 100 100" role="img" aria-label="${esc(cat || 'Studio')}">`
       + `<rect width="100" height="100" rx="14" fill="${c}"/>`
-      + `<text x="50" y="54" text-anchor="middle" dominant-baseline="middle" font-size="40" `
-      + `font-family="Inter Tight, system-ui, sans-serif" font-weight="600" fill="#fff">${esc(initials(a.name))}</text></svg>`;
+      + `<g class="ux-tile-glyph" transform="translate(38,16) scale(1.0)">${glyph}</g>`
+      + `<text class="ux-tile-initials" x="50" y="70" text-anchor="middle" dominant-baseline="middle" font-size="34" `
+      + `font-family="Inter Tight, system-ui, sans-serif" font-weight="700" fill="#fff">${esc(initials(a.name))}</text></svg>`;
   }
 
   // -------- Pan / zoom --------
@@ -1397,6 +1872,7 @@
   function updateZoomLevel() {
     const lvl = currentZoomLevel();
     svg.querySelectorAll('text.bld-name').forEach(t => t.classList.toggle('hidden', lvl < 2));
+    if (typeof UXdeclutter === 'function') UXdeclutter(lvl); /* UX:declutter */
   }
   function zoomTo(addr) {
     const pos = POSITIONS[addr];
@@ -1426,10 +1902,12 @@
   let touchMoved = false;
 
   svg.addEventListener('mousedown', e => {
+    UXmomentum.cancel(); /* UX:gestures — stop any inertia on new grab */
     isPanning = true;
     panStart = { x: e.clientX, y: e.clientY };
     panStartView = { ...VIEW };
     touchMoved = false;
+    UXmomentum.sample(e.clientX, e.clientY); /* UX:gestures */
     e.preventDefault();
   });
   window.addEventListener('mousemove', e => {
@@ -1441,14 +1919,16 @@
     const sx = panStartView.w / rect.width;
     const sy = panStartView.h / rect.height;
     setView(panStartView.x - dx * sx, panStartView.y - dy * sy, panStartView.w);
+    UXmomentum.sample(e.clientX, e.clientY); /* UX:gestures */
   });
   window.addEventListener('mouseup', () => {
-    if (touchMoved) { suppressClick = true; setTimeout(() => suppressClick = false, 80); }
+    if (touchMoved) { suppressClick = true; setTimeout(() => suppressClick = false, 80); UXmomentum.flick(); } /* UX:gestures */
     isPanning = false;
   });
 
   svg.addEventListener('wheel', e => {
     e.preventDefault();
+    UXmomentum.cancel(); /* UX:gestures — wheel interrupts any inertia */
     const factor = Math.exp(-e.deltaY * 0.0015);
     const rect = svg.getBoundingClientRect();
     const px = (e.clientX - rect.left) / rect.width;
@@ -1462,14 +1942,18 @@
   }, { passive: false });
 
   svg.addEventListener('touchstart', e => {
+    UXmomentum.cancel(); /* UX:gestures — stop inertia on new touch */
     if (e.touches.length === 1) {
       const t = e.touches[0];
       isPanning = true;
       panStart = { x: t.clientX, y: t.clientY };
       panStartView = { ...VIEW };
       touchMoved = false;
+      UXmomentum.sample(t.clientX, t.clientY); /* UX:gestures */
+      UXdoubleTap.onTouchStart(t, e); /* UX:gestures — double-tap-to-zoom */
     } else if (e.touches.length === 2) {
       isPanning = false;
+      UXmomentum.markPinch(); /* UX:gestures — suppress flick after a pinch */
       const t1 = e.touches[0], t2 = e.touches[1];
       pinchStartDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
       pinchStartView = { ...VIEW };
@@ -1492,6 +1976,7 @@
       const sx = panStartView.w / rect.width;
       const sy = panStartView.h / rect.height;
       setView(panStartView.x - dx * sx, panStartView.y - dy * sy, panStartView.w);
+      UXmomentum.sample(t.clientX, t.clientY); /* UX:gestures */
     } else if (e.touches.length === 2 && pinchStartView) {
       e.preventDefault();
       const t1 = e.touches[0], t2 = e.touches[1];
@@ -1507,8 +1992,10 @@
       touchMoved = true;
     }
   }, { passive: false });
-  svg.addEventListener('touchend', () => {
+  svg.addEventListener('touchend', e => {
     if (touchMoved) { suppressClick = true; setTimeout(() => suppressClick = false, 80); }
+    /* UX:gestures — flick only when the LAST finger lifts off a single-finger pan */
+    if ((!e || e.touches.length === 0)) UXmomentum.flick();
     isPanning = false;
     pinchStartView = null;
   });
@@ -1547,6 +2034,827 @@
   // Resize handler
   window.addEventListener('resize', () => setView(VIEW.x, VIEW.y, VIEW.w));
   window.addEventListener('orientationchange', () => setTimeout(() => setView(VIEW.x, VIEW.y, VIEW.w), 100));
+
+  // === UX: visual system (themes + action-bar hooks) ===
+  // Owns: 3-way theme (auto/sunlight/dark) on <html data-theme>, persisted under
+  // 'ux.theme'; plus the window.UX hooks the bottom action bar calls. Self-
+  // contained; only reads helpers defined above (POSITIONS, getCurrentPos, GEO,
+  // distanceMeters, openSheet, zoomTo, showArtistDetail, resolvePosKey, …).
+  window.UX = window.UX || {};
+  (function () {
+    const root = document.documentElement;
+    const THEME_KEY = 'ux.theme';
+    const MODES = ['auto', 'sunlight', 'dark'];
+    const META = {
+      auto:     { label: 'Auto', meta: '#000000', scheme: 'light dark',
+        glyph: '<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4a8 8 0 0 0 0 16Z" fill="currentColor" stroke="none"/>' },
+      sunlight: { label: 'Sun',  meta: '#ffffff', scheme: 'light',
+        glyph: '<circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.2 5.2l1.9 1.9M16.9 16.9l1.9 1.9M18.8 5.2l-1.9 1.9M7.1 16.9l-1.9 1.9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' },
+      dark:     { label: 'Dark', meta: '#0e0f12', scheme: 'dark',
+        glyph: '<path d="M20 14.2A8 8 0 1 1 9.8 4 6.4 6.4 0 0 0 20 14.2Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>' },
+    };
+
+    function applyTheme(mode) {
+      if (!MODES.includes(mode)) mode = 'auto';
+      root.setAttribute('data-theme', mode);
+      const m = META[mode];
+      // Keep the iOS status bar + form controls in step with the theme.
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeMeta) themeMeta.setAttribute('content', m.meta);
+      const schemeMeta = document.querySelector('meta[name="color-scheme"]');
+      if (schemeMeta) schemeMeta.setAttribute('content', m.scheme);
+      const btn = document.getElementById('ux-act-theme');
+      if (btn) {
+        const svg = btn.querySelector('svg');
+        if (svg) svg.innerHTML = m.glyph;
+        const lbl = btn.querySelector('.ux-act-lbl');
+        if (lbl) lbl.textContent = m.label;
+        const human = mode === 'auto' ? 'Theme: Auto (follows system)' : (mode === 'sunlight' ? 'Theme: Sunlight (high contrast)' : 'Theme: Dark');
+        btn.setAttribute('aria-label', human);
+        btn.setAttribute('title', human);
+      }
+    }
+
+    async function saveTheme(mode) {
+      try {
+        if (window.Capacitor?.Plugins?.Preferences) {
+          await window.Capacitor.Plugins.Preferences.set({ key: THEME_KEY, value: mode });
+        } else {
+          localStorage.setItem(THEME_KEY, mode);
+        }
+      } catch (e) { /* private mode / quota — best effort */ }
+    }
+    async function loadTheme() {
+      try {
+        if (window.Capacitor?.Plugins?.Preferences) {
+          const { value } = await window.Capacitor.Plugins.Preferences.get({ key: THEME_KEY });
+          return value || 'auto';
+        }
+        return localStorage.getItem(THEME_KEY) || 'auto';
+      } catch (e) { return 'auto'; }
+    }
+
+    function cycleTheme() {
+      const cur = root.getAttribute('data-theme') || 'auto';
+      const next = MODES[(MODES.indexOf(cur) + 1 + MODES.length) % MODES.length] || 'auto';
+      applyTheme(next);
+      saveTheme(next);
+      if (typeof showToast === 'function') showToast('Theme: ' + META[next].label);
+    }
+    window.UX.setTheme = applyTheme;
+    window.UX.cycleTheme = cycleTheme;
+
+    // Restore persisted theme on load (async; default 'auto' is already in markup).
+    loadTheme().then(applyTheme);
+
+    // ---- Map-centric hooks the action bar calls ----
+    // Recenter: reset the SVG viewBox to the full campus.
+    window.UX.recenter = function () {
+      if (typeof resetView === 'function') resetView();
+    };
+    // Focus the search field (and surface the keyboard on iOS).
+    window.UX.focusSearch = function () {
+      const s = document.getElementById('search');
+      if (!s) return;
+      s.focus();
+      try { s.select(); } catch (e) {}
+    };
+
+    // Inverse projection: SVG centroid → lat/lng (linear over GEO, per brief).
+    function svgToLatLng(cx, cy) {
+      return {
+        lat: GEO.nw.lat - (cy / 913) * (GEO.nw.lat - GEO.se.lat),
+        lng: GEO.nw.lng + (cx / 1019) * (GEO.se.lng - GEO.nw.lng),
+      };
+    }
+    function fmtDist(m) {
+      if (m < 950) return Math.round(m / 10) * 10 + ' m';
+      return (m / 1000).toFixed(1) + ' km';
+    }
+    // Studios near me: rank artists by walking distance from the user to their
+    // building, render a tappable list in the sheet. Respects category/favorite
+    // filters (matchesFilter) but ignores the text query.
+    window.UX.nearMe = async function () {
+      if (typeof getCurrentPos !== 'function') return;
+      if (typeof showToast === 'function') showToast('Finding studios near you…');
+      let pos;
+      try {
+        pos = await getCurrentPos();
+      } catch (e) {
+        const msg = (e && e.message) || '';
+        if (typeof showToast === 'function') {
+          showToast(/denied|permission/i.test(msg) ? 'Location permission denied' : 'Couldn’t get your location');
+        }
+        return;
+      }
+      // Build distance-ranked list of artists that have a placed building.
+      const ranked = [];
+      const seenNoPos = false;
+      (Array.isArray(artists) ? artists : []).forEach((a) => {
+        if (typeof matchesFilter === 'function' && !matchesFilter(a)) return;
+        const key = (typeof resolvePosKey === 'function' && resolvePosKey(a.address)) || a.address;
+        const p = POSITIONS[key];
+        if (!p) return;
+        const cx = p.x + p.w / 2, cy = p.y + p.h / 2;
+        const ll = svgToLatLng(cx, cy);
+        const d = distanceMeters(pos.lat, pos.lng, ll.lat, ll.lng);
+        ranked.push({ a, key, d });
+      });
+      ranked.sort((x, y) => x.d - y.d);
+      const top = ranked.slice(0, 30);
+      if (top.length === 0) {
+        if (typeof openSheet === 'function') {
+          openSheet('<h2>Nothing nearby</h2><p class="empty">No studios match the current filter.</p>');
+        }
+        return;
+      }
+      const nearest = top[0].d;
+      const head = nearest > GEO.radiusMeters
+        ? `<div class="building-head">You’re ${fmtDist(nearest)} away · nearest studios</div>`
+        : `<div class="building-head">Studios near you</div>`;
+      const rows = top.map(({ a, d }) => {
+        const idx = artists.indexOf(a);
+        const meta = `${esc(a.category || '')}${a.unit ? ' · #' + esc(a.unit) : ''} · ${fmtDist(d)}`;
+        return `<li><button data-artist-idx="${idx}">
+            <div class="a-name">${esc(a.name)}</div>
+            <div class="a-meta">${meta}</div>
+          </button></li>`;
+      }).join('');
+      openSheet(`${head}<h2>${top.length} near you</h2><ul class="artist-list">${rows}</ul>`);
+      const body = document.getElementById('sheet-body');
+      if (body) body.querySelectorAll('button[data-artist-idx]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const a = artists[parseInt(btn.dataset.artistIdx, 10)];
+          if (!a) return;
+          const key = (typeof resolvePosKey === 'function' && resolvePosKey(a.address)) || a.address;
+          if (typeof zoomTo === 'function') zoomTo(key);
+          if (typeof highlightBuilding === 'function') highlightBuilding(key);
+          if (typeof showArtistDetail === 'function') showArtistDetail(a, key);
+        });
+      });
+    };
+
+    // ---- Wire the bottom action bar. Locate + theme are owned here; near, search,
+    // and recenter are wired by the wayfind/discovery/mapgest blocks below — binding
+    // them here too would double-fire (per integration review). ----
+    document.getElementById('ux-act-locate')?.addEventListener('click', () => document.getElementById('locate-me')?.click());
+    document.getElementById('ux-act-theme')?.addEventListener('click', cycleTheme);
+  })();
+  // === UX: wayfind ===
+  // Real-world wayfinding built on the existing geolocation block: rank studios
+  // by GPS distance ("Studios near me") with live distance badges. Everything is
+  // computed from the SVG POSITIONS shapes via the linear inverse of latLngToSvg
+  // — no new network calls, no third-party maps. Entry points are exposed on
+  // window.UX so the (separately built) bottom action bar can call in.
+  window.UX = window.UX || {};
+  const UX_FEET_THRESHOLD_MI = 0.1;      // below this, show feet instead of miles
+
+  // Centroid of a studio's map shape, in SVG units. Resolves aliases/sub-units
+  // through resolvePosKey so a bare street address still finds a footprint.
+  function uxCentroidSvg(addr) {
+    const key = resolvePosKey(addr) || (POSITIONS[addr] ? addr : null);
+    if (!key) return null;
+    const pos = POSITIONS[key];
+    if (!pos) return null;
+    return { cx: pos.x + pos.w / 2, cy: pos.y + pos.h / 2, key };
+  }
+  // Same centroid, projected to lat/lng via the inverse of latLngToSvg (linear
+  // over the GEO corners), so we can haversine against the user's fix.
+  function uxCentroidLatLng(addr) {
+    const c = uxCentroidSvg(addr);
+    if (!c) return null;
+    return {
+      lat: GEO.nw.lat - (c.cy / 913) * (GEO.nw.lat - GEO.se.lat),
+      lng: GEO.nw.lng + (c.cx / 1019) * (GEO.se.lng - GEO.nw.lng),
+    };
+  }
+  // Smart distance label: feet when very close, else miles.
+  function uxFmtDistance(meters) {
+    const miles = meters / 1609.344;
+    if (miles < UX_FEET_THRESHOLD_MI) {
+      const ft = Math.round(meters * 3.28084 / 10) * 10;   // nearest 10 ft
+      return Math.max(10, ft) + ' ft';
+    }
+    return (miles < 10 ? miles.toFixed(1) : Math.round(miles)) + ' mi';
+  }
+  // Resolve a usable GPS fix: reuse a cached one (<60 s) else ask the OS, then
+  // gate on the campus radius exactly like findMe(). Returns { pos, svg } or null
+  // (after toasting the reason). `silent` skips the "Finding you…" chatter.
+  let uxFixPromise = null;
+  async function uxUserFix(silent) {
+    const cached = window.UX.lastPos;
+    if (cached && (Date.now() - cached.t) < 60000) {
+      return { pos: cached, svg: latLngToSvg(cached.lat, cached.lng) };
+    }
+    if (uxFixPromise) return uxFixPromise;
+    if (!silent) showToast('Finding you…');
+    uxFixPromise = (async () => {
+      try {
+        const pos = await getCurrentPos();
+        const center = { lat: (GEO.nw.lat + GEO.se.lat) / 2, lng: (GEO.nw.lng + GEO.se.lng) / 2 };
+        const distM = distanceMeters(pos.lat, pos.lng, center.lat, center.lng);
+        if (distM > GEO.radiusMeters) {
+          showToast(`You're ${(distM / 1000).toFixed(1)} km away — get closer to use this`, 3200);
+          return null;
+        }
+        window.UX.lastPos = { lat: pos.lat, lng: pos.lng, acc: pos.acc, t: Date.now() };
+        return { pos: window.UX.lastPos, svg: latLngToSvg(pos.lat, pos.lng) };
+      } catch (e) {
+        const msg = (e && e.message) ? e.message : '';
+        showToast(/denied|permission/i.test(msg) ? 'Location permission denied' : 'Couldn’t get your location', 3000);
+        return null;
+      } finally {
+        uxFixPromise = null;
+      }
+    })();
+    return uxFixPromise;
+  }
+
+  // ---- Item 1: "Studios near me" ----
+  async function uxNearMe() {
+    const fix = await uxUserFix();
+    if (!fix) return;
+    const { pos } = fix;
+    const ranked = artists.map(a => {
+      const ll = uxCentroidLatLng(a.address);
+      if (!ll) return null;
+      return { a, d: distanceMeters(pos.lat, pos.lng, ll.lat, ll.lng) };
+    }).filter(Boolean).sort((p, q) => p.d - q.d);
+
+    if (!ranked.length) { showToast('No studios to locate'); return; }
+
+    const rows = ranked.map(({ a, d }) => `
+      <li><button data-artist-idx="${artists.indexOf(a)}">
+        <span class="ux-near-main">
+          <span class="a-name">${esc(a.name)}</span>
+          <span class="a-meta">${esc(a.category)}${a.medium ? ' · ' + esc(a.medium) : ''} · ${esc(prettyAddr(a.address))}${a.unit ? ' #' + esc(a.unit) : ''}</span>
+        </span>
+        <span class="ux-dist-badge">${esc(uxFmtDistance(d))}</span>
+      </button></li>`).join('');
+    openSheet(`
+      <div class="building-head">Sorted by distance · ±${Math.round(pos.acc || 0)} m</div>
+      <h2>Studios near you</h2>
+      <ul class="ux-near-list">${rows}</ul>`);
+
+    // Tapping a row mirrors the search-result behaviour: zoom, highlight, detail.
+    sheetBody.querySelectorAll('button[data-artist-idx]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const a = artists[parseInt(btn.dataset.artistIdx, 10)];
+        const key = resolvePosKey(a.address) || a.address;
+        zoomTo(key);
+        selectedAddress = key;
+        highlightBuilding(key);
+        showArtistDetail(a, key);
+      });
+    });
+  }
+
+  // ---- distanceLabel: string|null (null until we have a GPS fix) ----
+  function uxDistanceLabel(addr) {
+    const fix = window.UX.lastPos;
+    if (!fix) return null;
+    const ll = uxCentroidLatLng(addr);
+    if (!ll) return null;
+    return uxFmtDistance(distanceMeters(fix.lat, fix.lng, ll.lat, ll.lng));
+  }
+
+  // Expose the wayfinding surface for the action bar + sibling features.
+  window.UX.nearMe = uxNearMe;
+  window.UX.distanceLabel = uxDistanceLabel;
+
+  // Action-bar hook (the bar is built by the visual agent; guard with ?. so this
+  // worktree, which has no bar yet, stays robust). The window.UX.nearMe hook is
+  // the real contract.
+  document.getElementById('ux-act-near')?.addEventListener('click', () => window.UX.nearMe());
+  // === UX: gestures + declutter ===
+  // Item 6 (robust gestures) + item 7 (label decluttering). Everything here is
+  // built ON TOP of the existing setView()/VIEW projection — it never replaces
+  // the projection and always routes motion through setView(), so setView's
+  // MIN_W/MAX_W + overshoot clamping is preserved. Tap-vs-drag selection is left
+  // entirely to the existing suppressClick/touchMoved gating; the only thing we
+  // add is momentum AFTER the gesture ends (post-suppressClick) and a separate
+  // double-tap recognizer that does not interfere with single-tap selection.
+  window.UX = window.UX || {};
+
+  const UXreduceMotion = (() => {
+    let mq = null;
+    try { mq = window.matchMedia('(prefers-reduced-motion: reduce)'); } catch (e) {}
+    return () => !!(mq && mq.matches);
+  })();
+
+  // Map a client point (px) to the focus fraction of the current viewBox.
+  function uxClientToFrac(clientX, clientY) {
+    const rect = svg.getBoundingClientRect();
+    return {
+      px: (clientX - rect.left) / rect.width,
+      py: (clientY - rect.top) / rect.height,
+      rect,
+    };
+  }
+
+  // ---- Momentum / inertia pan after a flick -------------------------------
+  // We sample pointer positions during a drag, then on release fling the view
+  // with a velocity that decays via requestAnimationFrame. Each frame calls
+  // setView(), so the fling decelerates naturally when it hits setView's clamp.
+  const UXmomentum = (() => {
+    const FRICTION = 0.93;          // per-frame velocity multiplier (~16ms frames)
+    const MIN_SPEED = 0.015;        // px/ms below which we stop
+    const MAX_SPEED = 4.0;          // px/ms cap, guards against jumpy samples
+    const SAMPLE_WINDOW = 90;       // ms of recent samples used for velocity
+    let samples = [];               // {x,y,t} in client px
+    let raf = 0;
+    let pinchThisGesture = false;
+
+    function cancel() {
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    }
+    function markPinch() { pinchThisGesture = true; }
+    function sample(x, y) {
+      const t = performance.now();
+      samples.push({ x, y, t });
+      // keep a little more than the window so we always have 2+ points
+      while (samples.length > 2 && t - samples[0].t > SAMPLE_WINDOW) samples.shift();
+    }
+    function reset() { samples = []; pinchThisGesture = false; }
+
+    function flick() {
+      cancel();
+      const wasPinch = pinchThisGesture;
+      const pts = samples.slice();
+      reset();
+      if (wasPinch || pts.length < 2 || UXreduceMotion()) return; // no inertia
+      const last = pts[pts.length - 1];
+      // first sample within the window
+      let first = pts[0];
+      for (let i = pts.length - 1; i >= 0; i--) {
+        if (last.t - pts[i].t >= SAMPLE_WINDOW) { first = pts[i]; break; }
+        first = pts[i];
+      }
+      const dt = last.t - first.t;
+      if (dt <= 0) return;
+      // client-px velocity
+      let vx = (last.x - first.x) / dt;   // px/ms
+      let vy = (last.y - first.y) / dt;
+      let speed = Math.hypot(vx, vy);
+      if (speed < 0.05) return;            // too slow to be a flick
+      if (speed > MAX_SPEED) { const k = MAX_SPEED / speed; vx *= k; vy *= k; }
+
+      const rect = svg.getBoundingClientRect();
+      // Convert client-px/ms → viewBox-units/frame (dragging right moves view left)
+      let dxView = -vx * (VIEW.w / rect.width) * 16;
+      let dyView = -vy * (VIEW.h / rect.height) * 16;
+
+      const step = () => {
+        const prevX = VIEW.x, prevY = VIEW.y;
+        setView(VIEW.x + dxView, VIEW.y + dyView, VIEW.w);
+        // If a clamp pinned an axis (no movement), kill that axis's velocity so
+        // we don't burn frames pushing against the wall.
+        if (VIEW.x === prevX) dxView = 0;
+        if (VIEW.y === prevY) dyView = 0;
+        dxView *= FRICTION; dyView *= FRICTION;
+        const remaining = Math.hypot(
+          dxView / (VIEW.w / rect.width),
+          dyView / (VIEW.h / rect.height)
+        ) / 16; // back to px/ms for the threshold check
+        if (remaining > MIN_SPEED && (dxView !== 0 || dyView !== 0)) {
+          raf = requestAnimationFrame(step);
+        } else { raf = 0; }
+      };
+      raf = requestAnimationFrame(step);
+    }
+    return { sample, flick, cancel, markPinch, reset };
+  })();
+
+  // ---- Smooth viewBox tween (used by recenter + double-tap) ---------------
+  let uxTweenRaf = 0;
+  function uxCancelTween() { if (uxTweenRaf) { cancelAnimationFrame(uxTweenRaf); uxTweenRaf = 0; } }
+  // Animate VIEW from its current box to (tx,ty,tw) over `ms`, then run done().
+  function uxAnimateView(tx, ty, tw, ms, done) {
+    uxCancelTween();
+    UXmomentum.cancel();
+    if (UXreduceMotion() || ms <= 0) { setView(tx, ty, tw); if (done) done(); return; }
+    const x0 = VIEW.x, y0 = VIEW.y, w0 = VIEW.w;
+    const t0 = performance.now();
+    const ease = p => 1 - Math.pow(1 - p, 3); // ease-out cubic
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / ms);
+      const k = ease(p);
+      setView(x0 + (tx - x0) * k, y0 + (ty - y0) * k, w0 + (tw - w0) * k);
+      if (p < 1) { uxTweenRaf = requestAnimationFrame(tick); }
+      else { uxTweenRaf = 0; if (done) done(); }
+    };
+    uxTweenRaf = requestAnimationFrame(tick);
+  }
+
+  // ---- Recenter to campus (exposed as window.UX.recenter) -----------------
+  // Computes the exact framing resetView() would land on, animates to it, then
+  // calls resetView() so the final state is pixel-identical to the reset path.
+  function uxRecenterTarget() {
+    const rect = svg.getBoundingClientRect();
+    const aspectScreen = rect.height / rect.width;
+    const w = aspectScreen >= NATURAL.h / NATURAL.w ? NATURAL.w : NATURAL.h / aspectScreen;
+    return { x: (NATURAL.w - w) / 2, y: 0, w };
+  }
+  function uxRecenter() {
+    const t = uxRecenterTarget();
+    uxAnimateView(t.x, t.y, t.w, 450, () => resetView());
+  }
+  window.UX.recenter = uxRecenter;
+
+  // ---- Double-tap to zoom at the tapped point -----------------------------
+  // Self-contained recognizer. It only ACTS on the second tap of a quick
+  // double-tap; single taps fall through untouched so building selection (via
+  // the existing g.click handler + suppressClick gating) is unaffected.
+  const UXdoubleTap = (() => {
+    const MAX_GAP = 300;   // ms between taps
+    const MAX_DIST = 32;   // px between taps (client)
+    let lastT = 0, lastX = 0, lastY = 0;
+    function onTouchStart(touch, e) {
+      const now = performance.now();
+      if (now - lastT < MAX_GAP &&
+          Math.hypot(touch.clientX - lastX, touch.clientY - lastY) < MAX_DIST) {
+        lastT = 0; // consume
+        if (e && e.cancelable) e.preventDefault();
+        // Suppress the tap-select that would otherwise follow this touch.
+        suppressClick = true; setTimeout(() => suppressClick = false, 350);
+        zoomAtPoint(touch.clientX, touch.clientY);
+      } else {
+        lastT = now; lastX = touch.clientX; lastY = touch.clientY;
+      }
+    }
+    return { onTouchStart };
+  })();
+
+  // Zoom toward a client point by `factor` (>1 zooms in), keeping that point
+  // fixed on screen. If we're already near max zoom, recenter to campus instead
+  // so double-tap acts as a familiar toggle. Routes through setView clamping.
+  function zoomAtPoint(clientX, clientY, factor) {
+    factor = factor || 2.2;
+    const { px, py, rect } = uxClientToFrac(clientX, clientY);
+    // Already deep in? Toggle back out to campus.
+    if (VIEW.w <= MIN_W * 1.15) { uxRecenter(); return; }
+    const fx = VIEW.x + px * VIEW.w;
+    const fy = VIEW.y + py * VIEW.h;
+    const newW = Math.max(MIN_W, VIEW.w / factor);
+    const aspectScreen = rect.height / rect.width;
+    const newH = newW * aspectScreen;
+    uxAnimateView(fx - px * newW, fy - py * newH, newW, 260);
+  }
+  // Desktop parity: double-click on the map zooms at the cursor too.
+  svg.addEventListener('dblclick', e => {
+    e.preventDefault();
+    suppressClick = true; setTimeout(() => suppressClick = false, 350);
+    zoomAtPoint(e.clientX, e.clientY);
+  });
+
+  // ---- Label decluttering by zoom (item 7) --------------------------------
+  // At campus zoom (level 1) building-number labels overlap and turn to mush.
+  // We hide the labels that collide with a more-prominent neighbour and, for the
+  // prominent ones, append a " · N" studio count when it fits inside the shape.
+  // Reveal everything as the user zooms in. Label rects are precomputed from
+  // POSITIONS (no getBBox / layout reads), so this is cheap to run on every
+  // zoom change. Approx glyph width ≈ 0.62·fontSize (Inter Tight digits).
+  const UX_GLYPH_W = 0.62;
+  let uxLabelRects = null;   // built lazily after renderMap, invalidated on rerender
+  function uxBuildLabelRects() {
+    uxLabelRects = [];
+    for (const [addr, pos] of Object.entries(POSITIONS)) {
+      const txt = svg.querySelector(
+        `g.bld-group[data-address="${cssEscape(addr)}"] text.bld-label`);
+      if (!txt) continue;
+      const short = String(pos.short == null ? '' : pos.short);
+      const minSide = Math.min(pos.w, pos.h);
+      const fontSize = minSide < 22 ? 7 : minSide < 36 ? 8 : minSide < 70 ? 10 : minSide < 130 ? 12 : 14;
+      const pad = 3;
+      const x = pos.x + pad;
+      const y = pos.y + pad;                 // top of the glyph box (text baseline is y+fontSize)
+      const w = short.length * fontSize * UX_GLYPH_W;
+      uxLabelRects.push({
+        addr, el: txt, short, fontSize,
+        x, y, w, h: fontSize,
+        shapeW: pos.w, area: pos.w * pos.h,
+        count: (artistsByAddress[addr]?.length || 0),
+      });
+    }
+    // Most prominent first → they win collisions and earn a studio count.
+    uxLabelRects.sort((a, b) => b.area - a.area);
+  }
+  function uxRectsOverlap(a, b) {
+    return !(a.x + a.w <= b.x || b.x + b.w <= a.x ||
+             a.y + a.h <= b.y || b.y + b.h <= a.y);
+  }
+  // Replace a label's content with "NNN · N" (count as a styled tspan) or back
+  // to plain "NNN". Idempotent; avoids touching the DOM when unchanged.
+  function uxSetLabel(rec, withCount) {
+    const el = rec.el;
+    const hasCount = !!el.querySelector('tspan.ux-count');
+    if (withCount && rec.count > 0) {
+      if (hasCount) return;
+      el.textContent = rec.short + ' · ';
+      const ts = document.createElementNS(NS, 'tspan');
+      ts.setAttribute('class', 'ux-count');
+      ts.textContent = String(rec.count);
+      el.appendChild(ts);
+    } else {
+      if (!hasCount && el.textContent === rec.short) return;
+      el.textContent = rec.short;
+    }
+  }
+  // Called from updateZoomLevel() (hooked via the `UXdeclutter` global below).
+  function uxDeclutter(level) {
+    if (!uxLabelRects) uxBuildLabelRects();
+    if (!uxLabelRects || !uxLabelRects.length) return;
+    if (level >= 2) {
+      // Zoomed in: reveal every label, strip the counts (numbers read clearly).
+      for (const r of uxLabelRects) {
+        r.el.classList.remove('ux-collapsed');
+        uxSetLabel(r, false);
+      }
+      return;
+    }
+    // Campus level: greedily keep prominent, non-overlapping labels.
+    const kept = [];
+    for (const r of uxLabelRects) {
+      // The label-with-count is wider; reserve that width when deciding overlap
+      // for buildings that will show a count, so the count never collides.
+      const willCount = r.count > 0 &&
+        (String(r.short).length + 3 + String(r.count).length) * r.fontSize * UX_GLYPH_W <= r.shapeW - 2;
+      const effW = willCount
+        ? (String(r.short).length + 3 + String(r.count).length) * r.fontSize * UX_GLYPH_W
+        : r.w;
+      const probe = { x: r.x, y: r.y, w: effW, h: r.h };
+      let collides = false;
+      for (const k of kept) { if (uxRectsOverlap(probe, k.box)) { collides = true; break; } }
+      if (collides) {
+        r.el.classList.add('ux-collapsed');
+      } else {
+        r.el.classList.remove('ux-collapsed');
+        uxSetLabel(r, willCount);
+        kept.push({ box: probe });
+      }
+    }
+  }
+  // Bridge so the tiny edit inside updateZoomLevel() can find us regardless of
+  // declaration order; updateZoomLevel calls `UXdeclutter(lvl)` if it's a fn.
+  function UXdeclutter(level) { uxDeclutter(level); }
+  // renderMap() rebuilds the label DOM, so any cached rects are stale.
+  const uxOrigRenderMap = renderMap;
+  renderMap = function () { uxLabelRects = null; return uxOrigRenderMap.apply(this, arguments); };
+
+  // Wire the shared bottom-bar recenter button if/when it exists (visual agent
+  // owns the markup; guard per the cross-agent contract).
+  document.getElementById('ux-act-recenter')?.addEventListener('click', () => window.UX.recenter());
+  // === UX: discovery (fuzzy search + multi-select filters + sheet snap points) ===
+  // Shared cross-agent namespace (the action bar lives in the visual agent's branch;
+  // we attach our hooks here and guard any #ux-act-* wiring with ?.).
+  window.UX = window.UX || {};
+  const UX_REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Fuzzy subsequence matcher (no external library) ----------------------
+  // Returns null when `query` is not a subsequence of `text`; otherwise an object
+  // { score, indices } where `indices` are the matched character positions in the
+  // ORIGINAL text. Scoring rewards contiguous runs, word-boundary starts, and an
+  // earlier first match — good enough to rank artist/medium/address hits.
+  function fuzzyScore(text, query) {
+    if (!query) return { score: 0, indices: [] };
+    if (!text) return null;
+    const t = text.toLowerCase();
+    const q = query.toLowerCase();
+    // Fast path / strong boost for a true substring match.
+    const sub = t.indexOf(q);
+    if (sub !== -1) {
+      const indices = [];
+      for (let k = 0; k < q.length; k++) indices.push(sub + k);
+      const boundary = sub === 0 || /[^a-z0-9]/.test(t[sub - 1]);
+      return { score: 1000 + (boundary ? 200 : 0) + q.length * 4 - sub, indices };
+    }
+    let ti = 0, score = 0, run = 0;
+    const indices = [];
+    for (let qi = 0; qi < q.length; qi++) {
+      const c = q[qi];
+      let found = -1;
+      while (ti < t.length) {
+        if (t[ti] === c) { found = ti; break; }
+        ti++;
+      }
+      if (found === -1) return null;            // not a subsequence → no match
+      indices.push(found);
+      const prev = found > 0 ? t[found - 1] : '';
+      if (found === 0 || /[^a-z0-9]/.test(prev)) score += 18;  // word-boundary bonus
+      if (qi > 0 && indices[qi - 1] === found - 1) { run++; score += 6 + run * 4; } // contiguous
+      else run = 0;
+      score += Math.max(0, 12 - found * 0.3);   // earlier is better
+      ti = found + 1;
+    }
+    return { score, indices };
+  }
+
+  // Best score across the searchable fields of an artist (used by matchesSearch + ranking).
+  function fuzzyArtistScore(a, query) {
+    const fields = [a.name, a.medium, a.category, a.address];
+    let best = null;
+    for (const f of fields) {
+      const r = fuzzyScore(f || '', query);
+      if (r && (best === null || r.score > best)) best = r.score;
+    }
+    return best; // null when nothing matched
+  }
+
+  // XSS-safe highlight: escape the WHOLE string first, then re-run the matcher over
+  // the original text to find indices and wrap those (escaped) characters in <mark>.
+  // Because we map original indices onto pre-escaped, per-character escaped pieces,
+  // no attacker-controlled markup can ever leak through.
+  function fuzzyHighlight(text, query) {
+    const s = String(text == null ? '' : text);
+    if (!query) return esc(s);
+    const r = fuzzyScore(s, query);
+    if (!r || !r.indices.length) return esc(s);
+    const mark = new Set(r.indices);
+    let out = '', open = false;
+    for (let i = 0; i < s.length; i++) {
+      const hit = mark.has(i);
+      if (hit && !open) { out += '<mark>'; open = true; }
+      else if (!hit && open) { out += '</mark>'; open = false; }
+      out += esc(s[i]);
+    }
+    if (open) out += '</mark>';
+    return out;
+  }
+  window.UX.fuzzyHighlight = fuzzyHighlight;
+
+  // ---- Bottom-sheet snap points: PEEK / HALF / FULL -------------------------
+  // The sheet is a 90dvh fixed panel translated DOWN by `--sheet-y` (px). We drive
+  // it via inline transform during drags and snap to one of three "visible heights"
+  // on release. openSheet()/closeSheet() keep their old signatures (see the small
+  // UX edits in those functions): open presents at HALF; close fully dismisses.
+  const UXSheet = (function () {
+    const SNAP_ORDER = ['peek', 'half', 'full'];
+    let sheetH = 0;              // measured panel height (≈ 90dvh)
+    let offsets = { peek: 0, half: 0, full: 0 }; // translateY (px) per snap; bigger = lower
+    let dismissedY = 0;          // translateY that hides the panel completely
+    let current = null;          // active snap name while open, else null
+
+    function visibleFor(name) {
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      if (name === 'peek') return 84;                 // handle + a sliver
+      if (name === 'half') return Math.round(vh * 0.5);
+      return Math.round(vh * 0.92);                   // full
+    }
+    function recompute() {
+      sheetH = sheet.getBoundingClientRect().height || (window.innerHeight * 0.9);
+      dismissedY = sheetH + 24;
+      SNAP_ORDER.forEach(n => {
+        offsets[n] = Math.max(0, Math.round(sheetH - visibleFor(n)));
+      });
+      if (current) applyY(offsets[current], false); // keep position correct after resize
+    }
+    function applyY(y, animate) {
+      if (!animate || UX_REDUCED) sheet.classList.add('ux-dragging');
+      sheet.style.setProperty('--sheet-y', y + 'px');
+      sheet.style.transform = 'translateY(' + y + 'px)';
+      if (!animate || UX_REDUCED) {
+        // force the no-transition paint, then drop the flag so the next move animates
+        void sheet.offsetHeight;
+        sheet.classList.remove('ux-dragging');
+      }
+    }
+    function setSnap(name, animate) {
+      if (!offsets[name] && offsets[name] !== 0) recompute();
+      current = name;
+      sheet.classList.toggle('ux-snap-peek', name === 'peek');
+      sheet.classList.toggle('ux-snap-full', name === 'full');
+      applyY(offsets[name], animate !== false);
+      sheet.setAttribute('data-snap', name);
+      const h = $('#sheet-handle');
+      if (h) {
+        h.setAttribute('aria-valuenow', String(SNAP_ORDER.indexOf(name)));
+        h.setAttribute('aria-valuetext', name.charAt(0).toUpperCase() + name.slice(1));
+      }
+    }
+    function nearest(y) {
+      let best = 'half', bestD = Infinity;
+      SNAP_ORDER.forEach(n => {
+        const d = Math.abs(offsets[n] - y);
+        if (d < bestD) { bestD = d; best = n; }
+      });
+      return best;
+    }
+    function present() {                 // called by openSheet()
+      recompute();
+      // Fresh open → HALF. Already open → keep the user's current snap.
+      const target = sheet.classList.contains('open') && current ? current : 'half';
+      sheet.classList.add('open');
+      sheet.setAttribute('aria-hidden', 'false');
+      // animate up from the dismissed position on a true (re)open
+      if (!current) { applyY(dismissedY, false); requestAnimationFrame(() => setSnap('half', true)); }
+      else setSnap(target, true);
+    }
+    function dismiss() {                  // called by closeSheet()
+      current = null;
+      sheet.classList.remove('ux-snap-peek', 'ux-snap-full');
+      sheet.removeAttribute('data-snap');
+      sheet.style.transform = '';        // hand control back to the CSS :not(.open) rule
+      sheet.style.removeProperty('--sheet-y');
+    }
+
+    // ---- drag handling (touch + mouse via Pointer Events) ----
+    let dragging = false, startPointerY = 0, startY = 0, lastY = 0, lastT = 0, velocity = 0;
+    function clientY(e) { return e.touches ? e.touches[0].clientY : e.clientY; }
+    function onDown(e) {
+      if (!sheet.classList.contains('open')) return;
+      recompute();
+      dragging = true;
+      startPointerY = clientY(e);
+      startY = offsets[current] != null ? offsets[current] : (parseFloat(sheet.style.getPropertyValue('--sheet-y')) || 0);
+      lastY = startY; lastT = (e.timeStamp || Date.now()); velocity = 0;
+      sheet.classList.add('ux-dragging');
+      try { if (e.pointerId != null && e.target.setPointerCapture) e.target.setPointerCapture(e.pointerId); } catch (_) {}
+    }
+    function onMove(e) {
+      if (!dragging) return;
+      const dy = clientY(e) - startPointerY;
+      let y = startY + dy;
+      if (y < 0) y = -Math.sqrt(-y) * 2;                 // rubber-band above FULL
+      if (y > dismissedY) y = dismissedY;
+      const now = (e.timeStamp || Date.now());
+      const dt = now - lastT;
+      if (dt > 0) velocity = (y - lastY) / dt;           // px per ms (down = +)
+      lastY = y; lastT = now;
+      sheet.style.setProperty('--sheet-y', y + 'px');
+      sheet.style.transform = 'translateY(' + y + 'px)';
+      if (e.cancelable) e.preventDefault();
+    }
+    function onUp() {
+      if (!dragging) return;
+      dragging = false;
+      sheet.classList.remove('ux-dragging');
+      const y = lastY;
+      const FLICK = 0.55;                                // px/ms downward = flick
+      const flingDown = !UX_REDUCED && velocity > FLICK;
+      const flingUp = !UX_REDUCED && velocity < -FLICK;
+      // Flick DOWN from peek (or dragged well below it) dismisses the sheet.
+      if ((flingDown && (current === 'peek' || y > offsets.peek)) ||
+          y > offsets.peek + Math.min(140, sheetH * 0.18)) {
+        closeSheet();
+        return;
+      }
+      let target;
+      if (flingDown) target = current === 'full' ? 'half' : 'peek';
+      else if (flingUp) target = current === 'peek' ? 'half' : 'full';
+      else target = nearest(y);
+      setSnap(target, true);
+    }
+
+    const handle = $('#sheet-handle');
+    if (handle) {
+      if (window.PointerEvent) {
+        handle.addEventListener('pointerdown', onDown);
+        window.addEventListener('pointermove', onMove, { passive: false });
+        window.addEventListener('pointerup', onUp);
+        window.addEventListener('pointercancel', onUp);
+      } else {
+        handle.addEventListener('touchstart', onDown, { passive: true });
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onUp);
+        handle.addEventListener('mousedown', onDown);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+      }
+      handle.setAttribute('role', 'slider');
+      handle.setAttribute('tabindex', '0');
+      handle.setAttribute('aria-label', 'Resize details panel');
+      handle.setAttribute('aria-orientation', 'vertical');
+      handle.setAttribute('aria-valuemin', '0');
+      handle.setAttribute('aria-valuemax', '2');
+      handle.setAttribute('aria-valuetext', 'Half');
+      // Keyboard a11y: up/down cycle snaps; Escape closes.
+      handle.removeAttribute('aria-hidden');
+      handle.addEventListener('keydown', ev => {
+        const i = SNAP_ORDER.indexOf(current || 'half');
+        if (ev.key === 'ArrowUp')        { setSnap(SNAP_ORDER[Math.min(i + 1, 2)], true); ev.preventDefault(); }
+        else if (ev.key === 'ArrowDown') { if (i === 0) closeSheet(); else setSnap(SNAP_ORDER[i - 1], true); ev.preventDefault(); }
+        else if (ev.key === 'Escape')    { closeSheet(); ev.preventDefault(); }
+      });
+    }
+    window.addEventListener('resize', recompute);
+    window.addEventListener('orientationchange', () => setTimeout(recompute, 120));
+
+    return { present, dismiss, setSnap, recompute, get current() { return current; } };
+  })();
+  window.UX.sheet = UXSheet;
+
+  // ---- Search focus hook (wired to the visual agent's #ux-act-search) -------
+  // Present the sheet (HALF) and focus the field so the user can immediately type.
+  window.UX.focusSearch = function focusSearch() {
+    if (!sheet.classList.contains('open')) {
+      // open onto the live results for the current query (empty query → no-op sheet)
+      showSearchResults(artists.filter(a => matchesFilter(a) && matchesSearch(a)));
+    }
+    try { search.focus({ preventScroll: true }); } catch (_) { search.focus(); }
+    search.select && search.select();
+  };
+  document.getElementById('ux-act-search')?.addEventListener('click', () => window.UX.focusSearch());
+  // === /UX ===
 
   // -------- Init --------
   function showError(msg) {
