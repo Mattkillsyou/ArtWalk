@@ -70,3 +70,7 @@ _audit/
 
 # Logo design scratch (concepts + renders); the master lives in icons/app-icon.svg
 _logo/
+
+# iOS build artifacts
+/build/
+build_num.txt
