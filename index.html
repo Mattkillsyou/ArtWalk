@@ -1140,14 +1140,21 @@
 
   // -------- About modal --------
   let aboutReturnFocus = null;
+  // Background regions to mark inert while the (modal) About dialog is open, so
+  // keyboard + VoiceOver stay inside it (the Tab-trap + Escape are belt-and-
+  // suspenders for engines without `inert` support).
+  const aboutBgEls = () => ['header', '#chips', '#map-container', '#sheet', '#ux-actionbar', '#toast']
+    .map(s => document.querySelector(s)).filter(Boolean);
   function openAbout() {
     aboutReturnFocus = document.activeElement;
     aboutModal.setAttribute('aria-hidden', 'false');
+    aboutBgEls().forEach(el => { el.setAttribute('aria-hidden', 'true'); try { el.inert = true; } catch (_) {} });
     const f = aboutModal.querySelector('#about-close');
     if (f) { try { f.focus({ preventScroll: true }); } catch (_) { f.focus(); } }
   }
   function closeAbout() {
     aboutModal.setAttribute('aria-hidden', 'true');
+    aboutBgEls().forEach(el => { el.removeAttribute('aria-hidden'); try { el.inert = false; } catch (_) {} });
     if (aboutReturnFocus && aboutReturnFocus.focus) { try { aboutReturnFocus.focus({ preventScroll: true }); } catch (_) { aboutReturnFocus.focus(); } }
     aboutReturnFocus = null;
   }
@@ -1259,8 +1266,9 @@
   if (locateBtn) locateBtn.addEventListener('click', findMe);
 
   // -------- Service worker registration (offline cache) --------
-  // Skipped in Capacitor's WebView (capacitor:// scheme) since the bundle is
-  // already on-device — only useful when served over http(s).
+  // Registers only over http(s) — the GitHub Pages / web PWA path. Under Capacitor
+  // (iosScheme: https) it also registers but is effectively inert: the bundle is
+  // already on-device, so the SW only adds a redundant cache.
   if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js').catch(() => { /* dev — fine */ });
@@ -1699,14 +1707,21 @@
   // -------- Bottom sheet --------
   let sheetReturnFocus = null;
   function openSheet(html) {
-    if (!sheet.classList.contains('open')) sheetReturnFocus = document.activeElement;
+    const wasOpen = sheet.classList.contains('open');
+    if (!wasOpen) sheetReturnFocus = document.activeElement;
     sheetBody.innerHTML = html;
     sheetBody.scrollTop = 0;
     /* UX:sheet — present at the HALF snap (keeps current snap if already open) */
     UXSheet.present();
-    // Move focus into the sheet for keyboard / VoiceOver users.
-    const f = sheet.querySelector('#sheet-close');
-    if (f) { try { f.focus({ preventScroll: true }); } catch (_) { f.focus(); } }
+    // Move focus into the sheet on FIRST open only, and never while the user is
+    // typing: search-as-you-type re-renders the sheet on every keystroke, so
+    // moving focus to the close button would steal it from #search and dismiss
+    // the keyboard (would break search after the first character).
+    const typing = document.activeElement && document.activeElement.tagName === 'INPUT';
+    if (!wasOpen && !typing) {
+      const f = sheet.querySelector('#sheet-close');
+      if (f) { try { f.focus({ preventScroll: true }); } catch (_) { f.focus(); } }
+    }
   }
   function closeSheet() {
     sheet.classList.remove('open');
