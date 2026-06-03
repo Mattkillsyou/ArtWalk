@@ -826,8 +826,6 @@
   #ux-actionbar .ux-act .ux-act-lbl { line-height: 1; white-space: nowrap; }
   #ux-actionbar .ux-act:active { background: var(--ux-ink, #000); color: var(--ux-bg, #fff); }
   #ux-actionbar .ux-act:focus-visible { outline: 2px solid var(--ux-accent, #007aff); outline-offset: -2px; }
-  #ux-actionbar .ux-act.is-active { color: var(--ux-accent, #007aff); }
-  #ux-actionbar .ux-act.is-active svg { stroke: var(--ux-accent, #007aff); }
   /* theme button shows the current mode glyph; label reflects mode */
 
   /* Keep zoom controls + bottom sheet clear of the action bar.
@@ -1373,11 +1371,13 @@
   };
   const POS_KEYS = Object.keys(POSITIONS);
   const _posKeyCache = {};
-  function resolvePosKey(addr) {
+  function resolvePosKey(addr, unit) {
     if (addr == null) return null;
-    if (addr in _posKeyCache) return _posKeyCache[addr];
+    const cacheKey = unit ? addr + '' + unit : addr;
+    if (cacheKey in _posKeyCache) return _posKeyCache[cacheKey];
     let key = null;
-    if (POSITIONS[addr]) key = addr;                                   // exact
+    if (POSITIONS[addr]) key = addr;                                   // exact bare address
+    else if (unit && POSITIONS[addr + ' #' + unit]) key = addr + ' #' + unit; // exact sub-unit
     else if (POS_ALIAS[addr] && POSITIONS[POS_ALIAS[addr]]) key = POS_ALIAS[addr];
     else {
       key = POS_KEYS.find(k => k.startsWith(addr + ' #')) || null;     // first sub-unit
@@ -1392,7 +1392,7 @@
         }
       }
     }
-    _posKeyCache[addr] = key;
+    _posKeyCache[cacheKey] = key;
     return key;
   }
 
@@ -1458,7 +1458,7 @@
   categories = [...new Set(artists.map(x => x.category).filter(Boolean))].sort();
   artistsByAddress = {};
   artists.forEach(x => {
-    const key = resolvePosKey(x.address) || x.address;
+    const key = resolvePosKey(x.address, x.unit) || x.address;
     (artistsByAddress[key] = artistsByAddress[key] || []).push(x);
   });
 
@@ -1663,13 +1663,6 @@
       if (!g) return;
       const isAny = matching.length > 0;
       g.classList.toggle('dim', filterActive && !isAny);
-      const badge = g.querySelector('text.badge-text');
-      const circ = g.querySelector('circle.badge-circle');
-      if (badge && circ) {
-        badge.textContent = matching.length;
-        badge.classList.toggle('badge-hidden', matching.length === 0);
-        circ.classList.toggle('badge-hidden', matching.length === 0);
-      }
     });
     status.textContent = `Showing ${total} of ${artists.length} artists`;
     if (searchQuery && !selectedAddress) {
@@ -1816,7 +1809,7 @@
     sheetBody.querySelectorAll('button[data-artist-idx]').forEach(btn => {
       btn.addEventListener('click', () => {
         const a = artists[parseInt(btn.dataset.artistIdx, 10)];
-        const key = resolvePosKey(a.address) || a.address;
+        const key = resolvePosKey(a.address, a.unit) || a.address;
         zoomTo(key);
         selectedAddress = key;
         highlightBuilding(key);
@@ -2164,79 +2157,6 @@
       try { s.select(); } catch (e) {}
     };
 
-    // Inverse projection: SVG centroid → lat/lng (linear over GEO, per brief).
-    function svgToLatLng(cx, cy) {
-      return {
-        lat: GEO.nw.lat - (cy / 913) * (GEO.nw.lat - GEO.se.lat),
-        lng: GEO.nw.lng + (cx / 1019) * (GEO.se.lng - GEO.nw.lng),
-      };
-    }
-    function fmtDist(m) {
-      if (m < 950) return Math.round(m / 10) * 10 + ' m';
-      return (m / 1000).toFixed(1) + ' km';
-    }
-    // Studios near me: rank artists by walking distance from the user to their
-    // building, render a tappable list in the sheet. Respects category/favorite
-    // filters (matchesFilter) but ignores the text query.
-    window.UX.nearMe = async function () {
-      if (typeof getCurrentPos !== 'function') return;
-      if (typeof showToast === 'function') showToast('Finding studios near you…');
-      let pos;
-      try {
-        pos = await getCurrentPos();
-      } catch (e) {
-        const msg = (e && e.message) || '';
-        if (typeof showToast === 'function') {
-          showToast(/denied|permission/i.test(msg) ? 'Location permission denied' : 'Couldn’t get your location');
-        }
-        return;
-      }
-      // Build distance-ranked list of artists that have a placed building.
-      const ranked = [];
-      const seenNoPos = false;
-      (Array.isArray(artists) ? artists : []).forEach((a) => {
-        if (typeof matchesFilter === 'function' && !matchesFilter(a)) return;
-        const key = (typeof resolvePosKey === 'function' && resolvePosKey(a.address)) || a.address;
-        const p = POSITIONS[key];
-        if (!p) return;
-        const cx = p.x + p.w / 2, cy = p.y + p.h / 2;
-        const ll = svgToLatLng(cx, cy);
-        const d = distanceMeters(pos.lat, pos.lng, ll.lat, ll.lng);
-        ranked.push({ a, key, d });
-      });
-      ranked.sort((x, y) => x.d - y.d);
-      const top = ranked.slice(0, 30);
-      if (top.length === 0) {
-        if (typeof openSheet === 'function') {
-          openSheet('<h2>Nothing nearby</h2><p class="empty">No studios match the current filter.</p>');
-        }
-        return;
-      }
-      const nearest = top[0].d;
-      const head = nearest > GEO.radiusMeters
-        ? `<div class="building-head">You’re ${fmtDist(nearest)} away · nearest studios</div>`
-        : `<div class="building-head">Studios near you</div>`;
-      const rows = top.map(({ a, d }) => {
-        const idx = artists.indexOf(a);
-        const meta = `${esc(a.category || '')}${a.unit ? ' · #' + esc(a.unit) : ''} · ${fmtDist(d)}`;
-        return `<li><button data-artist-idx="${idx}">
-            <div class="a-name">${esc(a.name)}</div>
-            <div class="a-meta">${meta}</div>
-          </button></li>`;
-      }).join('');
-      openSheet(`${head}<h2>${top.length} near you</h2><ul class="artist-list">${rows}</ul>`);
-      const body = document.getElementById('sheet-body');
-      if (body) body.querySelectorAll('button[data-artist-idx]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const a = artists[parseInt(btn.dataset.artistIdx, 10)];
-          if (!a) return;
-          const key = (typeof resolvePosKey === 'function' && resolvePosKey(a.address)) || a.address;
-          if (typeof zoomTo === 'function') zoomTo(key);
-          if (typeof highlightBuilding === 'function') highlightBuilding(key);
-          if (typeof showArtistDetail === 'function') showArtistDetail(a, key);
-        });
-      });
-    };
 
     // ---- Wire the bottom action bar. Locate + theme are owned here; near, search,
     // and recenter are wired by the wayfind/discovery/mapgest blocks below — binding
@@ -2344,7 +2264,7 @@
     sheetBody.querySelectorAll('button[data-artist-idx]').forEach(btn => {
       btn.addEventListener('click', () => {
         const a = artists[parseInt(btn.dataset.artistIdx, 10)];
-        const key = resolvePosKey(a.address) || a.address;
+        const key = resolvePosKey(a.address, a.unit) || a.address;
         zoomTo(key);
         selectedAddress = key;
         highlightBuilding(key);

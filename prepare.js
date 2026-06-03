@@ -11,6 +11,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const root          = __dirname;
 const htmlPath      = path.join(root, 'index.html');
@@ -99,6 +100,15 @@ function copyDir(rel) {
 
 // Top-level files the HTML references via relative URL.
 ['sw.js', 'manifest.webmanifest'].forEach(copyFile);
+
+// Stamp the service-worker cache version with a content hash of the shell, so
+// every release invalidates the previous cache automatically. The source sw.js
+// keeps the `__SW_VERSION__` placeholder; only the shipped www/ copy is stamped.
+const swVer = crypto.createHash('sha256').update(html).digest('hex').slice(0, 8);
+const wwwSw = path.join(wwwDir, 'sw.js');
+if (fs.existsSync(wwwSw)) {
+  fs.writeFileSync(wwwSw, fs.readFileSync(wwwSw, 'utf8').replace(/__SW_VERSION__/g, swVer));
+}
 
 // Bundled directories.
 ['fonts', 'icons'].forEach(copyDir);
