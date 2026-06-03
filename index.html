@@ -2,6 +2,7 @@
 <html lang="en" data-theme="auto">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' capacitor: https://localhost gap:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: capacitor: https://localhost; font-src 'self' data:; connect-src 'self' capacitor: https://localhost; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="light">
@@ -1440,8 +1441,12 @@
 
   artists = loadInlineB64('__ARTISTS_B64__');
   buildings = loadInlineB64('__BUILDINGS_B64__');
+  // Free the ~130 KB of base64 source now that it's decoded into objects.
+  try { window.__ARTISTS_B64__ = null; window.__BUILDINGS_B64__ = null; } catch (_) {}
 
-  if (!artists || !buildings) {
+  // Only artists are required to render (buildings.json is loaded but unused by
+  // the map, which draws from the in-file POSITIONS table).
+  if (!artists) {
     try {
       const [a, b] = await Promise.all([
         loadJSON('artists.json'),
